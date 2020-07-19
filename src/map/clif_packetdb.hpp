@@ -67,7 +67,7 @@
 	packet(0x009a,-1);
 	parseable_packet(0x009b,5,clif_parse_ChangeDir,2,4);
 	packet(0x009c,9);
-	packet(0x009d,17);
+	packet(0x009d,15 +sizeof(t_nameid));
 	packet(0x009e,17);
 	parseable_packet(0x009f,6,clif_parse_TakeItem,2);
 	packet(0x00a0,23);
@@ -176,13 +176,13 @@
 	packet(0x0107,10);
 	parseable_packet(0x0108,-1,clif_parse_PartyMessage,2,4);
 	packet(0x0109,-1);
-	packet(0x010a,4);
+	packet(0x010a,2 + sizeof(t_nameid));
 	packet(0x010b,6);
 	packet(0x010c,6);
 	packet(0x010d,2);
 	packet(0x010e,11);
 	packet(0x010f,-1);
-	packet(0x0110,10);
+	packet(0x0110,6 + 2*sizeof(t_nameid));
 	packet(0x0111,39);
 	parseable_packet(0x0112,4,clif_parse_SkillUp,2);
 	parseable_packet(0x0113,10,clif_parse_UseSkillToId,2,4,6);
@@ -308,10 +308,10 @@
 	packet(0x018b,4);
 	packet(0x018c,29);
 	packet(0x018d,-1);
-	parseable_packet(0x018e,10,clif_parse_ProduceMix,2,4,6,8);
-	packet(0x018f,6);
+	parseable_packet( HEADER_CZ_REQMAKINGITEM, sizeof( struct PACKET_CZ_REQMAKINGITEM ), clif_parse_ProduceMix, 0 );
+	packet(0x018f,sizeof(PACKET_ZC_ACK_REQMAKINGITEM));
 	parseable_packet(0x0190,90,clif_parse_UseSkillToPosMoreInfo,2,4,6,8,10);
-	packet(0x0191,86);
+	packet( HEADER_ZC_TALKBOX_CHATCONTENTS, sizeof( struct PACKET_ZC_TALKBOX_CHATCONTENTS ) );
 	packet(0x0192,24);
 	parseable_packet(0x0193,6,clif_parse_SolveCharName,2);
 	packet(0x0194,30);
@@ -340,7 +340,7 @@
 	packet(0x01ab,12);
 	packet(0x01ac,6);
 	packet(0x01ad,-1);
-	parseable_packet(0x01ae,4,clif_parse_SelectArrow,2);
+	parseable_packet( HEADER_CZ_REQ_MAKINGARROW, sizeof( PACKET_CZ_REQ_MAKINGARROW ), clif_parse_SelectArrow, 0 );
 	parseable_packet(0x01af,4,clif_parse_ChangeCart,2);
 	packet(0x01b0,11);
 	packet(0x01b1,7);
@@ -366,7 +366,7 @@
 	packet(0x01c5,22);
 	packet(0x01c6,4);
 	packet(0x01c7,2);
-	packet(0x01c8,13);
+	packet(0x01c8,11+sizeof(t_nameid));
 	packet(0x01c9,97);
 	//packet(0x01ca,-1);
 	packet(0x01cb,9);
@@ -419,7 +419,7 @@
 	packet(0x01fa,48);
 	packet(0x01fb,56);
 	packet(0x01fc,-1);
-	parseable_packet(0x01fd,4,clif_parse_RepairItem,2);
+	parseable_packet( HEADER_CZ_REQ_ITEMREPAIR, sizeof( struct PACKET_CZ_REQ_ITEMREPAIR ), clif_parse_RepairItem, 0 );
 	packet(0x01fe,5);
 	packet(0x01ff,10);
 	packet(0x0200,26);
@@ -636,7 +636,7 @@
 	parseable_packet(0x0193,21,clif_parse_MoveFromKafra,4,17);
 	packet(0x0221,-1);
 	parseable_packet(0x0222,6,clif_parse_WeaponRefine,2);
-	packet(0x0223,8);
+	packet(0x0223,6 + sizeof(t_nameid));
 #endif
 
 // 2004-12-13aSakexe
@@ -875,7 +875,7 @@
 #if PACKETVER >= 20051010
 	packet(0x020e,32);
 	packet(0x025a,-1);
-	parseable_packet(0x025b,6,clif_parse_Cooking,2,4);
+	parseable_packet( HEADER_CZ_REQ_MAKINGITEM, sizeof( struct PACKET_CZ_REQ_MAKINGITEM ), clif_parse_Cooking, 0 );
 #endif
 
 // 2005-10-13aSakexe
@@ -1001,8 +1001,8 @@
 	packet(0x0295,-1);
 	packet(0x0296,-1);
 	packet(0x0297,-1);
-	packet(0x0298,8);
-	packet(0x0299,6);
+	packet(0x0298,6+sizeof(t_nameid));
+	packet(0x0299,4+sizeof(t_nameid));
 	packet(0x029a,27);
 	packet(0x029c,66);
 	packet(0x029d,-1);
@@ -1072,14 +1072,9 @@
 	parseable_packet(0x0190,19,clif_parse_ActionRequest,5,18);
 #endif
 
-// 2007-05-07aSakexe
-#if PACKETVER >= 20070507
-	parseable_packet(0x01fd,15,clif_parse_RepairItem,2,4,6,7,9,11,13);
-#endif
-
 // 2007-02-27aSakexe to 2007-10-02aSakexe
 #if PACKETVER >= 20070227
-	parseable_packet(0x0288,10,clif_parse_cashshop_buy,2,4,6);
+	parseable_packet(0x0288,10,clif_parse_npccashshop_buy,2,4,6);
 	packet(0x0289,12);
 	packet(0x02a6,22);
 	packet(0x02a7,22);
@@ -1094,7 +1089,7 @@
 	packet(0x02b5,-1);
 	parseable_packet(0x02b6,7,clif_parse_questStateAck,2,6);
 	packet(0x02b7,7);
-	packet(0x02b8,22);
+	packet(0x02b8,12+5*sizeof(t_nameid));
 	packet(0x02b9,191);
 	parseable_packet(0x02ba,11,clif_parse_Hotkey,2,4,5,9);
 	packet(0x02bb,8);
@@ -1114,7 +1109,7 @@
 	packet(0x02cc,4);
 	packet(0x02cd,26);
 	packet(0x02ce,10);
-	packet(0x02cf,6);
+	parseable_packet(0x02cf,6,clif_parse_MemorialDungeonCommand,2);
 	packet(0x02d0,-1);
 	packet(0x02d1,-1);
 	packet(0x02d2,-1);
@@ -1505,7 +1500,7 @@
 	//packet(0x07d4,4);
 	//packet(0x07d5,4);
 	//packet(0x07d6,4);
-	//packet(0x0447,2);
+	parseable_packet( 0x0447, 2, clif_parse_blocking_playcancel, 0 );
 #endif
 
 // 2009-06-03aRagexeRE
@@ -1744,7 +1739,7 @@
 	packet(0x081a,4);
 	packet(0x081b,10);
 	packet(0x081c,10);
-	packet(0x0824,6);
+	packet(0x0824,4+sizeof(t_nameid));
 #endif
 
 // 2010-06-01aRagexeRE
@@ -1762,7 +1757,7 @@
 	parseable_packet(0x0838,2,clif_parse_SearchStoreInfoNextPage,0);
 	packet(0x083A,4); // Search Stalls Feature
 	parseable_packet(0x083B,2,clif_parse_CloseSearchStoreInfo,0);
-	parseable_packet(0x083C,12,clif_parse_SearchStoreInfoListItemClick,2,6,10);
+	parseable_packet(0x083C,10+sizeof(t_nameid),clif_parse_SearchStoreInfoListItemClick,2,6,10);
 	packet(0x083D,6);
 #endif
 
@@ -1815,7 +1810,7 @@
 
 // 2010-11-24aRagexeRE
 #if PACKETVER >= 20101124
-	parseable_packet(0x0288,-1,clif_parse_cashshop_buy,2,4,8,10);
+	parseable_packet(0x0288,-1,clif_parse_npccashshop_buy,2,4,8,10);
 	parseable_packet(0x0436,19,clif_parse_WantToConnection,2,6,10,14,18);
 	parseable_packet(0x035f,5,clif_parse_WalkToXY,2);
 	parseable_packet(0x0360,6,clif_parse_TickSend,2);
@@ -1915,11 +1910,10 @@
 
 // 2012-04-10aRagexeRE
 #if PACKETVER >= 20120410
-	parseable_packet(0x01fd,15,clif_parse_RepairItem,2,4,6,7,9,11,13);
 	parseable_packet(0x089c,26,clif_parse_FriendsListAdd,2);
 	parseable_packet(0x0885,5,clif_parse_HomMenu,2,4);
 	parseable_packet(0x0961,36,clif_parse_StoragePassword,2,4,20);
-	parseable_packet(0x0288,-1,clif_parse_cashshop_buy,2,4,8,10);
+	parseable_packet(0x0288,-1,clif_parse_npccashshop_buy,2,4,8,10);
 	parseable_packet(0x091c,26,clif_parse_PartyInvite2,2);
 	parseable_packet(0x094b,19,clif_parse_WantToConnection,2,6,10,14,18);
 	parseable_packet(0x0369,7,clif_parse_ActionRequest,2,6);
@@ -2049,7 +2043,6 @@
 // 2013-03-20Ragexe (Judas)
 #if PACKETVER >= 20130320
 	parseable_packet(0x014f,6,clif_parse_GuildRequestInfo,2);
-	parseable_packet(0x01fd,15,clif_parse_RepairItem,2,4,6,7,9,11,13);
 	//parseable_packet(0x0281,-1,clif_parse_ItemListWindowSelected,2,4,8,12);
 	parseable_packet(0x035f,6,clif_parse_ReqClickBuyingStore,2);
 	parseable_packet(0x0363,6,clif_parse_TickSend,2);
@@ -2170,7 +2163,7 @@
 	parseable_packet(0x09D4,2,clif_parse_NPCShopClosed,0);
 	//NPC Market
 	packet(0x09D5,-1);
-	parseable_packet(0x09D6,-1,clif_parse_NPCMarketPurchase,2,4,6);
+	parseable_packet(0x09D6,-1,clif_parse_NPCMarketPurchase,2,4,4+sizeof(t_nameid));
 	packet(0x09D7,-1);
 	parseable_packet(0x09D8,2,clif_parse_NPCMarketClosed,0);
 	// Clan System
@@ -2180,18 +2173,18 @@
 	parseable_packet(0x098D,-1,clif_parse_clan_chat,2,4);
 	packet(0x098E,-1);
 	// Sale
-	parseable_packet(0x09AC,-1,clif_parse_sale_search,2,4,8);
-	packet(0x09AD,8);
-	parseable_packet(0x09AE,17,clif_parse_sale_add,2,6,8,12,16);
+	parseable_packet( HEADER_CZ_REQ_CASH_BARGAIN_SALE_ITEM_INFO, -1, clif_parse_sale_search, 0 );
+	packet( HEADER_ZC_ACK_CASH_BARGAIN_SALE_ITEM_INFO, sizeof( PACKET_ZC_ACK_CASH_BARGAIN_SALE_ITEM_INFO ) );
+	parseable_packet( HEADER_CZ_REQ_APPLY_BARGAIN_SALE_ITEM, sizeof( PACKET_CZ_REQ_APPLY_BARGAIN_SALE_ITEM ), clif_parse_sale_add, 0 );
 	packet(0x09AF,4);
-	parseable_packet(0x09B0,8,clif_parse_sale_remove,2,6);
+	parseable_packet( HEADER_CZ_REQ_REMOVE_BARGAIN_SALE_ITEM, sizeof( PACKET_CZ_REQ_REMOVE_BARGAIN_SALE_ITEM ), clif_parse_sale_remove, 0 );
 	packet(0x09B1,4);
-	packet(0x09B2,8);
-	packet(0x09B3,4);
+	packet( HEADER_ZC_NOTIFY_BARGAIN_SALE_SELLING, sizeof( PACKET_ZC_NOTIFY_BARGAIN_SALE_SELLING ) );
+	packet( HEADER_ZC_NOTIFY_BARGAIN_SALE_CLOSE, sizeof( PACKET_ZC_NOTIFY_BARGAIN_SALE_CLOSE ) );
 	parseable_packet(0x09B4,6,clif_parse_sale_open,2);
 	parseable_packet(0x09BC,6,clif_parse_sale_close,2);
 	parseable_packet(0x09C3,8,clif_parse_sale_refresh,2,6);
-	packet(0x09C4,8);
+	packet( HEADER_ZC_ACK_COUNT_BARGAIN_SALE_ITEM, sizeof( PACKET_ZC_ACK_COUNT_BARGAIN_SALE_ITEM ) );
 	// New Packet
 	packet(0x097A,-1); // ZC_ALL_QUEST_LIST2
 	packet(0x09DB,-1); // ZC_NOTIFY_MOVEENTRY10
@@ -2230,7 +2223,7 @@
 	parseable_packet(0x0A1D,2,clif_parse_roulette_close,0); // CZ_REQ_CLOSE_ROULETTE
 	packet(0x0A1E,3); // ZC_ACK_CLOSE_ROULETTE
 	parseable_packet(0x0A1F,2,clif_parse_roulette_generate,0); // CZ_REQ_GENERATE_ROULETTE
-	packet(0x0A20,21); // ZC_ACK_GENERATE_ROULETTE
+	packet(0x0A20,19 + +sizeof(t_nameid)); // ZC_ACK_GENERATE_ROULETTE
 	parseable_packet(0x0A21,3,clif_parse_roulette_item,2); // CZ_RECV_ROULETTE_ITEM
 	packet(0x0A22,5); // ZC_RECV_ROULETTE_ITEM
 #endif
@@ -2251,8 +2244,8 @@
 // 2015-02-25aRagexeRE
 #if PACKETVER >= 20150225
 	packet(0x0A09,45); // ZC_ADD_EXCHANGE_ITEM3
-	packet(0x0A0A,47); // ZC_ADD_ITEM_TO_STORE3
-	packet(0x0A0B,47); // ZC_ADD_ITEM_TO_CART3
+	packet(0x0A0A,37 + 5 * sizeof(t_nameid)); // ZC_ADD_ITEM_TO_STORE3
+	packet(0x0A0B,37 + 5 * sizeof(t_nameid)); // ZC_ADD_ITEM_TO_CART3
 	packet(0x0A0C,56); // ZC_ITEM_PICKUP_ACK_V6
 	packet(0x0A0D,-1); // ZC_INVENTORY_ITEMLIST_EQUIP_V6
 	packet(0x0A0F,-1); // ZC_CART_ITEMLIST_EQUIP_V6
@@ -2312,7 +2305,7 @@
 
 // 2015-05-20aRagexe
 #if PACKETVER >= 20150520
-	parseable_packet(0x0A3D,18,clif_parse_sale_add,2,6,8,12,16);
+	parseable_packet( HEADER_CZ_REQ_APPLY_BARGAIN_SALE_ITEM2, sizeof( PACKET_CZ_REQ_APPLY_BARGAIN_SALE_ITEM ), clif_parse_sale_add, 0 );
 #endif
 
 // 2015-09-16Ragexe
@@ -2428,7 +2421,7 @@
 
 // 2018-03-21aRagexeRE
 #if PACKETVER >= 20180321
-	parseable_packet(0x0A49,20,clif_parse_private_airship_request,0);
+	parseable_packet( 0x0A49, sizeof( struct PACKET_CZ_PRIVATE_AIRSHIP_REQUEST ), clif_parse_private_airship_request, 0 );
 	packet(0x0A4A,6);
 	packet(0x0A4B,22);
 	packet(0x0A4C,28);
@@ -2437,6 +2430,38 @@
 // 2018-04-18bRagexeRE
 #if PACKETVER >= 20180418
 	packet(0x0ADD, 22);
+#endif
+
+#if PACKETVER_MAIN_NUM >= 20181002 || PACKETVER_RE_NUM >= 20181002 || PACKETVER_ZERO_NUM >= 20181010
+	parseable_packet( 0x0B10, sizeof( struct PACKET_CZ_START_USE_SKILL ), clif_parse_StartUseSkillToId, 0 );
+	parseable_packet( 0x0B11, sizeof( struct PACKET_CZ_STOP_USE_SKILL ), clif_parse_StopUseSkillToId, 0 );
+#endif
+
+#if PACKETVER_MAIN_NUM >= 20181031 || PACKETVER_RE_NUM >= 20181031 || PACKETVER_ZERO_NUM >= 20181114
+	parseable_packet( 0x0B14, sizeof( struct PACKET_CZ_INVENTORY_EXPAND ), clif_parse_dull, 0 );
+	parseable_packet( 0x0B16, sizeof( struct PACKET_CZ_INVENTORY_EXPAND_CONFIRMED ), clif_parse_dull, 0 );
+	parseable_packet( 0x0B19, sizeof( struct PACKET_CZ_INVENTORY_EXPAND_REJECTED ), clif_parse_dull, 0 );
+#endif
+
+#if PACKETVER_MAIN_NUM >= 20190227 || PACKETVER_RE_NUM >= 20190220 || PACKETVER_ZERO_NUM >= 20190220
+	parseable_packet( 0x0B1C, sizeof( struct PACKET_CZ_PING ), clif_parse_dull, 0 );
+#endif
+
+#if PACKETVER_MAIN_NUM >= 20190522 || PACKETVER_RE_NUM >= 20190508 || PACKETVER_ZERO_NUM >= 20190605
+	parseable_packet( 0x0B21, sizeof( struct PACKET_CZ_SHORTCUT_KEY_CHANGE2 ), clif_parse_Hotkey, 0 );
+	parseable_packet( 0x0B22, sizeof( struct PACKET_CZ_SHORTCUTKEYBAR_ROTATE2 ), clif_parse_HotkeyRowShift, 0 );
+#endif
+
+#if PACKETVER_MAIN_NUM >= 20190703 || PACKETVER_RE_NUM >= 20190703 || PACKETVER_ZERO_NUM >= 20190709
+	parseable_packet( HEADER_CZ_REQ_MOUNTOFF, sizeof( PACKET_CZ_REQ_MOUNTOFF ), clif_parse_RemoveOption, 0 );
+#endif
+
+#if PACKETVER >= 20190724
+	parseable_packet( 0x0b4c, 2, clif_parse_dull, 0 );
+#endif
+
+#if PACKETVER >= 20191224
+	parseable_packet( HEADER_CZ_SE_CASHSHOP_OPEN2, sizeof( struct PACKET_CZ_SE_CASHSHOP_OPEN2 ), clif_parse_cashshop_open_request, 0 );
 #endif
 
 #endif /* CLIF_PACKETDB_HPP */

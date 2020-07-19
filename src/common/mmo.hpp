@@ -33,6 +33,12 @@
 	#define MAX_HOTKEYS 38
 #endif
 
+#if PACKETVER_MAIN_NUM >= 20190522 || PACKETVER_RE_NUM >= 20190508 || PACKETVER_ZERO_NUM >= 20190605
+	#define MAX_HOTKEYS_DB ((MAX_HOTKEYS) * 2)
+#else
+	#define MAX_HOTKEYS_DB MAX_HOTKEYS
+#endif
+
 #define MAX_MAP_PER_SERVER 1500 /// Maximum amount of maps available on a server
 #define MAX_INVENTORY 100 ///Maximum items in player inventory
 /** Max number of characters per account. Note that changing this setting alone is not enough if the client is not hexed to support more characters as well.
@@ -45,6 +51,20 @@
 	#else
 		#define MAX_CHARS 9
 	#endif
+#endif
+
+#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114
+	typedef uint32 t_nameid;
+#define RFIFON RFIFOL
+#define WFIFON RFIFOL
+#define RBUFN RBUFL
+#define WBUFN WBUFL
+#else
+	typedef uint16 t_nameid;
+#define RFIFON RFIFOW
+#define WFIFON WFIFOW
+#define RBUFN RBUFW
+#define WBUFN WBUFW
 #endif
 /** Number of slots carded equipment can have. Never set to less than 4 as they are also used to keep the data of forged items/equipment. [Skotlex]
 * Note: The client seems unable to receive data for more than 4 slots due to all related packets having a fixed size. */
@@ -242,13 +262,13 @@ struct achievement {
 
 struct item {
 	int id;
-	unsigned short nameid;
+	uint32 nameid;
 	short amount;
 	unsigned int equip; // location(s) where item is equipped (using enum equip_pos for bitmasking)
 	char identify;
 	char refine;
 	char attribute;
-	unsigned short card[MAX_SLOTS];
+	uint32 card[MAX_SLOTS];
 	struct s_item_randomoption option[MAX_ITEM_RDM_OPT];		// max of 5 random options can be supported.
 	unsigned int expire_time;
 	char favorite, bound;
@@ -292,7 +312,8 @@ struct point {
 };
 
 struct startitem {
-	unsigned short nameid, amount;
+	uint32 nameid;
+	unsigned short amount;
 	short pos;
 };
 
@@ -377,7 +398,7 @@ struct s_storage {
 		unsigned get : 1;
 		unsigned put : 1;
 	} state;
-	union { // Max for inventory, storage, cart, and guild storage are 1637 each without changing this struct and struct item [2014/10/27]
+	union { // Max for inventory, storage, cart, and guild storage are 818 each without changing this struct and struct item [2016/08/14]
 		struct item items_inventory[MAX_INVENTORY];
 		struct item items_storage[MAX_STORAGE];
 		struct item items_cart[MAX_CART];
@@ -398,8 +419,8 @@ struct s_pet {
 	int pet_id;
 	short class_;
 	short level;
-	unsigned short egg_id;//pet egg id
-	unsigned short equip;//pet equip name_id
+	uint32 egg_id;//pet egg id
+	uint32 equip;//pet equip name_id
 	short intimate;//pet friendly
 	short hungry;//pet hungry
 	char name[NAME_LENGTH];
@@ -518,7 +539,7 @@ struct mmo_charstatus {
 
 	struct s_friend friends[MAX_FRIENDS]; //New friend system [Skotlex]
 #ifdef HOTKEY_SAVING
-	struct hotkey hotkeys[MAX_HOTKEYS];
+	struct hotkey hotkeys[MAX_HOTKEYS_DB];
 #endif
 	bool show_equip,allow_party;
 	short rename;
@@ -536,6 +557,7 @@ struct mmo_charstatus {
 	uint32 uniqueitem_counter;
 
 	unsigned char hotkey_rowshift;
+	unsigned char hotkey_rowshift2;
 	unsigned long title_id;
 };
 
@@ -673,7 +695,7 @@ struct guild {
 	struct guild_expulsion expulsion[MAX_GUILDEXPULSION];
 	struct guild_skill skill[MAX_GUILDSKILL];
 	struct Channel *channel;
-	unsigned short instance_id;
+	int instance_id;
 	time_t last_leader_change;
 
 	/* Used by char-server to save events for guilds */
@@ -964,8 +986,7 @@ enum e_job {
 enum e_sex {
 	SEX_FEMALE = 0,
 	SEX_MALE,
-	SEX_SERVER,
-	SEX_ACCOUNT = 99
+	SEX_SERVER
 };
 
 /// Item Bound Type
