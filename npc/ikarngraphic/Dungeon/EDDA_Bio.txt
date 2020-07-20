@@ -1,0 +1,459 @@
+yuno,216,346,4	script	Ceara	982,{
+
+// ------------------------------------------------
+	set .@npc$,"[ Ceara ]";
+// ------------------------------------------------
+
+mes .@npc$;
+mes "คุณรู้หรือไม่ ว่าชั้นใต้ดินของ";
+mes "Somatology Laboratory";
+mes "มีไอเท็มบางอย่างที่ฉันเก็ยมาได้";
+cutin "3rd_gn_demi02",2;
+next;
+mes .@npc$;
+mes "ว่าไป คุณลองไปสำรวจที่นั่นดูไหม";
+mes "ว่าเป็นอย่างไร";
+next;
+mes .@npc$;
+mes "ถ้าหากพบอะไร บอกฉันด้วยหละ";
+mes "สถานที่นั้นมัน เก่ามากเลย";
+mes "ระวังตัว ด้วยหละ";
+mes "อาจจะมีอะไรบางอย่าง";
+cutin "3rd_gn_demi01",2;
+next;
+mes .@npc$;
+mes "ออก !! มา!!";
+next;
+mes .@npc$;
+mes "สถานที่นี้";
+mes "ซึ่งเป็นอุปกรณ์ที่บันทึก";
+mes "ความทรงจำของหน่วยสืบข่าวลับที่ถูกส่งมาจาก";
+mes "Rune-Midgards";
+next;
+mes .@npc$;
+mes "ใช้ไอเท็ม";
+mes "^000099Somatology Experimental Fragment^000000 : 250 ชิ้น";
+mes "ในการเปิด ดันเจียน";
+cutin "3rd_gn_demi01",255;
+next;
+menu "ข้ารู้สึกกลัว ไว้ก่อน",END_DG,"ลงไปสำรวจแหล่งที่มากันเถอะ",N_MODE;
+
+//===============================================================
+	END_DG:
+//===============================================================
+
+cutin "3rd_gn_demi01",255;
+mes .@npc$;
+mes "หากเจ้าพร้อมแล้ว";
+mes "งั้นเราไปกันเถอะ";
+end;
+
+
+//==========================================================================================================================================================
+
+//===============================================================
+	N_MODE:
+//===============================================================
+
+	set .@party_id,getcharid(1);
+
+	if(BaseLevel < 165){
+		mes .@npc$;
+		mes "เลเวล ต้องมากกว่า 165";
+		mes "ถึงจะสามารถเข้าร่วมได้";
+		cutin "3rd_gn_demi01",255;
+		end;
+	}
+
+	if(.@party_id == 0){
+
+	mes .@npc$;
+	mes "ท่านจำเป็นต้องมีปาร์ตี้";
+	mes "จึงจะสามารถเข้าหอคอยได้";
+	cutin "3rd_gn_demi01",255;
+	end;
+
+	}
+
+	if(.@party_id == $@BioLabs) goto JOINDUN;
+	
+	if(getmapusers("1@gol1") == 0) { 
+	
+	set $@BioLabs,0;
+
+	set $BI1M1,100;
+	set $BI1M2,100;
+	set $BI1M3,100;
+	set $BI1M4,100;
+	set $BI1M5,100;
+	set $BI1M6,100;
+	set $BI1M7,100;
+	set $BItser,1;
+
+	killmonsterall "1@gol1";
+
+	} else {
+
+	mes .@npc$;
+	mes "ยังคงมีเหล่านักผจญภัย";
+	mes "อยู่ในห้วงกาลเวลาอยู่";
+	end;
+	}
+
+	set .@party_id,getcharid(1);
+	set $@BioLabs,getcharid(1);
+	
+	if(.@party_id == 0){
+
+	mes .@npc$;
+	mes "ท่านจำเป็นต้องมีปาร์ตี้";
+	mes "จึงจะสามารถเข้าไปได้";
+	end;
+
+	} else if(getpartyleader(.@party_id,2) != getcharid(0)) {
+
+	mes .@npc$;
+	mes "ท่านไม่ใช่หัวหน้าปาร์ตี้";
+	end;
+
+	} else if(countitem(25787) < 250){
+
+	mes .@npc$;
+	mes "ท่านไม่มีไอเปิดกุญแจ";
+	end;
+
+	}
+
+	//announce "[Ceara] : นักผจญภัยกลุ่ม "+getpartyname(.@party_id)+" ได้เข้าร่วม Glastheim Fall แล้ว !!",0,0xF6CB38;
+	delitem 25787,250;
+
+	
+	JOINDUN:
+
+	mes .@npc$;
+	mes "สามารถเข้าร่วมดันเจี้ยนได้แล้ว";
+	next;
+
+	if(BaseLevel<165){
+		mes .@npc$;
+		mes "เลเวล ต้องมากกว่า 165";
+		mes "ถึงจะสามารถเข้าร่วมได้";
+		end;
+	}
+
+	if(getpartyleader(.@party_id,2) != getcharid(0)){
+	warp "1@gol1",199,36;
+	} else {
+	warp "1@gol1",199,36;
+	sleep 5000;
+	disablenpc "BNR6";
+	disablenpc "tser";
+	donpcevent "BION-1::OnWanted";
+	}
+	end;
+}
+
+//==========================================================================================================================================================
+//==========================================================================================================================================================
+
+1@gol1,196,38,6	script	Ceara::BION-1	982,{
+end;
+
+OnWanted:
+sleep 2000; mapannounce "1@gol1","Ceara : พวกเราคงต้องแยกย้าย กันสำรวจที่นี่หน่อยแล้ว",bc_map,0xF6CB38;
+sleep 4000;
+//disablenpc "Ceara";
+
+set $BI1M1,15;
+warpparty "1@gol1",164,187,$@BioLabs;
+sleep 2000;
+mapannounce "1@gol1","Ceara : พวกเจ้าเจออะไรบ้างไหม ?",bc_map,0xF6CB38;
+areamonster "1@gol1",156,204,177,185,"Lighthalzen Elite",20541,15,"Bio_N1::Ondevildead";
+end;
+}
+
+1@gol1,0,0,0	script	Bio_N1	-1,{
+
+Ondevildead:
+
+	set $BI1M1,$BI1M1 - 1;
+
+	if($BI1M1 == 0){
+	sleep 2000; mapannounce "1@gol1","Ceara : ถ้าไม่พบอะไร งั้นไปห้องถัดไปกัน",bc_map,0xF6CB38;
+	sleep 3000; mapannounce "1@gol1","Ceara : แยกย้ายกันสำรวจได้ไว ๆ ขึ้น",bc_map,0xF6CB38;
+
+	warpparty "1@gol1",67,274,$@BioLabs;
+	enablenpc "BNR2";
+	donpcevent "BNR2::OnWanted";
+	end;
+	}
+}	
+
+//=================== ROOM 2 ===============
+
+1@gol1,63,277,4	script	Ceara::BNR2	982,{
+end;
+
+OnWanted:
+npctalk "Ceara : เอาหละ";
+sleep 2000;
+npctalk "Ceara : แยกย้ายกันค้นหาต่อไป";
+sleep 2000;
+disablenpc "BNR2";
+set $BI1M2,39;
+areamonster "1@gol1",8,323,74,302,"Lighthalzen Elite",20541,13,"Bio_N2::Ondevildead";
+areamonster "1@gol1",8,323,74,302,"Lighthalzen Guard",20542,13,"Bio_N2::Ondevildead";
+areamonster "1@gol1",8,323,74,302,"Crazy Scientist",20543,13,"Bio_N2::Ondevildead";
+end;
+
+}
+
+
+1@gol1,0,0,0	script	Bio_N2	-1,{
+
+Ondevildead:
+set $BI1M2,$BI1M2 - 1;
+
+	if($BI1M2 == 0){
+	sleep 2000; mapannounce "1@gol1","Ceara : หากสำรวจเสร็จแล้ว มารวมตัวกันได้เลย",bc_map,0xF6CB38;
+	sleep 4000; mapannounce "1@gol1","Ceara : เราจะไปห้องถัดไปนะ เร็วๆ เข้าหละ",bc_map,0xF6CB38;
+	sleep 2000;
+	warpparty "1@gol1",114,191,$@BioLabs;
+	enablenpc "BNR3";
+	donpcevent "BNR3::OnWanted";
+	end;
+	}
+}	
+
+//=================== ROOM 3 ===============
+
+1@gol1,119,196,4	script	Ceara::BNR3	982,{
+end;
+
+OnWanted:
+sleep 2000;
+npctalk "Ceara : รีบค้นหาเร็วเข้า";
+sleep 2000;
+npctalk "Ceara : เราได้รีบไปจากที่นี่";
+sleep 2000;
+npctalk "Ceara : ดูเหมือนพวกมันจะรู้ตัวแล้ว !!";
+sleep 2000;
+disablenpc "BNR3";
+set $BI1M3,24;
+areamonster "1@gol1",103,206,113,186,"Lighthalzen Elite",20541,8,"Bio_N3::Ondevildead";
+areamonster "1@gol1",103,206,113,186,"Lighthalzen Guard",20542,8,"Bio_N3::Ondevildead";
+areamonster "1@gol1",103,206,113,186,"Crazy Scientist",20543,8,"Bio_N3::Ondevildead";
+end;
+
+}
+
+1@gol1,0,0,0	script	Bio_N3	-1,{
+
+Ondevildead:
+
+	set $BI1M3,$BI1M3 - 1;
+
+	if($BI1M3 == 0){
+	set $BI1M4,30;
+	areamonster "1@gol1",85,257,133,215,"Crazy Scientist",20543,10,"Bio_N4::Ondevildead";
+	areamonster "1@gol1",85,257,133,215,"Lighthalzen Guard",20542,10,"Bio_N4::Ondevildead";
+	areamonster "1@gol1",85,257,133,215,"Lighthalzen Elite",20541,10,"Bio_N4::Ondevildead";
+	end;
+	}
+}
+
+1@gol1,0,0,0	script	Bio_N4	-1,{
+
+Ondevildead:
+
+	set $BI1M4,$BI1M4 - 1;
+
+	if($BI1M4 == 0){
+	set $BI1M7,30;
+	areamonster "1@gol1",85,257,133,215,"Crazy Scientist",20543,10,"Bio_N5::Ondevildead";
+	areamonster "1@gol1",85,257,133,215,"Lighthalzen Guard",20542,10,"Bio_N5::Ondevildead";
+	areamonster "1@gol1",85,257,133,215,"Lighthalzen Elite",20541,10,"Bio_N5::Ondevildead";
+	end;
+	}
+}
+
+1@gol1,0,0,0	script	Bio_N5	-1,{
+
+Ondevildead:
+
+	set $BI1M7,$BI1M7 - 1;
+
+	if($BI1M7 == 0){
+	sleep 2000; mapannounce "1@gol1","Ceara : เราใกล้ถึงทางออกแล้ว เร็วเข้า ๆ",bc_map,0xF6CB38;
+	sleep 4000; mapannounce "1@gol1","Ceara : ทุกคนยังอยู่ดีใช่ไหม !!",bc_map,0xF6CB38;
+	sleep 2000;
+	warpparty "1@gol1",80,110,$@BioLabs;
+	enablenpc "BNR4";
+	donpcevent "BNR4::OnWanted";
+	end;
+	}
+}
+
+//=================== ROOM 4 ===============
+
+1@gol1,74,118,4	script	Ceara::BNR4	982,{
+end;
+
+OnWanted:
+sleep 2000;
+npctalk "Ceara : เคลียทางให้เรียบร้อย";
+sleep 2000;
+npctalk "Ceara : ข้าจะไปหาทางออก จากที่นี่";
+sleep 2000;
+disablenpc "BNR4";
+set $BI1M5,15;
+areamonster "1@gol1",53,125,84,102,"Lighthalzen Elite",20541,15,"Bio_N6::Ondevildead";
+end;
+
+}
+
+1@gol1,0,0,0	script	Bio_N6	-1,{
+
+Ondevildead:
+
+	set $BI1M5,$BI1M5 - 1;
+
+	if($BI1M5 == 0){
+	sleep 2000; mapannounce "1@gol1","Ceara : กองกำลังเสริม ของมันออกมาแล้ว ระวังด้วย",bc_map,0xF6CB38;
+	sleep 2000;
+	set $BI1M6,40;
+	areamonster "1@gol1",36,161,99,131,"Lighthalzen Elite",20541,20,"Bio_N7::Ondevildead";
+	areamonster "1@gol1",36,161,99,131,"Lighthalzen Guard",20542,20,"Bio_N7::Ondevildead";
+	end;
+	}
+
+}
+
+1@gol1,0,0,0	script	Bio_N7	-1,{
+
+Ondevildead:
+
+set $BI1M6,$BI1M6 - 1;
+
+	if($BI1M6 == 0){
+	mapannounce "1@gol1","Ceara : ข้าว่าข้าเจอทางออกแล้ว !",bc_map,0xF6CB38;
+	sleep 2000;
+	mapannounce "1@gol1","Ceara : เรา รีบออกจากที่นี่กันเถอะ",bc_map,0xF6CB38;
+	sleep 2000;
+	mapannounce "1@gol1","Ceara : ตามข้ามาเลย~~",bc_map,0xF6CB38;
+	sleep 2000;
+	warpparty "1@gol2",49,27,$@BioLabs;
+	sleep 2000;
+	enablenpc "BNR5";
+	donpcevent "BNR5::OnWanted";
+	end;
+	}
+}
+
+//==================== King's ======================
+
+1@gol2,51,32,4	script	Ceara::BNR5	982,{
+end;
+
+OnWanted:
+sleep 3000;
+npctalk "Ceara : ข้าขอขึ้นไปสำรวจทางด้านบนหน่อยละกัน";
+sleep 2000;
+npctalk "Ceara : พวกเราน่าจะหลบหนีสำเร็จแล้ว";
+sleep 2000;
+disablenpc "BNR5";
+enablenpc "BNRS1";
+sleep 2000;
+warpparty "1@gol2",50,56,$@BioLabs;
+setcell "1@gol2",46,43,53,42,cell_walkable,0;
+
+areamonster "1@gol2",36,73,64,49,"Egnigem Cenia",30048,1,"Bio_N8::Ondevildead";
+end;
+
+}
+
+
+1@gol2,51,44,4	script	Soul::BNRS1	802,{	end;	}
+
+
+
+
+1@gol2,0,0,0	script	Bio_N8	-1,{
+
+Ondevildead:
+disablenpc "BNRS1";
+setcell "1@gol2",46,43,53,42,cell_walkable,1;
+sleep 2000;
+enablenpc "BNR6";
+enablenpc "tser";
+end;
+}
+
+1@gol2,48,62,6	script	???::tser	10005,{
+
+
+if($BItser==0){
+
+mes "[???]";
+mes "สมบัติถูกค้นไปแล้ว";
+mes "ไม่สามารถค้นหาได้อีก";
+end;
+	}
+
+	progressbar "0x007000", 1;
+
+
+set $BItser,0;
+set .@rand, rand(200);
+	if (.@rand >= 0 && .@rand < 190){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],42038;
+		setarray .@itemea[0],10,20,30,40,50,10,20,30,40,50,10,20,30,40,50,100;
+		goto GETBIO;
+				}
+
+	if (.@rand >= 190 && .@rand < 200){
+		set .@eff,18;
+		set .@acc,0;
+		setarray .@item[0],21051,21052,32023,1333,16092,28138,28765,28766,28044,28042,26158,2055,2056,26161,2057,16095,18185,18187,18186,32350,32024,32025,32351,16093,16094,28767,28768,18184,28633,26159,26160,1865,1866,16096,18188,26212,26213,32107,32108;
+		setarray .@itemea[0],1;
+		goto GETBIO;	}
+
+
+GETBIO:
+set .@get, .@item[rand(getarraysize(.@item))];
+set .@getea,.@itemea[rand(getarraysize(.@itemea))];
+getitem .@get,.@getea;
+specialeffect2 .@eff;
+mapannounce "1@gol2","??? : เปิดได้ "+getitemname(.@get)+" จำนวน "+.@getea+" ชิ้น",bc_map,0xF6CB38;
+end;
+}
+
+
+1@gol2,51,62,4	script	Ceara::BNR6	982,{
+
+	set .@npc$,"[ Ceara ]";
+
+mes .@npc$;
+mes "ขอบคุณทุกท่านจริงๆ";
+mes "พวกเรากลับกันเถอะ";
+next;
+	getitem 42038,5;
+	set $@BioLabs,0;
+	warp "yuno",213,345;
+end;
+
+}
+
+//==========================================================================================================================================================
+//==========================================================================================================================================================
+
+1@gol2	mapflag	nosave	SavePoint
+1@gol2	mapflag	nomemo
+1@gol2	mapflag	nobranch
+1@gol2	mapflag	noteleport
+1@gol1	mapflag	nosave	SavePoint
+1@gol1	mapflag	nomemo
+1@gol1	mapflag	nobranch
+1@gol1	mapflag	noteleport

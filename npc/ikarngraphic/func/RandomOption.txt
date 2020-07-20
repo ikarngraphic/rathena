@@ -1,0 +1,92 @@
+//===== rAthena Script =====================================
+//===== Random option ====================================
+//===== By ikarngraphic ================================
+//===== Script Option ================================
+/*
+	0 = Right Accessary
+	1 = Left Accessary
+	2 = Shoes
+	3 = Grament
+	4 = Lower
+	5 = Middle
+	6 = Headgear
+	7 = Armor
+	8 = Shield
+	9 = Weapon
+	10 = Upper Costume
+	11 = Middle Costume
+	12 = Lower Costume
+
+	setrandomoption(6,0,rand(1,192),rand(5,30),100,getcharid(0));
+	setrandomoption(<equip>,<index>,<ID>,<value>,<100>,<getcharid(0)>);
+	index: 0 - 3
+
+	ID - ID of random option. See db/const.txt for constants.
+	Value - Value of random option
+
+*/
+
+morocc_in,117,126,3	script	Upg Hight	856,{
+		if (getgmlevel() < 90) close;
+		set .@cash,10;
+
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "โย่ว โย่ว !!";
+	mes "มีอะไร เรอะ โย่ว !";
+	mes "ใช้: "+.@cash+" CASH";
+	next;
+	switch(select(" - UPPER,"," - MIDDLE,"," - LOWER")) {
+case 1:	set .@part,6;	goto OPTION;
+case 2: set .@part,5;	goto OPTION;
+case 3: set .@part,4;	goto OPTION;
+	}
+
+OPTION:
+
+	set .@j, .@part;
+
+		for (set .@c, 0; .@c < getarraysize(getd(".ids" + .@j)); set .@c, .@c + 1)
+			if (isequipped(getd(".ids" + .@j + "[" + .@c +"]")) == 1)
+			set .@s, .@c;	
+
+	if (!.@s) {
+	if (atoi(getequipname(.@part)) == -1)
+		mes "ท่านไม่ได้สวมใส่อุปกรณ์";
+	else
+		mes "ท่านสวมใส่ ^FF0000[" + getequipname(.@part) + "]^000000, ไม่สามารหลอมได้";
+	close;
+}
+	if(#CASHPOINTS < .@cash){
+		mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+		mes "มี Cash ไม่พอนิ !!";
+		end;
+	}
+
+	//Option
+	setarray .@opt[0],3,4,5,6,7,8,9,10,13,14,15,17,18,19,20,21,157,158,159,160,161,162,169,170,171;
+	//setarray .@opt[0],14;
+
+	set .@get1, .@opt[rand(getarraysize(.@opt))];
+	set .@get2, .@opt[rand(getarraysize(.@opt))];
+	set .@get3, .@opt[rand(getarraysize(.@opt))];
+	set .@get4, .@opt[rand(getarraysize(.@opt))];
+	setrandomoption(.@part,0,.@get1,rand(4000,5000),100,getcharid(0));
+	setrandomoption(.@part,1,.@get2,rand(4000,5000),100,getcharid(0));
+	setrandomoption(.@part,2,.@get3,rand(4000,5000),100,getcharid(0));
+	setrandomoption(.@part,3,.@get4,rand(4000,5000),100,getcharid(0));
+	specialeffect2 10;
+	set #CASHPOINTS,#CASHPOINTS - .@cash;
+	dispbottom ""+strnpcinfo(1)+": Cash ถูกใช้ไป "+.@cash+" เหลือ "+#CASHPOINTS+"";
+	end;
+
+OnInit:
+	// Top
+	setarray .ids6[1],55082,19116;
+	// Middle
+	setarray .ids5[1],18839;
+	// Low
+	setarray .ids4[1],18839;
+
+//	waitingroom "",0;
+	end;
+}

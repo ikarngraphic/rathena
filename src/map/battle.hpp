@@ -511,6 +511,7 @@ struct Battle_Config
 	int hom_max_level;
 	int hom_S_max_level;
 	int hom_S_growth_level;
+	int droprate_mapflag; // [Xantara]
 
 	// [BattleGround Settings]
 	int bg_update_interval;
@@ -520,6 +521,15 @@ struct Battle_Config
 	int bg_magic_damage_rate;
 	int bg_misc_damage_rate;
 	int bg_flee_penalty;
+	
+	// Global Damage adjustment. [Cydh]
+	int atk_adjustment_map;
+	int atk_damage_attacker;
+	int atk_short_damage_rate;
+	int atk_long_damage_rate;
+	int atk_weapon_damage_rate;
+	int atk_magic_damage_rate;
+	int atk_misc_damage_rate;
 
 	// rAthena
 	int max_third_parameter;
@@ -657,8 +667,7 @@ struct Battle_Config
 	int switch_remove_edp;
 	int feature_homunculus_autofeed;
 	int feature_homunculus_autofeed_rate;
-	int summoner_race;
-	int summoner_size;
+	int summoner_trait;
 	int homunculus_autofeed_always;
 	int feature_attendance;
 	int feature_privateairship;
@@ -684,6 +693,16 @@ struct Battle_Config
 	int show_skill_scale;
 	int achievement_mob_share;
 	int slave_stick_with_master;
+	/**
+	* Extended Vending system [Lilith]
+	**/
+	int extended_vending;
+	int show_broadcas_info;
+	int show_item_vending;
+	int ex_vending_info;
+	int ex_vending_report;
+	int item_zeny;
+	int item_cash;
 
 #include "../custom/battle_config_struct.inc"
 };

@@ -1,0 +1,36 @@
+-	script	Auto_Item	 -1,{
+
+OnInit:
+
+	while (1)
+	{
+		query_sql "SELECT `id`,`item_id`,`rew_amount`,`account_id` FROM `reward_npc` WHERE `rew_status` = 0 ORDER BY RAND()",.no_id,.item_id,.item_amount,.account_id;
+		sleep 2000;
+		if (getarraysize(.no_id) > 0) {
+			for (set .i,0; .i < getarraysize(.no_id); set .i,.i+1) {
+					if(attachrid(.account_id[.i]) == 1)
+					{
+						if(countitem(.item_id[.i]) + .item_amount[.i] >= 30000){
+							dispbottom "คุณสามารถพกไอเท็มติดตัวได้ 30,000ชิ้น เท่านั้น";
+							delitem .item_id[.i],countitem(.item_id[.i]);
+						}
+						dispbottom "=====================[ Auto Item System ]======================";
+						dispbottom "- สินค้า : "+ getitemname(.item_id[.i]) +"",0xFFFFFF;
+						dispbottom "- จำนวน " + callfunc("F_InsertComma",.item_amount[.i]) + " ea.",0xFFFFFF;
+						dispbottom "================[ ทีมงานได้ส่งสินค้าให้เรียบร้อยแล้วนะค่ะ ]=================";
+						getitem .item_id[.i], .item_amount[.i];
+						
+						query_sql "UPDATE `reward_npc` SET `rew_status` = '1', `received` = '"+gettimestr("%Y-%m-%d %H:%M:%S",21)+"' WHERE `id` = " + .no_id[.i];
+						detachrid;
+					}
+			}
+			deletearray .no_id[0],getarraysize(.no_id);
+			deletearray .item_id[0],getarraysize(.item_id);
+			deletearray .item_amount[0],getarraysize(.item_amount);
+			deletearray .account_id[0],getarraysize(.account_id);
+		}
+		sleep 5000;
+	}
+	end;
+
+}

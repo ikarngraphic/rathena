@@ -1,0 +1,92 @@
+-	shop	GC_FBN	-1,41003:1;
+
+maintown,71,135,4	script	Gacha Free	562,{
+		set .name$,"[ Gacha Free ]";
+		set .@itemuse,49527;
+		set .@itemea,1;
+mes .name$;
+mes "สวัสดีครับ ยินดีให้บริการครับ";
+mes "ใช้ ^2CDEB8"+getitemname(.@itemuse)+"^000000 : "+.@itemea+" ea.";
+mes "คุณมี : ^DE2C52"+countitem(.@itemuse)+"^000000";
+//mes "โอกาศได้มีแค่ 1% เท่านั้น";
+//mes " ";
+mes "         (10 ~ 1,000)";
+mes "       Jackpot : ^FF00003,000^000000";
+//cutin "jpn_anni2_04",2;
+next;
+menu " - สุ่มไอเท็ม",L_YES," - สุ่มไอเท็ม^0000FF(Auto)^000000",L_YESA," - ดูของรางวัล",L_SEE," - ยกเลิก",L_EX;
+
+L_YESA:
+	set .loop,countitem(.@itemuse);
+	goto STARTSPIN;
+	
+L_YES:
+
+	set .loop,1;
+	goto STARTSPIN;
+
+
+STARTSPIN:
+	close2;
+	cutin "jpn_anni2_04",255;
+	
+SPINAGAIN:	
+	
+	if (countitem(.@itemuse) < .@itemea){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+
+	//set $jackpotcash,$jackpotcash + 3;
+	
+//	specialeffect2 408;
+	progressbar "0x007000", 1;
+	delitem .@itemuse,.@itemea;
+//	sleep2 300;
+	
+// ====================== JACKPOT CASH =====================	
+	
+
+set .@rand, rand(200);
+	if (.@rand >= 0 && .@rand < 195){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],10,10,10,10,10,10,10,15,15,15,20,20,20,20,30,30,30,30,35,35,40,40,40,40,50,50,50,60,60,70,70,75,75,80,90;
+				}
+
+	if (.@rand >= 195 && .@rand < 200){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],100,100,100,200,200,300,300,400,400,500,500,1000,1000,3000;
+	}
+
+
+set .@get, .@item[rand(getarraysize(.@item))];
+getitem 41003,.@get;
+specialeffect2 .@eff;
+//if (.@acc == 1){ announce "[ Gacha Bonus ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(41003)+":"+.@get+"",8; }
+set .loop,.loop - 1;
+
+	if(.loop != 0){ goto SPINAGAIN; }
+
+end;
+
+
+L_SEE:
+	cutin "jpn_anni2_04",255;
+	callfunc "Shop_HQPC","GC_FBN",1;
+
+L_EX:
+	cutin "jpn_anni2_04",255;
+end;
+
+OnBuyItem:
+end;
+
+OnInit: 
+waitingroom "กาชาแคชโบนัส(เติม)",0;
+end;
+}
+
+

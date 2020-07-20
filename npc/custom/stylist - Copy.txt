@@ -1,0 +1,179 @@
+//===== Hercules Script ======================================
+//= Stylist
+//===== By: ==================================================
+//= Euphy
+//===== Current Version: =====================================
+//= 1.1
+//===== Description: =========================================
+//= Changes your hair style, hair color, and cloth color.
+//===== Additional Comments: =================================
+//= 1.1 Switched to 'getbattleflag', credits to Saithis. [Euphy]
+//= limit doram class hstyle and hcolor line(18,19). [HaureN]
+//============================================================
+
+maintown,70,82,6	script	ช่างแต่งตัว	878,{
+
+		set .@mxhair,31;	// Hstyle
+		set .@mxhcolor,127;	// Hcolor
+		set .@mxdye,699;		// DYE
+		set .@mxdye2,3;		// DYE 2
+		
+if( BaseLevel <= 135 ) {
+				mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";	
+				mes "Lv. 135 ขึ้นไปถึงสามารถ";
+				mes "เปลี่ยนสีชุดได้..";
+				end;
+			}
+
+if(Class == 4218){
+
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "Can't use.";
+end;
+}
+
+if(Class == 4211 || Class == 4212 || Class == 4215 || Class == 4239 || Class == 4240 || Class == 4228 || Class == 4229 || Class == 4241 || Class == 4242){
+
+		//set .@mxhair,31;
+		//set .@mxhcolor,251;
+		//set .@mxdye,3;
+		
+		set .@mxhair,31;	// Hstyle
+		set .@mxhcolor,127;	// Hcolor
+		set .@mxdye,699;	// DYE
+
+} 
+
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "เราสามารถเปลี่ยน";
+mes "ทรงผม สีผม สีเสื้อ ให้คุณได้";
+mes "ผมของคุณ: "+HLook+"";
+mes "สีผมของคุณ: "+CLook+"";
+mes "สีเสื้อของคุณ: "+Look0+"";
+next;
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "ต้องกดบันทึกทุกครั้งหลังเลือกสีเสร็จด้วยนะ";
+next;
+
+switch(select("^FF0000•^000000 ทรงผม:^FF0000•^000000 สีผม:^FF0000•^000000 สีเสื้อ:^FF0000•^000000 ยกเลิก")){
+
+case 1:
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "เชิญเลือกเมนูที่คุณต้องการได้เลยค่ะ^_^";
+	set .@look,HLook;
+	if(HLook == 0){ set .@look,1;	set HLook,1; }
+next;
+	while(1){
+		setlook 1,.@look;			
+		switch(select( "• ต่อไป [^0000FF"+ (.@look%.@mxhair+1) +"^000000]","• ก่อนหน้า [^0000FF"+ ((.@look+.@mxhair-2)%.@mxhair+1) +"^000000]","• ใส่สีผมที่ต้องการเอง","• บันทึกสีผมนี้"))
+		{
+
+		case 1:
+		set .@look,.@look%.@mxhair+1;
+	break;
+
+		case 2:
+		set .@look,(.@look+.@mxhair-2)%.@mxhair+1;
+	break;
+
+		case 3:
+		input .@look;
+		if (.@look > .@mxhair || .@look<=0) set .@look, 1;
+	break;
+
+		case 4:
+		set HLook,.@look;
+		mes "ยินดีให้บริการค่ะ";
+	close;
+		}
+		}
+		break;
+
+case 2:
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "เชิญเลือกเมนูที่คุณต้องการได้เลยค่ะ^_^";
+	set .@look,CLook;
+	if(CLook == 0){ set .@look,1;	set CLook,1; }
+next;
+	while(1){
+		setlook 6,.@look;			
+		switch(select( "• ต่อไป [^0000FF"+ (.@look%.@mxhcolor+1) +"^000000]","• ก่อนหน้า [^0000FF"+ ((.@look+.@mxhcolor-2)%.@mxhcolor+1) +"^000000]","• ใส่สีผมที่ต้องการเอง","• บันทึกสีผมนี้"))
+		{
+
+		case 1:
+		set .@look,.@look%.@mxhcolor+1;
+	break;
+
+		case 2:
+		set .@look,(.@look+.@mxhcolor-2)%.@mxhcolor+1;
+	break;
+
+		case 3:
+		input .@look;
+		if (.@look > .@mxhcolor || .@look<=0) set .@look, 1;
+	break;
+
+		case 4:
+		set CLook,.@look;
+		mes "ยินดีให้บริการค่ะ";
+	close;
+		}
+		}
+		break;
+
+case 3:
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "เชิญเลือกเมนูที่คุณต้องการได้เลยค่ะ^_^";
+	if(getequipid(EQI_SHADOW_ARMOR) == 42001){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42002){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42003){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42004){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42005){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42006){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42007){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42008){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42009){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42010){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42011){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42012){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	if(getequipid(EQI_SHADOW_ARMOR) == 42013){ mes "คุณสวมใส่ Shadow Job อยู่กรุณาไปที่เมนูของ Shadow Job ค่ะ";	end; }
+	set .@look,Look0;
+	if(Look0 == 0){ set .@look,1;	set Look0,1; }
+next;
+	while(1){
+		setlook 7,.@look;			
+		switch(select( "• ต่อไป [^0000FF"+ (.@look%.@mxdye+1) +"^000000]","• ก่อนหน้า [^0000FF"+ ((.@look+.@mxdye-2)%.@mxdye+1) +"^000000]","• ใส่สีชุดที่ต้องการเอง","• บันทึกสีชุดนี้"))
+		{
+
+		case 1:
+		set .@look,.@look%.@mxdye+1;
+	break;
+
+		case 2:
+		set .@look,(.@look+.@mxdye-2)%.@mxdye+1;
+	break;
+
+		case 3:
+		input .@look;
+		if (.@look > .@mxdye || .@look<=0) set .@look, 1;
+	break;
+
+		case 4:
+		set Look0,.@look;
+		mes "ยินดีให้บริการค่ะ";
+	close;
+		}
+		}
+		break;
+
+case 4:
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "ยินดีให้บริการค่ะ";
+	break;
+	}
+end;
+
+OnInit:
+waitingroom "     ปรับสีชุด",0;
+end;
+}

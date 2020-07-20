@@ -1,0 +1,164 @@
+moc_para01,52,38,4	script	enchant eden	2_M_OLDBLSMITH,{
+	if (checkweight(2571,5) == 0) {
+		mes "- ‡®È“·∫°¢Õß¡“¡“°‡°‘π‰ª -";
+		close;
+	}
+	mes "¡“∑”Õ–‰√ ?";
+	next;
+	switch( select( "ÕÕø™ÿ¥", "¢Õø—ß√“¬≈–‡Õ’¬¥", "‰¡Ë≈Ë–." ) ) {
+		mes "[Thorn]";
+	case 1:
+		if ((countitem(2571) > 0) || (countitem(15031) > 0) || (countitem(2473) > 0)) {
+			mes "Õ¬“°„ÀÈ¢Õß «¡„ Ë·°√Ëß¢÷Èπ ?";
+			mes "¢È“ “¡“√∂∑”„ÀÈ¢Õß «¡„ Ë‡®È“·°√Ëß¢÷Èπ‰¥È.";
+			next;
+			mes "[Thorn]";
+			mes "‡®È“µÈÕß°“√ÕÕø™‘Èπ‰Àπ≈– ?";
+			next;
+			switch( select( "Eden Group Manteau II", "Eden Group Armor IV", "Eden Group Boots IV" ) ) {
+				case 1: callsub S_Enchant,2571,"Manteau";// Para_Team_Manteau2
+				case 2: callsub S_Enchant,15031,"Armor";// Para_Team_Armor
+				case 3: callsub S_Enchant,2473,"Boots";// Para_Team_Boots4
+			}
+		}
+			mes "¢È“∑”„ÀÈ‰¡Ë‰¥È∂È“‡®È“‰¡Ë‰¥È‡Õ“¢Õß¡“¥È«¬.";
+			next;
+			mes "[Thorn]";
+			mes "‰ª‡Õ“¢Õß¡“·≈È«°≈—∫¡“À“¢È“„À¡Ë.";
+		close;
+	case 2:
+			mes "¢È“ “¡“√∂ÕÕø™ÿ¥";
+			mes "Eden Group Manteau II";
+			mes "Eden Group Armor IV";
+			mes "·≈– Eden Group Boots IV ‰¥È.";
+			mes "‚¥¬¢È“®– ÿË¡§Ë“ ‡µµ— „ÀÈ‡®È“ Õß§Ë“.";
+			mes "∑’Ë ”§—≠§◊Õ¢È“∑”„ÀÈø√’Ê.";
+		close;
+	case 3:
+		mes "ÕË“-À–...";
+		mes "∫“¬...";
+		close;
+	}
+
+S_Enchant:
+	mes "[Thorn]";
+	if (countitem(getarg(0)) > 0) {
+		// .@1st = rand(1,12);
+		// .@2nd = rand(1,12);
+
+		// if (.@1st == 1) .@1st = 4751;// Luck2
+		// else if (.@1st == 2) .@1st = 4787;// Mdef4
+		// else if (.@1st == 3) .@1st = 4791;// Def3
+		// else if (.@1st == 4) .@1st = 4701;// Strength2
+		// else if (.@1st == 5) .@1st = 4788;// Mdef6
+		// else if (.@1st == 6) .@1st = 4792;// Def6
+		// else if (.@1st == 7) .@1st = 4731;// Agility2
+		// else if (.@1st == 8) .@1st = 4789;// Mdef8
+		// else if (.@1st == 9) .@1st = 4793;// Def9
+		// else if (.@1st == 10) .@1st = 4721;// Dexterity2
+		// else if (.@1st == 11) .@1st = 4711;// Inteligence2
+		// else if (.@1st == 12) .@1st = 4741;// Vitality2
+
+		// if (.@2nd == 1) .@2nd = 4701;// Strength2
+		// else if (.@2nd == 2) .@2nd = 4787;// Mdef4
+		// else if (.@2nd == 3) .@2nd = 4741;// Vitality2
+		// else if (.@2nd == 4) .@2nd = 4791;// Def3
+		// else if (.@2nd == 5) .@2nd = 4788;// Mdef6
+		// else if (.@2nd == 6) .@2nd = 4792;// Def6
+		// else if (.@2nd == 7) .@2nd = 4721;// Dexterity2
+		// else if (.@2nd == 8) .@2nd = 4793;// Def9
+		// else if (.@2nd == 9) .@2nd = 4751;// Luck2
+		// else if (.@2nd == 10) .@2nd = 4789;// Mdef8
+		// else if (.@2nd == 11) .@2nd = 4731;// Agility2
+		// else if (.@2nd == 12) .@2nd = 4711;// Inteligence2
+		setarray .@bonus[1],
+			4751,// Luck2
+			4787,// Mdef4
+			4791,// Def3
+			4701,// Strength2
+			4788,// Mdef6
+			4792,// Def6
+			4731,// Agility2
+			4789,// Mdef8
+			4793,// Def9
+			4721,// Dexterity2
+			4711,// Inteligence2
+			4741;// Vitality2
+		.@1st = .@bonus[ rand(1,12) ];
+		.@2nd = .@bonus[ rand(1,12) ];
+		mes "Eden Group "+ getarg(1) +"?";
+		mes "¢È“‡¢È“„®·≈È«.";
+		mes "®”‰«È«Ë“§Ë“ ‡µµ— ∑’Ë‰¥È®–‡ªÁπ·∫∫ ÿË¡.";
+		mes "‡®È“·πË„®∑’Ë®–ÕÕø‰À¡ ?";
+		next;
+		switch( select( "¢È“‡ª≈’Ë¬π„®·≈È«.", "ÕÕø¡—π‡≈¬." ) ) {
+			mes "[Thorn]";
+		case 1:
+			mes "‡®È“‰¡ËÕ¬“°ÕÕø„™Ë‰À¡ ?";
+			mes "¢È“®–∑”µ“¡∑’Ë‡®È“‡≈◊Õ°.";
+			close;
+		case 2:
+			mes "¢È“‡¢È“„®·≈È«.";
+			mes "¡“‡√‘Ë¡°—π‡≈¬.";
+			next;
+			specialeffect EF_REPAIRWEAPON;
+			progressbar "ffff00",3;
+			delitem getarg(0),1;
+			// erasequest 7240;// Equipment Enhancement
+			// setquest 7241;// Errands for Thorn timer
+			getitem2 getarg(0),1,1,0,0,0,0,.@1st,.@2nd;						
+			mes "[Thorn]";
+			mes "Ok, ‡√’¬∫√ÈÕ¬.";
+			mes "∂È“‡®È“‰¡ËæÕ„®„πº≈∑’Ë‰¥È„ÀÈ°≈—∫¡“À“¢È“.";
+			close;
+		}
+	}
+	mes "À◊¡... ‡®È“‰¡Ë¡’ "+ getarg(1) +"?";
+	mes "¢È“‰¡Ë§‘¥«Ë“®–∑”„ÀÈ‡®È“‰¥È.";
+	close;
+}ray .@bonus[1],
+			4751,// Luck2
+			4787,// Mdef4
+			4791,// Def3
+			4701,// Strength2
+			4788,// Mdef6
+			4792,// Def6
+			4731,// Agility2
+			4789,// Mdef8
+			4793,// Def9
+			4721,// Dexterity2
+			4711,// Inteligence2
+			4741;// Vitality2
+		.@1st = .@bonus[ rand(1,12) ];
+		.@2nd = .@bonus[ rand(1,12) ];
+		mes "Eden Group "+ getarg(1) +"?";
+		mes "‡∏Ç‡πâ‡∏≤‡πÄ‡∏Ç‡πâ‡∏≤‡πÉ‡∏à‡πÅ‡∏•‡πâ‡∏ß.";
+		mes "‡∏à‡∏≥‡πÑ‡∏ß‡πâ‡∏ß‡πà‡∏≤‡∏Ñ‡πà‡∏≤‡∏™‡πÄ‡∏ï‡∏ï‡∏±‡∏™‡∏ó‡∏µ‡πà‡πÑ‡∏î‡πâ‡∏à‡∏∞‡πÄ‡∏õ‡πá‡∏ô‡πÅ‡∏ö‡∏ö‡∏™‡∏∏‡πà‡∏°.";
+		mes "‡πÄ‡∏à‡πâ‡∏≤‡πÅ‡∏ô‡πà‡πÉ‡∏à‡∏ó‡∏µ‡πà‡∏à‡∏∞‡∏≠‡∏≠‡∏ü‡πÑ‡∏´‡∏° ?";
+		next;
+		switch( select( "‡∏Ç‡πâ‡∏≤‡πÄ‡∏õ‡∏•‡∏µ‡πà‡∏¢‡∏ô‡πÉ‡∏à‡πÅ‡∏•‡πâ‡∏ß.", "‡∏≠‡∏≠‡∏ü‡∏°‡∏±‡∏ô‡πÄ‡∏•‡∏¢." ) ) {
+			mes "[Thorn]";
+		case 1:
+			mes "‡πÄ‡∏à‡πâ‡∏≤‡πÑ‡∏°‡πà‡∏≠‡∏¢‡∏≤‡∏Å‡∏≠‡∏≠‡∏ü‡πÉ‡∏ä‡πà‡πÑ‡∏´‡∏° ?";
+			mes "‡∏Ç‡πâ‡∏≤‡∏à‡∏∞‡∏ó‡∏≥‡∏ï‡∏≤‡∏°‡∏ó‡∏µ‡πà‡πÄ‡∏à‡πâ‡∏≤‡πÄ‡∏•‡∏∑‡∏≠‡∏Å.";
+			close;
+		case 2:
+			mes "‡∏Ç‡πâ‡∏≤‡πÄ‡∏Ç‡πâ‡∏≤‡πÉ‡∏à‡πÅ‡∏•‡πâ‡∏ß.";
+			mes "‡∏°‡∏≤‡πÄ‡∏£‡∏¥‡πà‡∏°‡∏Å‡∏±‡∏ô‡πÄ‡∏•‡∏¢.";
+			next;
+			specialeffect EF_REPAIRWEAPON;
+			progressbar "ffff00",3;
+			delitem getarg(0),1;
+			// erasequest 7240;// Equipment Enhancement
+			// setquest 7241;// Errands for Thorn timer
+			getitem2 getarg(0),1,1,0,0,0,0,.@1st,.@2nd;						
+			mes "[Thorn]";
+			mes "Ok, ‡πÄ‡∏£‡∏µ‡∏¢‡∏ö‡∏£‡πâ‡∏≠‡∏¢.";
+			mes "‡∏ñ‡πâ‡∏≤‡πÄ‡∏à‡πâ‡∏≤‡πÑ‡∏°‡πà‡∏û‡∏≠‡πÉ‡∏à‡πÉ‡∏ô‡∏ú‡∏•‡∏ó‡∏µ‡πà‡πÑ‡∏î‡πâ‡πÉ‡∏´‡πâ‡∏Å‡∏•‡∏±‡∏ö‡∏°‡∏≤‡∏´‡∏≤‡∏Ç‡πâ‡∏≤.";
+			close;
+		}
+	}
+	mes "‡∏´‡∏∑‡∏°... ‡πÄ‡∏à‡πâ‡∏≤‡πÑ‡∏°‡πà‡∏°‡∏µ "+ getarg(1) +"?";
+	mes "‡∏Ç‡πâ‡∏≤‡πÑ‡∏°‡πà‡∏Ñ‡∏¥‡∏î‡∏ß‡πà‡∏≤‡∏à‡∏∞‡∏ó‡∏≥‡πÉ‡∏´‡πâ‡πÄ‡∏à‡πâ‡∏≤‡πÑ‡∏î‡πâ.";
+	close;
+}

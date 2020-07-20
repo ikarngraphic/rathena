@@ -1,0 +1,244 @@
+maintown,131,72,4	script	Wolf Battle	795,{
+			if(!mobcount("this","clr_mob::Onmobkilled01")) && (!mobcount("this","clr_mob::Onmobkilled02")) && ($@ba_st == 0) && ($@w_mob == 0){
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "อยากจะเล่นพนันกับข้ามั้ยล่ะ";
+			mes "Blue Win : "+$wteam1+"";
+			mes "Brown Win : "+$wteam2+"";
+			next;
+			if(select("เปิด Wolf Battle:ไม่เล่นดีกว่า") !=1){ 
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "กลับบ้านไปดูดนมเมียซะ";
+			end;
+			}
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "เจ้าจงไปวางเดิมพันที่ผู้รับพนัน";
+			close2;
+			
+			setarray .@nmob[0],21353,21353,21353,21353,21353,21353,21354,21355;
+			setarray .@nmob2[0],21356,21356,21356,21356,21356,21356,21357,21358;			
+			setarray .@mobname$[0],"Blue Wolf","Blue Wolf","Blue Wolf","Blue Wolf","Blue Wolf","Blue Wolf","Blue Wolf","Blue Wolf";
+			setarray .@mobname2$[0],"Brown Wolf","Brown Wolf","Brown Wolf","Brown Wolf","Brown Wolf","Brown Wolf","Brown Wolf","Brown Wolf";
+			set .@ch_fight, rand(0,2);
+			set .@ch_fights, rand(0,2);
+			while(.@ch_fights == .@ch_fight){ set .@ch_fights, rand(0,2); }
+			set .@intmobid, rand(1,1);
+			set .@intmobids, rand(1,1);
+			set $@mn$, .@mobname$[.@ch_fight];
+			set $@mns$, .@mobname2$[.@ch_fights];
+			set $roundmvsm,$roundmvsm + 1;
+			mapannounce "maintown",  "[ Wolf Battle ] : ขณะนี้สนามมวยซีปรีย์กำลังจะเริ่มมวยคู่เดือด "+$@mn$+" ปะทะ "+$@mns$+" ภายใน 1 นาที สามารถวางเดิมพันได้ที่ผู้รับพนัน",0;
+			set $@ba_st, 1;
+			sleep 60000;
+			mapannounce "maintown",  "[ Wolf Battle ] : "+$@mn$+" ปะทะ "+$@mns$+" ได้เริ่มต้นขึ้นแล้ว   กรุณาอย่ายืนชิดขอบเวทีมิฉะนั้นท่านอาจโดนลูกหลง",0;
+			set $@ba_st, 2;
+			
+			if($wteam_2 > 3){ set .@nmob[.@ch_fight],rand(21353,21354); }
+			if($wteam_1 > 3){ set .@nmob2[.@ch_fights],rand(21356,21357); }
+			
+			if($wteam_2 == 10){ set .@nmob[.@ch_fight],21355; }
+			if($wteam_1 == 10){ set .@nmob2[.@ch_fights],21358; }
+			
+			monster "maintown",117,72, $@mn$ , .@nmob[.@ch_fight] , .@intmobid ,"clr_mob::Onmobkilled02",0,1;
+			monster "maintown",123,66, $@mns$ , .@nmob2[.@ch_fights] , .@intmobids ,"clr_mob::Onmobkilled01";
+			//setmapflag "maintown", mf_monster_noteleport;
+			//setmapflag "maintown", mf_noskill;
+			//setmapflag "maintown", mf_nomobloot;
+			end;
+			}
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "รอให้ event จบ แล้วค่อยมาใหม่";
+			end;
+}
+
+maintown,134,70,4	script	พนัน Wolf Battle	791,{
+			
+			set $MMItem,41003;	//item
+			
+			if($@ba_st==1){
+			if(@plb_t <= gettimetick(2)){
+			
+				set @plb_ch, 0;
+				mes "[ ^FF0000Wolf Battle^000000 ]";
+				mes "จะแทงเท่าไหร่ดี ถ้าแทงถูกเจ้าจะได้ 1เท่าของเดิมพัน";
+				mes "ใช้ไอเท็ม : ^000088"+getitemname($MMItem)+"^000000";
+				mes "แทงได้ทีละ 1 - 15,000";
+				mes "^FF0000ต้องการแทงเท่าไหร่^000000";
+				
+					next;
+					
+				while(input(@pl_bet,1,15000)){
+				mes "แทงได้ทีละ 1 - 15,000";
+				mes "จะแทงไม่แทง";
+				if(select("แทง:ไม่แทง")!=1){
+				mes "[ ^FF0000Wolf Battle^000000 ]";
+				mes "เดี๋ยวเมิงจะโดนแทง";
+				end;
+				}
+			
+				next;
+				
+				}
+				mes "[ ^FF0000Wolf Battle^000000 ]";
+				mes "จะแทงข้างไหน";
+				set @plb_ch, select($@mn$+":"+$@mns$);
+				
+				if(countitem($MMItem) < @pl_bet){
+				mes "[ ^FF0000Wolf Battle^000000 ]";
+				mes "มีไอเท็มไม่ถึงที่จะแทง";
+					end;
+				}
+				
+				//set Zeny, Zeny - @pl_bet;
+				delitem $MMItem,@pl_bet;
+				
+				set @plb_t, gettimetick(2)+120;
+				set @rmvsm, $roundmvsm;
+				
+				mes "วางเงินเดิมพันเรียบร้อย";
+				mes "กรุณากลับมารับรางวัลเมื่อ mvp ที่ท่านแทงชนะ";
+				end;
+			
+			}else{
+			
+				mes "[ ^FF0000Wolf Battle^000000 ]";
+				mes "แทงไปแล้วนิ";
+				mes "จำนวน : ^FF0000"+@pl_bet+"^000000";
+				end;
+				}
+			}
+			
+			if($@ba_st==2){
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "หมดเวลาเดิมพันแล้ว!!";
+			end;
+			}
+			
+			if($@ba_st==3){
+				if(@plb_ch == $@w_mob ){
+			//set Zeny, Zeny+(@pl_bet*2);
+			
+			//fix not round!
+			if(@rmvsm != $roundmvsm){  end;  }
+			
+			set .@FSC_Temp,@pl_bet*2;
+			getitem $MMItem,.@FSC_Temp;
+			
+			set @plb_ch, 0;
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "ยินดีด้วยเจ้าแทงโดนข้า 1 ที";
+			end;
+			}
+			}
+			mes "[ ^FF0000Wolf Battle^000000 ]";
+			mes "รอจัดคู่มวยใหม่";
+			end;
+	
+			
+}
+
+-	script	clr_mob	-1,{
+Onmobkilled01:
+			if(mobcount("maintown","clr_mob::Onmobkilled01")==0){
+			sleep 10000;
+			set $@ba_st, 3;
+			mapannounce "maintown",  $@mn$+" : ชนะน็อคเอ้าท์ ใครแทงไว้กรุณามารับเงินที่ผู้รับพนันภายใน 1 นาที",0;
+			set $@w_mob, 1;
+			set $wteam1,$wteam1 + 1;
+			set $wteam_1,$wteam_1 + 1;
+			set $wteam_2,0;
+			sleep 60000;
+			killmonster "maintown","clr_mob::Onmobkilled02";
+			set $@ba_st, 0;
+			set $@w_mob, 0;
+			mapannounce "maintown",  "หมดเวลาปิดโต๊ะ ไปหาเจ้ามือเพื่อเปิดโต๊ะใหม่",0;
+			//removemapflag "maintown", mf_monster_noteleport;
+			//removemapflag "maintown", mf_noskill;
+			//removemapflag "maintown", mf_nomobloot;
+			end;
+			}
+
+Onmobkilled02:
+			if(mobcount("maintown","clr_mob::Onmobkilled02")==0){
+			set $@ba_st, 3;
+			sleep 10000;
+			mapannounce "maintown",  $@mns$+" : ชนะน็อคเอาท์ ใครแทงไว้กรุณามารับเงินที่ผู้รับพนันภายใน 1 นาที",0;
+			set $@w_mob, 2;
+			set $wteam2,$wteam2 + 1;
+			set $wteam_2,$wteam_2 + 1;
+			set $wteam_1,0;
+			sleep 60000;
+			killmonster "maintown","clr_mob::Onmobkilled01";
+			set $@ba_st, 0;
+			set $@w_mob, 0;
+			mapannounce "maintown",  "หมดเวลาปิดโต๊ะ ไปหาตุ๊เพื่อเปิดโต๊ะใหม่",0;
+			//removemapflag "maintown", mf_monster_noteleport;
+			//removemapflag "maintown", mf_noskill;
+			//removemapflag "maintown", mf_nomobloot;
+			end;
+			}
+}
+
+-	script	set_eve_mg	-1,{
+	end;
+OnInit:
+	set $@w_mob$, "0";
+	set $@ba_st,0;
+
+	setwall "maintown",116,73,8,6,0,"mobgam_wall";
+	setwall "maintown",116,72,8,4,0,"mobgam_walls";
+	setwall "maintown",116,65,8,6,0,"mobgam_walle";
+	setwall "maintown",124,65,10,0,0,"mobgam_walln";
+	setwall "maintown",115,74,9,6,0,"mobgam_wall02";
+	setwall "maintown",115,73,9,4,0,"mobgam_walls02";
+	setwall "maintown",115,64,9,6,0,"mobgam_walle02";
+	setwall "maintown",125,64,11,0,0,"mobgam_walln02";
+	setcell "maintown",100,83,141,48,cell_landprotector,1;
+	setcell "maintown",113,76,127,62,cell_basilica,1;
+	
+}
+
+
+
+maintown,116,74,3	script	เขตกิจกรรม::No_entry	858,{}
+maintown,117,74,3	duplicate(No_entry)	เขตกิจกรรม#01	858,{}
+maintown,118,74,3	duplicate(No_entry)	เขตกิจกรรม#02	858,{}
+maintown,119,74,3	duplicate(No_entry)	เขตกิจกรรม#03	858,{}
+maintown,120,74,3	duplicate(No_entry)	เขตกิจกรรม#04	858,{}
+maintown,121,74,3	duplicate(No_entry)	เขตกิจกรรม#05	858,{}
+maintown,122,74,3	duplicate(No_entry)	เขตกิจกรรม#09	858,{}
+maintown,123,74,3	duplicate(No_entry)	เขตกิจกรรม#06	858,{}
+maintown,124,74,3	duplicate(No_entry)	เขตกิจกรรม#07	858,{}
+maintown,125,74,3	duplicate(No_entry)	เขตกิจกรรม#08	858,{}
+
+maintown,125,73,3	duplicate(No_entry)	เขตกิจกรรม#10	858,{}
+maintown,125,72,3	duplicate(No_entry)	เขตกิจกรรม#11	858,{}
+maintown,125,71,3	duplicate(No_entry)	เขตกิจกรรม#12	858,{}
+maintown,125,70,3	duplicate(No_entry)	เขตกิจกรรม#13	858,{}
+maintown,125,69,3	duplicate(No_entry)	เขตกิจกรรม#14	858,{}
+maintown,125,68,3	duplicate(No_entry)	เขตกิจกรรม#15	858,{}
+maintown,125,67,3	duplicate(No_entry)	เขตกิจกรรม#16	858,{}
+maintown,125,66,3	duplicate(No_entry)	เขตกิจกรรม#17	858,{}
+maintown,125,65,3	duplicate(No_entry)	เขตกิจกรรม#18	858,{}
+maintown,125,64,3	duplicate(No_entry)	เขตกิจกรรม#19	858,{}
+
+maintown,124,64,3	duplicate(No_entry)	เขตกิจกรรม#20	858,{}
+maintown,123,64,3	duplicate(No_entry)	เขตกิจกรรม#21	858,{}
+maintown,122,64,3	duplicate(No_entry)	เขตกิจกรรม#22	858,{}
+maintown,121,64,3	duplicate(No_entry)	เขตกิจกรรม#23	858,{}
+maintown,120,64,3	duplicate(No_entry)	เขตกิจกรรม#24	858,{}
+maintown,119,64,3	duplicate(No_entry)	เขตกิจกรรม#25	858,{}
+maintown,118,64,3	duplicate(No_entry)	เขตกิจกรรม#26	858,{}
+maintown,117,64,3	duplicate(No_entry)	เขตกิจกรรม#27	858,{}
+maintown,116,64,3	duplicate(No_entry)	เขตกิจกรรม#28	858,{}
+maintown,115,64,3	duplicate(No_entry)	เขตกิจกรรม#29	858,{}
+
+maintown,115,65,3	duplicate(No_entry)	เขตกิจกรรม#30	858,{}
+maintown,115,66,3	duplicate(No_entry)	เขตกิจกรรม#31	858,{}
+maintown,115,67,3	duplicate(No_entry)	เขตกิจกรรม#32	858,{}
+maintown,115,68,3	duplicate(No_entry)	เขตกิจกรรม#33	858,{}
+maintown,115,69,3	duplicate(No_entry)	เขตกิจกรรม#34	858,{}
+maintown,115,70,3	duplicate(No_entry)	เขตกิจกรรม#35	858,{}
+maintown,115,71,3	duplicate(No_entry)	เขตกิจกรรม#36	858,{}
+maintown,115,72,3	duplicate(No_entry)	เขตกิจกรรม#37	858,{}
+maintown,115,73,3	duplicate(No_entry)	เขตกิจกรรม#38	858,{}
+maintown,115,74,3	duplicate(No_entry)	เขตกิจกรรม#39	858,{}

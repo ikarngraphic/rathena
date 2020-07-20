@@ -1,0 +1,80 @@
+mooc,214,89,4	script	VIP Central	4_F_KAFRA1,{
+OnTalk:
+	mes .npc$;
+	mes (gettime(3)>= 6&&gettime(3)<= 12?"Good Morning":(gettime(3)>=13&&gettime(3)<=18?"Good Afternoon":"Good Evening"))+", ^008aff"+strcharinfo(0)+"^000000 !";
+	mes "Welcome to VIP Central.";
+	if (vip_status(1)) {
+		mes "^008affYour VIP access will expire on " + callfunc("Time2Str",vip_status(2)) + ".^000000";
+		mes " ";		
+	}
+	mes "How can I help?";
+	next;
+	switch (select(.bcor$+"I want to go to Central VIP.",""+((vip_status(1))?""+.bcor$+"I want to extend my time ^008affVIP^000000.":""+.bcor$+"I wish to become a ^008affVIP^000000 player."),""+.rcor$+"I do not want anything.")){
+		case 1:
+			if (getgmlevel() > 90){ warp .map$,.cord[0],.cord[1]; end; }
+
+			if (!vip_status(1)) {
+				mes .npc$;
+				mes "Excuse me! Access to VIP Central is only allowed to ^008affVIP^000000 players.";
+				mes "-----------------------------------";
+				mes "Visit our website and learn how to become a ^008affVIP^000000 player.";
+				mes "-----------------------------------";
+				close;
+			}
+			warp .map$,.cord[0],.cord[1];
+			end;
+		case 2:
+			mes .npc$;
+			mes "How many days of access ^008affVIP^000000 do you want to acquire?";
+			next;
+			.@i = select(
+				.bcor$+""+.vip_day[0] + " Days."
+				,.bcor$+""+.vip_day[1] + " Days."
+				,.bcor$+""+.vip_day[2] + " Days."
+				,.bcor$+""+.vip_day[3] + " Days."
+				,.bcor$+""+.vip_day[4] + " Days."
+				) - 1;
+				
+			mes .npc$;
+			mes "You chose the plan of:";
+			mes "^4527A0VIP:^000000 "+.vip_day[.@i]+" VIP days.";
+			mes "^4527A0√“§“:^000000 "+F_InsertComma(.vip_cashpoint[.@i])+" #CASHPOINTS.";
+			mes " ";
+			mes " ";
+			mes "What do you want to do?";
+			next;
+			switch(select(.bcor$+"Purchase:"+.rcor$+"Cancel")){
+				case 1:
+					if ( #CASHPOINTS < .vip_cashpoint[.@i] ) {
+					mes .npc$;
+					mes "You do not have the quantity of ^008aff"+F_InsertComma(.vip_cashpoint[.@i])+" #CASHPOINTS^000000.";
+					close;
+				}
+				else {
+					#CASHPOINTS -= .vip_cashpoint[.@i];
+					vip_time (.vip_day[.@i] * 1440);
+					mes .npc$;
+					mes "Congratulations you just got "+.vip_day[.@i]+" days VIP.";
+					close;
+				}
+				end;
+				case 2:
+					mes .npc$;
+					mes "All right, come back whenever you want.";
+					close;
+			}
+
+		case 3:
+			close;
+	}
+
+OnInit:
+	.npc$ = "^FF7F00[ VIP Central ]^000000";						// Name of NPC;
+	.bcor$ = "^008affï^000000 ";									// Option Button Symbol;
+	.rcor$ = "^ff0000ï^000000 ";									// Cancel button symbol;
+	setarray .vip_day,1,7,15,30,365;										// Number of days that can be purchased;
+	setarray .vip_cashpoint,1000,4000,7000,10000,100000;						// Price in #CASHPOINTS;
+	.map$ = "mooc";													// VIP Room Map;
+	setarray .cord,210,96;											// X and Y Coordinate;
+	end;
+}

@@ -1,0 +1,119 @@
+mooc,152,93,2	script	Halloween Season	801,{
+
+set $HW_WANT_CD,250000;	//candy want
+
+mes "[ Soul in Coffin ]";
+mes "ค่ำคืนแห่งความสยองกำลังจะเกิดขึ้น";
+mes "เหล่าผี จะออกล่าผู้คนมากมาย";
+mes "เราต้องการ Candy จำนวน";
+mes " "+$HW_CD+"^FF0000/"+$HW_WANT_CD+"^000000 ชิ้น";
+mes "เพื่อผนึกเหล่าสิ่งเลวร้ายนั้น";
+next;
+mes "[ Soul in Coffin ]";
+mes "แคนดี้สามารถหาได้จาก";
+mes "Monster : Ghost,Undead";
+mes "ไม่สามารถหาได้จาก Boss หรือ Mini Boss";
+next;
+menu " - ส่งมอบ Candy",TCDY,
+" - เชคจำนวน Candy",CCDY,
+//" - แลกของรางวัล",GEVT,
+//" - แลก Epic[Costume]",EPICC,
+" - ยกเลิก",CEVT;
+
+TCDY:
+mes "[ Soul in Coffin ]";
+mes "เจ้าต้องการลง : ^FF0000Candy^000000";
+mes "มีทั้งหมด "+countitem(49513)+"";
+mes "เจ้าต้องการลงไอเท็มใช่หรอไม่";
+next;
+menu " - ใช่",-," - ยกเลิก",CEVT;
+
+	if($HW_CD >= $HW_WANT_CD){
+	dispbottom "[Halloween Event]: ตอนนี้เราได้รับ Candy ครบจำนวนแล้ว";
+	end;	}
+
+	if(countitem(49513) > 0){
+	set #HW_CD,#HW_CD + countitem(49513);
+	set $HW_CD,$HW_CD + countitem(49513);
+	if(countitem(49513) > 1500){ announce "[ Halloween Event ] : "+strcharinfo(0)+" ได้ใส่ Candy ลงไปจำนวน "+countitem(49513)+" !!",8; }
+	
+	if($HW_CD >= $HW_WANT_CD){	specialeffect2 347;
+	announce "[ Halloween Event ] : ภาระกิจสำเร็จแล้ว กรุณารอรับของรางวัลกันได้เลย !!",8; }
+
+	delitem 49513,countitem(49513);
+	dispbottom "[Halloween Event]: ตอนนี้มีแคนดี้ ทั้งหมด ["+$HW_CD+"] ชิ้น";
+	end;	}else{
+	dispbottom "[Halloween Event]: คุณไม่มีแคนดี้นิ";
+	end;	}
+
+close;
+
+CCDY:
+mes "[ Soul in Coffin ]";
+mes "Candy ทั้งหมด : [^FF0000"+$HW_CD+"^000000]";
+mes "คุณลงไปจำนวน : [^FF0000"+#HW_CD+"^000000]";
+if(#HW_CD > 1000){ mes "^FF0000คุณจะได้รับไอเท็มหลังจบกิจกรรม^000000";	}
+end;
+
+GEVT:
+if($HW_CD < $HW_WANT_CD){ 
+mes "[ Soul in Coffin ]";
+mes "อีเว้นยังไม่จบครับ";
+end; }
+if(#HW_CD >= 1000){
+mes "ยินดีด้วยคุณได้รับของรางวัล";
+mes "จากกิจกรรม Halloween Event";
+mes "เป็น ^FF0000Costume^000000";
+set .@rand,rand(1,25);
+if(.@rand == 5){ getitem2 55593,1,1,0,0,46068,0,0,0; specialeffect2 348; announce "[ Halloween Event ] : "+strcharinfo(0)+" ได้รับ Epic Haunting Spirits",8; }
+else if(.@rand == 10){ getitem2 19917,1,1,0,0,46067,0,0,0; }
+else if(.@rand == 11){ getitem2 19917,1,1,0,0,46067,0,0,0; }
+else if(.@rand == 12){ getitem2 19917,1,1,0,0,46067,0,0,0; }
+else if(.@rand == 13){ getitem2 19917,1,1,0,0,46067,0,0,0; }
+else { getitem2 19917,1,1,0,0,0,0,0,0; }
+
+set #HW_CD,#HW_CD - 1000;	end;	} else {
+mes "แต้มสะสมคุณมีไม่พอ";	end;	}
+end;
+
+EPICC:
+if($HW_CD < $HW_WANT_CD){ 
+mes "[ Soul in Coffin ]";
+mes "อีเว้นยังไม่จบครับ";
+end; }
+mes "[ Soul in Coffin ]";
+mes "ถ้าเจ้าอยากได้ Epic Costume";
+mes "เจ้าต้องนำหัวฟักทอง";
+mes "มาให้ข้า 15 หัว !!";
+next;
+menu " - ข้ามีหัวฟักทองครบแล้ว",-," - ข้าไม่มีของแลก",CEVT;
+if(countitem(19917) < 15){
+mes "[ Soul in Coffin ]";
+mes "เจ้าไม่เห็นจะมีหัวฟักทองครบตรงไหนเลย";
+mes "เจ้าเสียสติไปแล้วหรอ !!";
+end;
+}
+delitem 19917,15;
+getitem 55593,1;
+mes "[ Soul in Coffin ]";
+mes "แสดงความยินดีด้วยเจ้าได้รับไอเท็ม";
+mes "^FF0000Haunting Spirits^000000";
+announce "[ Halloween Event ] : "+strcharinfo(0)+" ได้แลกไอเท็ม Epic Haunting Spirits",8;
+end;
+
+CEVT:
+end;
+
+end;
+Oninit:
+waitingroom " Event Halloween",0;
+end;
+}
+
+
+// ================ Undead Monster ====================
+-	script	AutoDropHalloween	-1,{
+OnNPCKillEvent:
+setarray .mobid[0],1116,1869,1587,1143,2368,2283,1403,1098,1016,1188,1504,1117,1036,1512,1132,1026,1870,1152,1153,1071,1508,1865,1682,1076,1196,1169,1028,1032,1192,1291,1015,1298,1197,1864;
+	for (set .@c, 0; .@c < getarraysize(.mobid); set .@c, .@c + 1){
+if (killedrid == .mobid[.@c]){	set .iit,rand(1,30);	if(.iit <= 15){ getitem 49513,1; }	}	}	end;	}

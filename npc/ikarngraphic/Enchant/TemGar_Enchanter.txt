@@ -1,0 +1,211 @@
+//===== rAthena Script =======================================
+//= Vicious Mind Weapon Random Option Enchanter
+//===== By ===================================================
+//= llchrisll
+//===== Version ==============================================
+//= 1.0 - Initial Version
+//===== Tested With ==========================================
+//= rAthena 03/26/2018 Revision
+//= GIT Hash: 333f0dddc8353663eacba0423751988c9bc38e34
+//===== Description ==========================================
+//= This script handles the random options for the Vicious Mind Weapons
+//  until rAthena changes the way the Random Option Database is handled.
+//= Instead of defining every possible random option for each option slot
+//  this enchanter will be used.
+//===== Comments =============================================
+//= ...
+/* db/import/mob_db.txt:
+// Sky Fortress Instance Mobs
+// Original by Alayne, Drops updated by [llchrisll] based on Nova Ro Wiki,
+// since divine-pride.net also doesn't have every Weapon Drop listed.
+
+*/
+//===== Credits ==============================================
+//= NovaRo for their Information regarding the possible Options.
+//============================================================
+
+
+maintown,126,132,4	script	เสริมพลังคลุมเทม	628,{
+
+	set .itemdel,25866;
+	set .@npc$,"[ TemGarment Enchanter ]";
+
+mes .@npc$;
+mes "สวัสดีท่าน, "+strcharinfo(0)+"!";
+mes "มีอะไรให้ข้าช่วยมั้ย ?";
+mes "ใช้ : ^000099" + getitemname(.itemdel) + "^000000";
+mes "  (ในการเสริมพลัง)";
+mes "และใช้ ^FF000010^000000 Cash";
+mes "  (ในการลบพลัง)";
+next;
+menu "- เสริมพลังอุปกรณ์",MN1,"- ลบออฟไอเท็ม",MN2,"- ยกเลิกการทำงาน",EX1;
+
+//====================================
+	MN1:
+//====================================
+mes .@npc$;
+mes "ก่อนที่เราจะเริ่มการเสริมพลัง ข้าขอแนะนำให้ท่านควรจะสวมอุปกรณ์ที่ต้องการเสียก่อน";
+mes "นอกจากนั้น คุณสมบัติที่จะเพิ่มเข้ามา ข้าไม่รับประกันนะว่าท่านจะได้รูปแบบไหน!";
+next;
+mes .@npc$;
+mes "มาเริ่มกันเลย ขอข้าดูอุปกรณ์ของท่านหน่อยนะ";
+next;
+set .@part,EQI_GARMENT; // Save equip location
+mes .@npc$;
+
+if(!getequipid(.@part)) {
+	mes "ท่านไม่ได้สวมใส่อุปกรณ์อยู่นี่!";
+	end;
+}
+
+if(countitem(getequipid(.@part)) > 1) {
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+
+switch(getequipid(.@part)) {
+	case 20963:
+	case 20964:
+	case 20965:
+	case 20966:
+	case 20967:
+	case 20968:
+	break;
+	
+	default:
+	mes "เอ่อ. ขอโทษด้วย ข้าสามารถเสริมพลังได้เฉพาะอุปกรณ์ Temporal Garment เท่านั้น";
+	end;
+}
+
+
+mes "อุปกรณ์ที่สวมใส่: "+getitemname(getequipid(.@part));
+set .@ropt1,getequiprandomoption(.@part,0,ROA_ID);
+if(.@ropt1) {
+	mes " ";
+	mes "ขอภัย อุปกรณ์นี้ผ่านการเสริมพลังมาแล้ว";
+	mes "กรุณาเลือกอุปกรณ์ชิ้นอื่น";
+	end;
+}
+		set .@Type$,"P";
+
+	if(countitem(.itemdel) < 1){
+					mes .@npc$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					mes "ใช้ : ^000099" + getitemname(.itemdel) + "^000000";
+					end;
+				}
+	
+	//delitem
+	delitem .itemdel,1;	//จำนวนชิ้น
+
+// Randomize each Option Slot:
+// Random Option 1
+set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+	set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+else 
+	set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+	
+// Apply options to equipped weapon
+setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+mes .@npc$;
+mes "การเสริมพลังให้แก่ \""+getitemname(getequipid(.@part))+"\" เสร็จสมบูรณ์";
+end;
+
+OnInit:
+// ========= Random Option Slot 1 ========= 
+// - Physical
+setarray .RandOpt1_P[0],RDMOPT_VAR_ATTPOWER,
+					    RDMOPT_VAR_ATKPERCENT,
+					    RDMOPT_VAR_ATTMPOWER,
+					    RDMOPT_VAR_MAGICATKPERCENT,
+					    RDMOPT_VAR_MAXHPAMOUNT,
+					    RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPAMOUNT,
+					    RDMOPT_VAR_MAXSPPERCENT,
+					    RDMOPT_VAR_HITSUCCESSVALUE,
+					    RDMOPT_VAR_AVOIDSUCCESSVALUE,
+					    RDMOPT_VAR_CRITICALSUCCESSVALUE,
+					    RDMOPT_VAR_PLUSASPDPERCENT,
+					    RDMOPT_DEC_SPELL_CAST_TIME,
+					    RDMOPT_DAMAGE_CRI_TARGET,
+					    RDMOPT_HEAL_MODIFY_PERCENT,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_TARGET,
+					    RDMOPT_DEC_SPELL_DELAY_TIME;
+									  
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P_MinV[0],5,1,5,1,500,3,50,3,3,10,3,3,3,3,3,3,3;
+setarray .RandOpt1_P_MaxV[0],40,6,40,6,2000,10,1000,10,10,50,10,10,10,10,10,10,15;
+
+//====================================
+	MN2:
+//====================================
+mes .@npc$;
+mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+mes "ต้องใช้ ^FF000010 Cash^000000 ในการลบ";
+mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_GARMENT;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 10){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+		//progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 10;
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+	
+//====================================
+	EX1:
+//====================================
+	
+end;
+
+
+}

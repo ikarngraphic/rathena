@@ -1,0 +1,714 @@
+//===== rAthena Script =======================================
+//= Euphy's Quest Shop
+//===== By: ==================================================
+//= Euphy
+//===== Current Version: =====================================
+//= 1.6c
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Description: =========================================
+//= A dynamic quest shop based on Lunar's, with easier config.
+//= Includes support for multiple shops & cashpoints.
+//= Item Preview script by ToastOfDoom.
+//===== Additional Comments: =================================
+//= 1.0 Initial script.
+//= 1.2 Added category support.
+//= 1.3 More options and fixes.
+//= 1.4 Added debug settings.
+//= 1.5 Replaced categories with shop IDs.
+//= 1.6 Added support for purchasing stackables.
+//= 1.6a Added support for previewing costumes and robes.
+//= 1.6b Added 'disable_items' command.
+//= 1.6c Replaced function 'A_An' with "F_InsertArticle".
+//============================================================
+
+// Shop NPCs -- supplying no argument displays entire menu.
+//	callfunc "chsell"{,<shop ID>{,<shop ID>{,...}}};
+//  ADD YOUR NPC HERE
+//============================================================
+//sp_cor,180,269,6	script	Costume Quest	1,{ callfunc "chsell",1; }
+
+// Dummy shop data -- copy as needed.
+//============================================================
+-	shop	chsell1	-1,909:-1
+-	shop	chsell2	-1,909:-1
+-	shop	chsell3	-1,909:-1
+-	shop	chsell4	-1,909:-1
+-	shop	chsell5	-1,909:-1
+-	shop	chsell6	-1,909:-1
+-	shop	chsell7	-1,909:-1
+-	shop	chsell8	-1,909:-1
+-	shop	chsell9	-1,909:-1
+-	shop	chsell10	-1,909:-1
+-	shop	chsell11	-1,909:-1
+-	shop	chsell12	-1,909:-1
+-	shop	chsell13	-1,909:-1
+-	shop	chsell14	-1,909:-1
+-	shop	chsell15	-1,909:-1
+-	shop	chsell16	-1,909:-1
+-	shop	chsell17	-1,909:-1
+-	shop	chsell18	-1,909:-1
+-	shop	chsell19	-1,909:-1
+-	shop	chsell20	-1,909:-1
+-	shop	chsell21	-1,909:-1
+-	shop	chsell22	-1,909:-1
+-	shop	chsell23	-1,909:-1
+-	shop	chsell24	-1,909:-1
+
+maintown,56,128,4	script	Cash[Hat]	564,{
+
+	mes "[ Cash ]";
+	mes "นี่คือรายการ Cash Shop";	
+	mes "สามารถเลือกดูได้ตาม List เลยจ้า";
+	mes "^ff0000โปรดเชคน้ำหนักก่อน ทำการแลก";
+	mes "GM จะไม่รับผิดชอบอะไรทั้งนั้น^000000";
+	mes "^000088สามารถใช้บัตรส่วนลดได้^000000";
+	close2;
+	callfunc "chsell",1,2,3;
+	end;
+ }
+maintown,59,128,4	script	Cash[Armor]	564,{
+
+	mes "[ Cash ]";
+	mes "นี่คือรายการ Cash Shop";	
+	mes "สามารถเลือกดูได้ตาม List เลยจ้า";
+	mes "^ff0000โปรดเชคน้ำหนักก่อน ทำการแลก";
+	mes "GM จะไม่รับผิดชอบอะไรทั้งนั้น^000000";
+	mes "^000088สามารถใช้บัตรส่วนลดได้^000000";
+	close2;
+	callfunc "chsell",4;
+	end;
+ }
+maintown,62,128,4	script	Cash[Weapon]	564,{
+
+	mes "[ Cash ]";
+	mes "นี่คือรายการ Cash Shop";	
+	mes "สามารถเลือกดูได้ตาม List เลยจ้า";
+	mes "^ff0000โปรดเชคน้ำหนักก่อน ทำการแลก";
+	mes "GM จะไม่รับผิดชอบอะไรทั้งนั้น^000000";
+	mes "^000088สามารถใช้บัตรส่วนลดได้^000000";
+	close2;
+	callfunc "chsell",5;
+	end;
+ }
+maintown,65,128,4	script	Cash[Accessory]	564,{
+
+	mes "[ Cash ]";
+	mes "นี่คือรายการ Cash Shop";	
+	mes "สามารถเลือกดูได้ตาม List เลยจ้า";
+	mes "^ff0000โปรดเชคน้ำหนักก่อน ทำการแลก";
+	mes "GM จะไม่รับผิดชอบอะไรทั้งนั้น^000000";
+	mes "^000088สามารถใช้บัตรส่วนลดได้^000000";
+	close2;
+	callfunc "chsell",6;
+	end;
+ }
+ 
+// etc.. Add your Shop NPCs 'Quest Shop#XXX' here
+//============================================================
+
+
+// Script Core - DO NOT DUPLICATE THIS NPC !!!!!!!!!!!!!
+//============================================================
+-	script	cashshopfunc	-1,{
+function Add; function Chk; function Slot;
+OnInit:
+	freeloop(1);
+
+// -----------------------------------------------------------
+//  Basic shop settings.
+// -----------------------------------------------------------
+
+	set .Announce,0;	// Announce quest completion? (1: yes / 0: no)
+	set .ShowSlot,1;	// Show item slots? (2: all equipment / 1: if slots > 0 / 0: never)
+	set .ShowID,1;  	// Show item IDs? (1: yes / 0: no)
+	set .ShowZeny,1;	// Show Zeny cost, if any? (1: yes / 0: no)
+	set .MaxStack,10;	// Max number of quest items purchased at one time.
+
+// -----------------------------------------------------------
+//  Points variable -- optional quest requirement.
+//	setarray .Points$[0],"<variable name>","<display name>";
+// -----------------------------------------------------------
+
+	setarray .Points$[0],
+		"#CASHPOINTS", "Cash Points";
+
+
+//=====================================================================================
+// ------------------- ADD YOUR SHOPS NAME AND ITEMS SHOPS STARTING HERE --------------
+//=====================================================================================
+
+// -----------------------------------------------------------
+//  Shop IDs -- to add shops, copy dummy data at bottom of file.
+//	setarray .Shops$[1],"<Shop 1>","<Shop 2>"{,...};
+// -----------------------------------------------------------
+
+	setarray .Shops$[1],
+		"- Hat",	// Hat maker
+		"- Mid",	// Hat maker
+		"- Low",	// Hat maker
+		"- Armor",	// Hat maker
+		"- Weapon",
+		"- Accessory",
+		"- Refine",
+		"- Useable";
+
+// -----------------------------------------------------------
+//  Quest items -- do NOT use a reward item more than once!
+//	Add(<shop ID>,<reward ID>,<reward amount>,
+//	    <Zeny cost>,<point cost>,
+//	    <required item ID>,<required item amount>{,...});
+// -----------------------------------------------------------
+
+// Shop 1
+
+	//=============================================
+	//		Hat
+	//=============================================
+	Add(1,5906,1,250,250);
+	Add(1,18827,1,250,250);
+	Add(1,18791,1,250,250);
+	Add(1,18652,1,250,250);
+	Add(1,18573,1,250,250);
+	Add(1,5968,1,250,250);
+	Add(1,5506,1,250,250);
+	Add(1,5581,1,250,250);
+	Add(1,5745,1,250,250);
+	Add(1,18732,1,400,400);
+	Add(1,18585,1,400,400);
+	Add(1,18586,1,400,400);
+	Add(1,18587,1,400,400);
+	Add(1,18588,1,400,400);
+	Add(1,18865,1,700,700);
+	sleep 10;
+	Add(1,5137,1,700,700);
+	Add(1,18550,1,700,700);
+	Add(1,18561,1,700,700);
+	Add(1,5778,1,700,700);
+	Add(1,18849,1,700,700);
+	Add(1,18605,1,700,700);
+	Add(1,18630,1,700,700);
+	Add(1,5779,1,700,700);
+	Add(1,18528,1,700,700);
+	Add(1,18673,1,700,700);
+	sleep 10;
+	Add(1,18522,1,700,700);
+	Add(1,18508,1,700,700);
+	Add(1,5569,1,700,700);
+	Add(1,5374,1,700,700);
+	Add(1,5660,1,700,700);
+	Add(1,18810,1,700,700);
+	Add(1,5481,1,700,700);
+	Add(1,5654,1,700,700);
+	Add(1,18595,1,700,700);
+	Add(1,5423,1,700,700);
+	sleep 10;
+	Add(1,5497,1,700,700);
+	Add(1,5663,1,700,700);
+	Add(1,5753,1,700,700);
+	Add(1,18597,1,700,700);
+	Add(1,5457,1,700,700);
+	Add(1,5451,1,700,700);
+	Add(1,18570,1,800,800);
+	Add(1,18910,1,1000,1000);
+	Add(1,18909,1,1000,1000);
+	Add(1,18908,1,1000,1000);
+	sleep 10;
+	Add(1,5875,1,1000,1000);
+	Add(1,5969,1,1000,1000);
+	Add(1,19038,1,1000,1000);
+	Add(1,18509,1,1000,1000);
+	Add(1,5898,1,1000,1000);
+	Add(1,18793,1,1000,1000);
+	Add(1,19409,1,1000,1000);
+	sleep 10;
+	Add(1,18729,1,1200,1200);
+	Add(1,18893,1,1200,1200);
+	Add(1,18601,1,1200,1200);
+	Add(1,18600,1,1200,1200);
+	Add(1,19116,1,1200,1200);
+	sleep 10;
+	Add(1,19437,1,1200,1200);
+	Add(1,19156,1,1200,1200);
+	Add(1,5905,1,1200,1200);
+	Add(1,5899,1,1200,1200);
+	Add(1,19343,1,1200,1200);
+	Add(1,19125,1,1200,1200);
+	Add(1,5900,1,1200,1200);
+	Add(1,5901,1,1200,1200);
+	Add(1,19021,1,1200,1200);
+	Add(1,18933,1,1200,1200);
+	sleep 10;
+	Add(1,18794,1,1200,1200);
+	Add(1,19469,1,1200,1200);
+	Add(1,5907,1,1200,1200);
+	Add(1,19172,1,1200,1200);
+	Add(1,40138,1,1200,1200);
+	Add(1,19426,1,1200,1200);
+	Add(1,19114,1,1200,1200);
+	Add(1,19379,1,1200,1200);
+	Add(1,19272,1,1200,1200);
+	Add(1,19407,1,1200,1200);
+	Add(1,5963,1,1200,1200);
+	
+	//=============================================
+	//		Mid
+	//=============================================
+	sleep 10;
+	Add(2,5971,1,450,450);
+	Add(2,19039,1,450,450);
+	Add(2,5794,1,450,450);
+	Add(2,18540,1,450,450);
+	Add(2,2202,1,450,450);
+	Add(2,2204,1,450,450);
+	Add(2,5471,1,450,450);
+	Add(2,5786,1,450,450);
+	Add(2,18603,1,450,450);
+	Add(2,5800,1,450,450);
+	sleep 10;
+	Add(2,19128,1,450,450);
+	Add(2,5516,1,450,450);
+	Add(2,5985,1,450,450);
+	Add(2,5325,1,450,450);
+	Add(2,19126,1,450,450);
+	Add(2,5966,1,450,450);
+	Add(2,18823,1,450,450);
+	Add(2,18559,1,450,450);
+	Add(2,19117,1,450,450);
+	Add(2,18657,1,700,700);
+	Add(2,19024,1,700,700);
+	sleep 10;
+	Add(2,5918,1,800,800);
+	Add(2,19138,1,800,800);
+	Add(2,18813,1,800,800);
+	Add(2,19181,1,800,800);
+	Add(2,18894,1,800,800);
+	Add(2,19082,1,900,900);
+	Add(2,19391,1,900,900);
+	Add(2,19380,1,900,900);
+	Add(2,18787,1,900,900);
+	Add(2,18720,1,900,900);
+	
+	//=============================================
+	//		Low
+	//=============================================
+	Add(3,18666,1,200,200);
+	Add(3,18560,1,200,200);
+	Add(3,18679,1,200,200);
+	Add(3,5978,1,200,200);
+	Add(3,18845,1,400,400);
+	Add(3,18754,1,400,400);
+	Add(3,18683,1,400,400);
+	Add(3,19137,1,400,400);
+	Add(3,19299,1,400,400);
+	sleep 10;
+	Add(3,5868,1,600,600);
+	Add(3,5597,1,600,600);
+	Add(3,5403,1,600,600);
+	Add(3,5917,1,600,600);
+	Add(3,5972,1,600,600);
+	Add(3,5967,1,600,600);
+	Add(3,18536,1,600,600);
+	Add(3,5377,1,600,600);
+	Add(3,18936,1,600,600);
+	Add(3,18670,1,600,600);
+	Add(3,19095,1,600,600);
+	sleep 10;
+	Add(3,5362,1,600,600);
+	Add(3,5305,1,600,600);
+	Add(3,5463,1,600,600);
+	Add(3,5767,1,600,600);
+	Add(3,18867,1,600,600);
+	Add(3,5462,1,600,600);
+	Add(3,18774,1,600,600);
+	Add(3,19246,1,600,600);
+	Add(3,19306,1,600,600);
+	Add(3,19438,1,600,600);
+	Add(3,40147,1,600,600);
+	Add(3,40112,1,600,600);
+	Add(3,19139,1,600,600);
+	Add(3,28502,1,800,800);
+	Add(3,40141,1,800,800);
+	
+	//=============================================
+	//		Armor
+	//=============================================
+	Add(4,2345,1,200,200);
+	Add(4,2347,1,200,200);
+	Add(4,2351,1,200,200);
+	Add(4,2349,1,200,200);
+	Add(4,15035,1,500,500);
+	Add(4,15164,1,500,500);
+	Add(4,15147,1,500,500);
+	Add(4,15110,1,500,500);
+	Add(4,15175,1,500,500);
+	sleep 10;
+	Add(4,15145,1,600,600);
+	Add(4,15095,1,600,600);
+	Add(4,15094,1,600,600);
+	Add(4,15097,1,600,600);
+	Add(4,15093,1,600,600);
+	Add(4,15098,1,600,600);
+	Add(4,15096,1,600,600);
+	Add(4,15384,1,600,600);
+	Add(4,15405,1,800,800);
+	Add(4,15283,1,1000,1000);
+	Add(4,15419,1,1000,1000);
+	Add(4,15417,1,1000,1000);
+	
+	sleep 10;
+	
+	Add(4,2573,1,300,300);
+	Add(4,20718,1,300,300);
+	Add(4,2598,1,500,50);
+	Add(4,2576,1,500,500);
+	Add(4,20969,1,500,500);
+	Add(4,20749,1,800,800);
+	Add(4,2589,1,900,900);
+	Add(4,20859,1,1000,1000);
+	//jRO
+	//Add(4,20816,1,1000,1000);
+	sleep 10;
+	
+	Add(4,22002,1,300,300);
+	Add(4,22004,1,300,300);
+	Add(4,22001,1,300,300);
+	Add(4,22005,1,300,300);
+	Add(4,22000,1,300,300);
+	Add(4,22003,1,300,300);
+	Add(4,22207,1,400,400);
+	Add(4,22106,1,500,500);
+	Add(4,22172,1,500,500);
+	
+	//=============================================
+	//		Weapon
+	//=============================================
+	Add(5,13092,1,150,150);
+	Add(5,16026,1,150,150);
+	Add(5,1670,1,150,150);
+	Add(5,16015,1,250,250);
+	Add(5,13438,1,250,250);
+	Add(5,13089,1,400,400);
+	Add(5,1228,1,700,700);
+	Add(5,13017,1,700,700);
+	Add(5,18110,1,700,700);
+	Add(5,1377,1,700,700);
+	Add(5,13090,1,1000,1000);
+	Add(5,13412,1,2000,2000);
+	Add(5,13413,1,2000,2000);
+	Add(5,1185,1,2000,2000);
+	Add(5,1449,1,2000,2000);
+	Add(5,28010,1,5000,5000);
+	Add(5,21018,1,6000,6000);
+	Add(5,40107,1,6000,6000);
+	sleep 10;
+	
+	Add(5,2198,1,200,200);
+	Add(5,2169,1,250,250);
+	Add(5,28901,1,400,400);
+	Add(5,28906,1,500,500);
+	Add(5,28907,1,500,500);
+	Add(5,28908,1,500,500);
+	Add(5,28909,1,500,500);
+	Add(5,28913,1,600,600);
+	sleep 10;
+	Add(5,2168,1,700,700);
+	Add(5,28903,1,700,700);
+	Add(5,28916,1,700,700);
+	Add(5,28941,1,850,850);
+	
+	//=============================================
+	//		Accessory
+	//=============================================
+	Add(6,2967,1,250,250);
+	Add(6,2969,1,250,250);
+	Add(6,2897,1,250,250);
+	sleep 10;	
+	Add(6,2923,1,350,350);
+	Add(6,2924,1,350,350);
+	Add(6,2925,1,350,350);
+	Add(6,2926,1,350,350);
+	Add(6,2927,1,350,350);
+	Add(6,2928,1,350,350);
+	Add(6,2985,1,400,400);
+	Add(6,2899,1,400,400);
+	sleep 10;	
+	Add(6,32227,1,400,400);
+	Add(6,28560,1,400,400);
+	Add(6,2910,1,600,600);
+	Add(6,2911,1,600,600);
+	Add(6,2907,1,600,600);
+	Add(6,28411,1,600,600);
+	Add(6,28573,1,600,600);
+	Add(6,28564,1,600,600);
+	Add(6,2737,1,800,800);
+	Add(6,2936,1,800,800);
+	Add(6,32204,1,800,800);
+	sleep 10;	
+	
+	Add(6,28513,1,800,800);
+	Add(6,20931,1,800,800);
+	Add(6,28506,1,800,800);
+	Add(6,28594,1,1000,1000);
+	Add(6,28531,1,1000,1000);
+	Add(6,28438,1,1000,1000);
+	Add(6,28386,1,1000,1000);
+	//Add(6,40259,1,1000,1000);
+	Add(6,32242,1,1500,1500);
+	
+
+	
+// -----------------------------------------------------------
+
+//=====================================================================================
+// ------------------- YOUR SHOPS AND ITEMS SHOPS HAVE BEEN ADDED ---------------------
+//=====================================================================================
+
+	freeloop(0);
+	set .menu$,"";
+	for(set .@i,1; .@i<=getarraysize(.Shops$); set .@i,.@i+1) {
+		set .menu$, .menu$+.Shops$[.@i]+":";
+		npcshopdelitem "chsell"+.@i,909;
+	}
+
+	end;
+OnMenu:
+	set .@size, getarraysize(@i);
+	if (!.@size) set @shop_index, select(.menu$);
+	else if (.@size == 1) set @shop_index, @i[0];
+	else {
+		for(set .@j,0; .@j<.@size; set .@j,.@j+1)
+			set .@menu$, .@menu$+.Shops$[@i[.@j]]+":";
+		set @shop_index, @i[select(.@menu$)-1];
+	}
+	deletearray @i[0],getarraysize(@i);
+	if (.Shops$[@shop_index] == "") {
+		message strcharinfo(0),"An error has occurred.";
+		end;
+	}
+	//dispbottom "Select one item at a time.";
+	callshop "chsell"+@shop_index,1;
+	npcshopattach "chsell"+@shop_index;
+	end;
+
+OnBuyItem:
+	// .@q[] : RewardID, BoughtAmt, RewardAmt, BaseAmt, ReqZeny, ReqPts, { ReqItem, ReqAmt, ... }
+	setarray .@q[0],@bought_nameid[0],((@bought_quantity[0] > .MaxStack)?.MaxStack:@bought_quantity[0]);
+	copyarray .@q[3],getd(".q_"+@shop_index+"_"+.@q[0]+"[0]"),getarraysize(getd(".q_"+@shop_index+"_"+.@q[0]));
+	set .@q[2],.@q[1]*.@q[3];
+	if (!.@q[2] || .@q[2] > 30000) {
+		message strcharinfo(0),"You can't purchase that many "+getitemname(.@q[0])+".";
+		end;
+	}
+	mes "[ Cash ]";
+	mes "ไอเท็ม: ^0055FF"+((.@q[2] > 1)?.@q[2]+"x ":"")+Slot(.@q[0])+"^000000";
+	mes "ต้องการ:";
+	disable_items;
+	//if (.@q[4]) mes " > "+Chk(Zeny,.@q[4]*.@q[1])+(.@q[4]*.@q[1])+" Zeny^000000";
+	if (.@q[5]) mes "  "+Chk(getd(.Points$[0]),.@q[5]*.@q[1])+(.@q[5]*.@q[1])+" "+.Points$[1]+" ("+getd(.Points$[0])+"/"+(.@q[5]*.@q[1])+")^000000";
+	if (.@q[6]) for(set .@i,6; .@i<getarraysize(.@q); set .@i,.@i+2)
+		mes "  "+Chk(countitem(.@q[.@i]),.@q[.@i+1]*.@q[1])+((.ShowID)?"{"+.@q[.@i]+"} ":"")+Slot(.@q[.@i])+" ("+countitem(.@q[.@i])+"/"+(.@q[.@i+1]*.@q[1])+")^000000";
+	next;
+	setarray @qe[1], getiteminfo(.@q[0],5), getiteminfo(.@q[0],11);
+	if (@qe[2] > 0 && ((@qe[1] & EQP_HEAD_LOW) || (@qe[1] & EQP_HEAD_TOP) || (@qe[1] & EQP_HEAD_MID) || (@qe[1] & EQP_COSTUME_HEAD_TOP) || (@qe[1] & EQP_COSTUME_HEAD_MID) || (@qe[1] & EQP_COSTUME_HEAD_LOW) || (@qe[1] & EQP_GARMENT) || (@qe[1] & EQP_COSTUME_GARMENT)))
+		set .@preview,1;
+	addtimer 1000, strnpcinfo(0)+"::OnEnd";
+	while(1) {
+		switch(select("  ซื้อไอเท็ม ^0055FF"+getitemname(.@q[0])+"^000000:"+((.@preview && !@qe[7])?"  ทดลองสวมใส่...":"")+":  ^777777ยกเลิก^000000")) {
+		case 1:		
+			if (@qe[0]) {
+				mes "[ Cash ]";
+				mes "คุณไม่มีไอเท็มที่เราต้องการ";
+				end;
+			}
+			if (!checkweight(.@q[0],.@q[2])) {
+				mes "[ Cash ]";
+				mes "^FF0000You need "+(((.@q[2]*getiteminfo(.@q[0],6))+Weight-MaxWeight)/10)+" additional weight capacity to complete this trade.^000000";
+				end;
+			}
+			
+//==============================================================================================
+//			Discount Card 10%
+//==============================================================================================
+			
+			if(countitem(49523) >= 1){
+			
+			next;
+			mes "[ Cash ]";
+			mes "คุณมีไอเท็มส่วนลดในการซื้อสินค้า";
+			mes "   ^000088ส่วนลด 10%^000000";
+			mes "ต้องการใช้หรือไม่";
+			next;
+				menu "ใช้ไอเท็มส่วนลด",-,"ยังไม่ใช้ตอนนี้",nousetc;
+				set .disam,10;			
+				set .disc,((.@q[5]*.@q[1])/100)*(100-.disam);	
+			mes "[ Cash ]";	
+			mes "ราคาที่ลดแล้ว : ^FF0000"+.disc+"^000000";
+			mes "ต้องการใช้บัตรส่วนลดหรือไม่";
+			next;
+			menu "ใช้ไอเท็มส่วนลดทันที",-,"ยกเลิกการซื้อ",nobuycc;
+			
+			delitem 49523,1;
+			setd .Points$[0], getd(.Points$[0])-.disc;
+			getitem .@q[0],.@q[2];
+			end;
+			
+			}
+//==============================================================================================
+//			Discount Card 20%
+//==============================================================================================
+			
+			if(countitem(49524) >= 1){
+			
+			next;
+			mes "[ Cash ]";
+			mes "คุณมีไอเท็มส่วนลดในการซื้อสินค้า";
+			mes "   ^000088ส่วนลด 20%^000000";
+			mes "ต้องการใช้หรือไม่";
+			next;
+				menu "ใช้ไอเท็มส่วนลด",-,"ยังไม่ใช้ตอนนี้",nousetc;
+				set .disam,20;			
+				set .disc,((.@q[5]*.@q[1])/100)*(100-.disam);	
+			mes "[ Cash ]";	
+			mes "ราคาที่ลดแล้ว : ^FF0000"+.disc+"^000000";
+			mes "ต้องการใช้บัตรส่วนลดหรือไม่";
+			next;
+			menu "ใช้ไอเท็มส่วนลดทันที",-,"ยกเลิกการซื้อ",nobuycc;
+			
+			delitem 49524,1;
+			setd .Points$[0], getd(.Points$[0])-.disc;
+			getitem .@q[0],.@q[2];
+			end;
+			
+			}
+//==============================================================================================
+//			Discount Card 30%
+//==============================================================================================
+			
+			if(countitem(49525) >= 1){
+			
+			next;
+			mes "[ Cash ]";
+			mes "คุณมีไอเท็มส่วนลดในการซื้อสินค้า";
+			mes "   ^000088ส่วนลด 30%^000000";
+			mes "ต้องการใช้หรือไม่";
+			next;
+				menu "ใช้ไอเท็มส่วนลด",-,"ยังไม่ใช้ตอนนี้",nousetc;
+				set .disam,30;			
+				set .disc,((.@q[5]*.@q[1])/100)*(100-.disam);	
+			mes "[ Cash ]";	
+			mes "ราคาที่ลดแล้ว : ^FF0000"+.disc+"^000000";
+			mes "ต้องการใช้บัตรส่วนลดหรือไม่";
+			next;
+			menu "ใช้ไอเท็มส่วนลดทันที",-,"ยกเลิกการซื้อ",nobuycc;
+			
+			delitem 49525,1;
+			setd .Points$[0], getd(.Points$[0])-.disc;
+			getitem .@q[0],.@q[2];
+			end;
+			
+			}
+//==============================================================================================
+//			Discount Card 50%
+//==============================================================================================
+			
+			if(countitem(49526) >= 1){
+			
+			next;
+			mes "[ Cash ]";
+			mes "คุณมีไอเท็มส่วนลดในการซื้อสินค้า";
+			mes "   ^000088ส่วนลด 50%^000000";
+			mes "ต้องการใช้หรือไม่";
+			next;
+				menu "ใช้ไอเท็มส่วนลด",-,"ยังไม่ใช้ตอนนี้",nousetc;
+				set .disam,50;			
+				set .disc,((.@q[5]*.@q[1])/100)*(100-.disam);	
+			mes "[ Cash ]";	
+			mes "ราคาที่ลดแล้ว : ^FF0000"+.disc+"^000000";
+			mes "ต้องการใช้บัตรส่วนลดหรือไม่";
+			next;
+			menu "ใช้ไอเท็มส่วนลดทันที",-,"ยกเลิกการซื้อ",nobuycc;
+			
+			delitem 49526,1;
+			setd .Points$[0], getd(.Points$[0])-.disc;
+			getitem .@q[0],.@q[2];
+			end;
+			
+			}
+			
+	nousetc:
+			//if (.@q[4]) set Zeny, Zeny-(.@q[4]*.@q[1]);
+			if (.@q[5]) setd .Points$[0], getd(.Points$[0])-(.@q[5]*.@q[1]);
+			if (.@q[6]) for(set .@i,6; .@i<getarraysize(.@q); set .@i,.@i+2)
+				delitem .@q[.@i],.@q[.@i+1]*.@q[1];
+			getitem .@q[0],.@q[2];
+			if (.Announce) announce strcharinfo(0)+" ได้ทำการสร้าง "+((.@q[2] > 1)?.@q[2]+"x "+getitemname(.@q[0]):callfunc("F_InsertArticle",getitemname(.@q[0])))+"!",0;
+			specialeffect2 EF_FLOWERLEAF;
+			end;
+		case 2:
+			setarray @qe[3], getlook(LOOK_HEAD_BOTTOM), getlook(LOOK_HEAD_TOP), getlook(LOOK_HEAD_MID), getlook(LOOK_ROBE), 1;
+			if ((@qe[1] & 1) || (@qe[1] & 4096)) changelook LOOK_HEAD_BOTTOM, @qe[2];
+			else if ((@qe[1] & 256) || (@qe[1] & 1024)) changelook LOOK_HEAD_TOP, @qe[2];
+			else if ((@qe[1] & 512) || (@qe[1] & 2048)) changelook LOOK_HEAD_MID, @qe[2];
+			else if ((@qe[1] & 4) || (@qe[1] & 8192)) changelook LOOK_ROBE, @qe[2];
+			break;
+		case 3:
+	nobuycc:	
+			end;
+		}
+	}
+
+OnEnd:
+	if (@qe[7]) {
+		changelook LOOK_HEAD_BOTTOM, @qe[3];
+		changelook LOOK_HEAD_TOP, @qe[4];
+		changelook LOOK_HEAD_MID, @qe[5];
+		changelook LOOK_ROBE, @qe[6];
+	}
+	deletearray @qe[0],8;
+	end;
+
+function Add {
+	if (getitemname(getarg(1)) == "null") {
+		debugmes "Quest reward #"+getarg(1)+" invalid (skipped).";
+		return;
+	}
+	setarray .@j[0],getarg(2),getarg(3),getarg(4);
+	for(set .@i,5; .@i<getargcount(); set .@i,.@i+2) {
+		if (getitemname(getarg(.@i)) == "null") {
+			debugmes "Quest requirement #"+getarg(.@i)+" invalid (skipped).";
+			return;
+		} else
+			setarray .@j[.@i-2],getarg(.@i),getarg(.@i+1);
+	}
+	copyarray getd(".q_"+getarg(0)+"_"+getarg(1)+"[0]"),.@j[0],getarraysize(.@j);
+	npcshopadditem "chsell"+getarg(0),getarg(1),((.ShowZeny)?getarg(3):0);
+	return;
+}
+
+function Chk {
+	if (getarg(0) < getarg(1)) {
+		set @qe[0],1;
+		return "^FF0000";
+	} else
+		return "^28B49D";
+}
+
+function Slot {
+	set .@s$,getitemname(getarg(0));
+	switch(.ShowSlot) {
+		case 1: if (!getitemslots(getarg(0))) return .@s$;
+		case 2: if (getiteminfo(getarg(0),2) == 4 || getiteminfo(getarg(0),2) == 5) return .@s$+" ["+getitemslots(getarg(0))+"]";
+		default: return .@s$;
+	}
+}
+
+}
+
+function	script	chsell	{
+	deletearray @i[0],getarraysize(@i);
+	for(set .@i,0; .@i<getargcount(); set .@i,.@i+1)
+		set @i[.@i],getarg(.@i);
+	doevent "cashshopfunc::OnMenu";
+	end;
+}

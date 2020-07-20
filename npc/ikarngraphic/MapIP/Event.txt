@@ -1,0 +1,89 @@
+//quiz_02,0,0,0	script	Event_IP_Check	-1,{
+//OnInit:
+//	setmapflag "quiz_02", mf_loadevent;
+//
+//	set .map_list$, "quiz_02";
+//	//set .map_list$, "quiz_02 | prtg_cas02 | prtg_cas03";
+//	set .whitelist$, "127.0.0.1";
+//	end;
+// 
+//// Trigger when a player enters a map with "loadevent" mapflag.
+//OnPCLoadMapEvent:
+// 
+//	// Only run for map in the list.
+//	if ( compare( .map_list$,strcharinfo(3) ) == 0 ) end;
+//	
+//	set .@my_ip$, getcharip();
+//	if ( compare( .whitelist$,.@my_ip$ ) )
+//		.@right = 2;
+//	else
+//		.@right = 1;
+// 
+//	// Get list of name online with attached character's IP address.
+//	set .@size, query_sql("SELECT `char`.`name` FROM `login` join `char` on `char`.account_id = login.account_id WHERE online = 1 and `last_ip` = '"+ .@my_ip$ +"' and `char`.`account_id` != "+ getcharid(3), .@name$ );
+// 
+//	// Passed check if only the attached player is returned.
+//	if ( .@size < .@right ) end;
+//	setd ".@count_"+ strcharinfo(3), 1;
+//
+//	// Check all online characters using the IP address if they are on a Battlegrounds map.
+//	for( ; .@i<.@size; set .@i,.@i+1) {
+//		getmapxy .@map$, .@x, .@y, 0, .@name$[.@i];
+//		if ( compare( .map_list$,.@map$ ) ) {
+//			setd ".@count_"+ .@map$, getd( ".@count_"+ .@map$ ) +1;
+//			setd ".@name_"+ .@map$ +"$", getd( ".@name_"+ .@map$ +"$" ) + .@name$[.@i] + ( ( getd( ".@name_"+ .@map$ +"$" ) == "" && .@right == 2 ) ? "," : "" );
+//			if ( getd( ".@count_"+ .@map$ ) == .@right +1 ) {
+//				message strcharinfo(0),"Characters "+ getd( ".@name_"+ .@map$ +"$" ) +" already present in a map with your IP. Kicking....";
+//				sleep2 2000;
+//				atcommand "@kick "+ strcharinfo(0);
+//				end;
+//			}
+//		}
+//	}
+// 
+//	// Passed check.
+//	end;
+//}
+
+/*
+
+CREATE TABLE IF NOT EXISTS `mapeventip` (
+  `id` int(11) NOT NULL auto_increment,
+  `mapname` varchar(30) NOT NULL default '',
+  `last_ip` varchar(100) NOT NULL default '',
+  `count` varchar(100) NOT NULL default '',
+  PRIMARY KEY (`last_ip`),
+  KEY (`id`)
+) ENGINE=MyISAM;
+
+*/
+
+bat_c03,76,121,6	script	CheckIP	910,{
+
+	query_sql("SELECT last_ip FROM `login` WHERE account_id = "+getcharid(3)+"", .@lastip$);
+	query_sql("SELECT count FROM `mapeventip` WHERE last_ip = '"+.@lastip$+"'", .@freebiesip$);
+	getmapxy .@map$, .@x, .@y, BL_PC, getcharid(3);
+	
+	mes "Check MAP&IP";
+	mes "IP : "+.@lastip$+"";
+	mes "MAP : "+.@map$+"";
+	mes "Count : "+.@freebiesip$+"";
+	next;
+	menu "- Add IP",Add1,"- Reset",Del1,"- Exit",Ex;
+		
+		
+	Add1:
+		query_sql( "INSERT INTO `mapeventip` SET `mapname`='"+.@map$+"',`last_ip`='"+.@lastip$+"',`Count`='1' ON DUPLICATE KEY UPDATE `Count`=`Count`+1" );
+	end;
+	
+
+	
+	Del1:
+			query_sql( "TRUNCATE TABLE `mapeventip` " );
+	end;
+	
+	
+	Ex:
+	end;
+	
+}

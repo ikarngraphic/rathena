@@ -1,0 +1,27 @@
+maintown,43,72,4	script	อันดับการต่อสู้#01	734,{
+
+query_sql "SELECT `name`,`r_pvp` FROM `char` " + "ORDER BY CAST(`r_pvp` AS UNSIGNED) DESC LIMIT 10",.@name$, .@cash;
+	mes "[ Top "+getarraysize(.@name$)+" PVP Rank ]";
+	for (set .@i,0; .@i<getarraysize(.@name$); set .@i,.@i+1)
+		mes (.@i+1) +". ^886A08"+ .@name$[.@i] +"^000000 : ^DF013A"+ .@cash[.@i] +"^000000 Kills";
+		close;
+
+OnInit:
+waitingroom "   อันดับ PVP",0;
+end;
+
+}
+
+maintown,43,63,4	script	อันดับการล่าบอส#02	732,{
+
+query_sql "SELECT `name`,`r_mvp` FROM `char` " + "ORDER BY CAST(`r_mvp` AS UNSIGNED) DESC LIMIT 10",.@name$, .@cash;
+	mes "[ Top "+getarraysize(.@name$)+" MVP Rank ]";
+	for (set .@i,0; .@i<getarraysize(.@name$); set .@i,.@i+1)
+		mes (.@i+1) +". ^886A08"+ .@name$[.@i] +"^000000 : ^DF013A"+ .@cash[.@i] +"^000000 Kills";
+		close;
+
+OnInit:
+waitingroom "   อันดับ MVP",0;
+end;
+
+}

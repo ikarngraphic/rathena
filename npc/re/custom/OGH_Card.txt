@@ -1,0 +1,138 @@
+glast_01,197,347,6	script	Portrait Collector#1	715,{
+	mes "[Portrait Collector]";
+	mes "ฮัลโหลล! ท่านนักเดินทาง. ยินดีที่ได้รู้จัก ตัวข้าน้อยเป็นนักสะสมภาพถ่ายมือฉมัง ท่านสนใจรูปภาพเหล่าคนในตำนานซักหน่อยมั้ยล่ะ";
+	next;
+	mes "[Portrait Collector]";
+	mes "ท่านต้องการแลก ^0000ffCoagulated Spell^000000 หรือ ^ff0000Contaminated Magic^000000 กับคอลเลคชั่นของข้าน้อยหรือไม่?";
+	if (select("ข้าต้องการ:ไม่เป็นไร" ) == 1) {
+		next;
+		mes "[Portrait Collector]";
+		mes "สนใจภาพไหนหรือขอรับ?";
+		switch(select("White Knight Card","Khalitzburg Knightage Card","ไม่เป็นไร ขอบคุณ")) {
+			case 1:
+				next;
+				mes "[Portrait Collector]";
+				mes "<ITEM>White Knight Card<INFO>4608</INFO></ITEM>","แลกกับ ^0000ff2000 Coagulated Spell^000000 ~","หรือ ^ff0000233 Contaminated Magic^000000 ~";
+				switch(select("2000 Coagulated Spell","233 Contaminated Magic","ไม่เป็นไร ขอบคุณ")) {
+					case 1:
+						next;
+						mes "[Portrait Collector]";
+						mes "ท่านต้องการจะแลก 2000 ^0000ffCoagulated Spell^000000 กับ ^777777White Knight Card^000000 หรือไม่?";
+						next;
+						if (select("ใช่:ไม่" ) == 1) {
+							if (checkweight(4608,1)) {
+								if (countitem(6608) >= 2000) {
+									mes "[Portrait Collector]";
+									mes "ขอบคุณขอรับนายท่าน";
+									delitem 6608,2000;
+									getitem 4608,1;
+									close;
+								}
+								mes "[Portrait Collector]","โอ๊ะโอ้ ดูเหมือนนายท่านจะมี ^0000ffCoagulated Spell^000000 ไม่พอนะขอรับ";
+								close;
+							}
+							else { 
+								mes "[Portrait Collector]","ขออภัย ช่องเก็บของท่านเต็ม";
+								close; }
+						}
+						else {
+							mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+							close; }
+					case 2:
+						next;
+						mes "[Portrait Collector]";
+						mes "ท่านต้องการจะแลก 233 ^ff0000Contaminated Magic^000000 กับ ^777777White Knight Card^000000 หรือไม่?";
+						next;
+						if (select("ใช่:ไม่" ) == 1) {
+							if (checkweight(4608,1)) {
+								if (countitem(6755) >= 233) {
+									mes "[Portrait Collector]";
+									mes "ขอบคุณขอรับนายท่าน";
+									delitem 6755,233;
+									getitem 4608,1;
+									close;
+								}
+								mes "[Portrait Collector]","โอ๊ะโอ้ ดูเหมือนนายท่านจะมี ^ff0000Contaminated Magic^000000 ไม่พอนะขอรับ";
+								close;
+							}
+							else { 
+								mes "[Portrait Collector]","ขออภัย ช่องเก็บของท่านเต็ม";
+								close; }
+						}
+						else {
+							mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+							close; }
+					case 3:
+						next;
+						mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+						close;
+				}
+			case 2:
+				next;
+				mes "[Portrait Collector]";
+				mes "<ITEM>Khalitzburg Knight Card<INFO>4609</INFO></ITEM>","แลกกับ ^0000ff2000 Coagulated Spell^000000 ~","หรือ ^ff0000233 Contaminated Magic^000000 ~";
+				switch(select("2000 Coagulated Spell","233 Contaminated Magic","ไม่เป็นไร ขอบคุณ")) {
+					case 1:
+						next;
+						mes "[Portrait Collector]";
+						mes "ท่านต้องการจะแลก 2000 ^0000ffCoagulated Spell^000000 กับ ^777777Khalitzburg Knight Card^000000 หรือไม่?";
+						next;
+						if (select("ใช่:ไม่" ) == 1) {
+							if (checkweight(4609,1)) {
+								if (countitem(6608) >= 2000) {
+									mes "[Portrait Collector]";
+									mes "ขอบคุณขอรับนายท่าน";
+									delitem 6608,2000;
+									getitem 4609,1;
+									close;
+								}
+								mes "[Portrait Collector]","โอ๊ะโอ้ ดูเหมือนนายท่านจะมี ^0000ffCoagulated Spell^000000 ไม่พอนะขอรับ";
+								close;
+							}
+							else { 
+								mes "[Portrait Collector]","ขออภัย ช่องเก็บของท่านเต็ม";
+								close; }
+						}
+						else {
+							mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+							close; }
+					case 2:
+						next;
+						mes "[Portrait Collector]";
+						mes "ท่านต้องการจะแลก 233 ^ff0000Contaminated Magic^000000 กับ ^777777Khalitzburg Knight Card^000000 หรือไม่?";
+						next;
+						if (select("ใช่:ไม่" ) == 1) {
+							if (checkweight(4609,1)) {
+								if (countitem(6755) >= 233) {
+									mes "[Portrait Collector]";
+									mes "ขอบคุณขอรับนายท่าน";
+									delitem 6755,233;
+									getitem 4609,1;
+									close;
+								}
+								mes "[Portrait Collector]","โอ๊ะโอ้ ดูเหมือนนายท่านจะมี ^ff0000Contaminated Magic^000000 ไม่พอนะขอรับ";
+								close;
+							}
+							else { 
+								mes "[Portrait Collector]","ขออภัย ช่องเก็บของท่านเต็ม";
+								close; }
+						}
+						else {
+							mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+							close; }
+					case 3:
+						next;
+						mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+						close;	
+				}
+			case 3:
+				next;
+				mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+				close;
+		}
+	}
+	else {
+		next;
+		mes "[Portrait Collector]","ยินดีที่ได้พบท่าน ไว้เจอกันใหม่โอกาสหน้านะขอรับ";
+		close; }
+}

@@ -1,0 +1,41 @@
+vip_lounge,125,263,4	script	µŸÈ‚™«Ï‰Õ‡∑Á¡#1	562,{
+	set .Given_ItemID,39001;
+	callshop "Shop_Show#1",1;
+	npcshopattach "Shop_Show#1";
+	end;
+
+OnBuyItem:
+	for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		for(set @j,0; @j < getarraysize(.Shop_ItemID); set @j,@j+1) {
+			if(.Shop_ItemID[@j] == @bought_nameid[@i]) {
+				set @itemcost,(.Shop_Price[(@j)]*@bought_quantity[@i]);
+				set @totalcost,(@totalcost+@itemcost);
+				break;
+			}
+		}
+	}
+	
+	if(@totalcost > countitem(.Given_ItemID)) {
+	}
+	else {
+		for(set @i,0; @i < getarraysize(@bought_nameid); set @i,@i+1) {
+		getitem @bought_nameid[@i],@bought_quantity[@i];
+	}
+		delitem .Given_ItemID,@totalcost;
+	}
+	set @totalcost,0;
+	deletearray @bought_nameid[0],128;
+	deletearray @bought_quantity[0],128;
+end;
+
+OnInit:
+waitingroom "# µŸÈ‚™«Ï‰Õ‡∑Á¡",0;
+npcshopdelitem "Shop_Show#1",909;
+setarray .Shop_ItemID[0],38001,38002,38003,38004,39996,39997,39998,39999,55301,55302,55303,55304,55305,55306,55307,55308,55309,55310,55311,55312,55313,55314,55315,57000,57001,57002,57003,57004,57005,57006,57007,57008,57009,57010,57011,57012,57013,57014,57015,57016,57017,57018,57019; //√À— ‰Õ‡∑¡
+setarray .Shop_Price[0],1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; //√“§“
+for(set .@i,0; .@i < getarraysize(.Shop_ItemID); set .@i,.@i+1) {
+npcshopadditem "Shop_Show#1",.Shop_ItemID[.@i],.Shop_Price[.@i];
+}
+end;
+}
+-	shop	Shop_Show#1	-1,909:-1

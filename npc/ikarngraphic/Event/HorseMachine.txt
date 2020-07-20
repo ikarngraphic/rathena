@@ -1,0 +1,533 @@
+//===== eAthena Script =======================================
+//= RacingMachine
+//===== By: ==================================================
+//= PlayNewZone
+//= Modified By VanNovA
+//====== Edit: ===============================================
+//= แทงสูงสุดได้ 5 คนในเวลานี้
+//= 1 ตัวละครแทงได้ 1 ครั้งเท่านั้น
+//= Error : fb.com/ikarngraphic
+//= Edit V.2 : ikarngraphic
+//= แทงได้ 5 คน(NPC 5 ตัว)
+//===== Current Version: =====================================
+-	script	RacingMachineTemp	-1,{}
+
+trinity,23,59,6	script	RacingNumber [ 1 ]#1	955,{	//ม้าตัวที่ 1	=x -1
+end;
+OnEffect:for(set $@HM_i_1,1;$@HM_i_1<15;set $@HM_i_1,$@HM_i_1+1){specialeffect 68;sleep 500;}end;
+}
+trinity,23,56,6	script	RacingNumber [ 2 ]#1	955,{	//ม้าตัวที่ 2	=x -4
+end;
+OnEffect:for(set $@HM_i_1,1;$@HM_i_1<15;set $@HM_i_1,$@HM_i_1+1){specialeffect 68;sleep 500;}end;
+}
+trinity,23,53,6	script	RacingNumber [ 3 ]#1	955,{	//ม้าตัวที่ 3	=x -7
+end;
+OnEffect:for(set $@HM_i_1,1;$@HM_i_1<15;set $@HM_i_1,$@HM_i_1+1){specialeffect 68;sleep 500;}end;
+}
+trinity,23,50,6	script	RacingNumber [ 4 ]#1	955,{	//ม้าตัวที่ 4	=x -10
+end;
+OnEffect:for(set $@HM_i_1,1;$@HM_i_1<15;set $@HM_i_1,$@HM_i_1+1){specialeffect 68;sleep 500;}end;
+}
+
+trinity,23,60,6	duplicate(RacingMachineTemp)	Start#ป้ายบนซ้าย	858	//x y
+trinity,23,49,6	duplicate(RacingMachineTemp)	Start#ป้ายล่างซ้าย	858	//=x -11
+trinity,38,60,6	duplicate(RacingMachineTemp)	End#ป้ายบนขวา	858	//+15 =y
+trinity,38,49,6	duplicate(RacingMachineTemp)	End#ป้ายล่างขวา	858	//+15 -11
+
+trinity,39,62,6	script	RacingMachine#1	900,{
+goto PLZ_Main;
+
+PLZ_Main:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ยินดีต้อนรับสู่ตู้นักแข่ง";
+	mes "^FF9900•^000000 ท่านอยากลองเล่นบ้างมั้ยหล่ะ";
+	next;
+	menu "^FF9900•^000000 เริ่มเล่น",Play,"^FF9900•^000000 ดูสถิติ",Stats,"^FF9900•^000000 วิธีการเล่น",HowTo;
+end;
+
+Play:	mes "เราจะปล่อยม้าให้ท่าน";
+	close2;
+	npctalk "เอาหล่ะการแข่งขันม้าจะเริ่มในอีก 20 วินาที";
+	sleep 10000;	npctalk "ข้าจะนับถอยหลัง 10 วินาที";	
+	sleep 1000; npctalk "9";
+	sleep 1000; npctalk "8";
+	sleep 1000; npctalk "7";
+	sleep 1000; npctalk "6";
+	sleep 1000; npctalk "5";
+	sleep 1000; npctalk "4";
+	sleep 1000; npctalk "3";
+	sleep 1000; npctalk "2";
+	sleep 1000; npctalk "1";
+	sleep 1000; npctalk "เริ่มปล่อยม้าได้แล้ว ณ บัดนี้";
+	set $@MA_PLAY,1;	
+	donpcevent "RacingMachine#1::OnPlaying";
+	end;
+end;
+
+Stats:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ^008800นักแข่งตัวที่ 1 แต้ม ^555599[ "+$HM_Number_1_1+"^000000 ]";
+	mes "^FF9900•^000000 ^00AA00นักแข่งตัวที่ 2 แต้ม ^555599[ "+$HM_Number_2_1+"^000000 ]";
+	mes "^FF9900•^000000 ^00CC00นักแข่งตัวที่ 3 แต้ม ^555599[ "+$HM_Number_3_1+"^000000 ]";
+	mes "^FF9900•^000000 ^00DD00นักแข่งตัวที่ 4 แต้ม ^555599[ "+$HM_Number_4_1+"^000000 ]";
+	mes "^FF9900•^000000 ^FF0000จำนวนครั้งที่เสมอ ^555599[ "+$HM_Number_Same_1+"^000000 ]";
+	next;
+	goto PLZ_Main;
+end;
+
+HowTo:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 1.เลือกนักแข่งตัวที่ท่านต้องการ (1-4)";
+	mes "^FF9900•^000000 2.ใส่จำนวนที่ต้องการแทง";
+	mes "^FF9900•^000000 3.รอลุ้นไปกับมัน !!";
+	next;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 หากท่านทายถูกตัว จะได้รับเหรียญคืน 3 เท่า";
+	mes "^FF9900•^000000 หากมีนักแข่งมากกว่า 1 ตัวเข้าเส้นชัย";
+	mes "^FF9900•^000000 ท่านจะไม่ได้อะไรเลย";
+	next;
+	goto PLZ_Main;
+end;
+
+OnPlaying:
+	set $@HM_Playing_1,1;
+	set $@HM_Check_1,0;
+	set $@HM_Count_Win_1,0;
+	for(set $@i_1,0;$@HM_Check_1==0;set $@i_1,$@i_1+1){
+		if(rand(2)==0){
+			set $@RacingNumber1X_1,$@RacingNumber1X_1+1;
+			movenpc "RacingNumber [ 1 ]#1",$@RacingNumber1X_1,59;	// เลขจุดเริ่มตัวที่ 1 y-1
+			if($@RacingNumber1X_1==38){				// เลขจุดจบ x+15
+				set $@HM_Check_1,1;
+				set $@HM_Count_Win_1,$@HM_Count_Win_1+1;
+			}
+		}
+		if(rand(2)==0){
+			set $@RacingNumber2X_1,$@RacingNumber2X_1+1;
+			movenpc "RacingNumber [ 2 ]#1",$@RacingNumber2X_1,56;	// เลขจุดเริ่มตัวที่ 2
+			if($@RacingNumber2X_1==38){				// เลขจุดจบ
+				set $@HM_Check_1,2;
+				set $@HM_Count_Win_1,$@HM_Count_Win_1+1;
+			}
+		}
+		if(rand(2)==0){
+			set $@RacingNumber3X_1,$@RacingNumber3X_1+1;
+			movenpc "RacingNumber [ 3 ]#1",$@RacingNumber3X_1,53;	// เลขจุดเริ่มตัวที่ 3
+			if($@RacingNumber3X_1==38){				// เลขจุดจบ
+				set $@HM_Check_1,3;
+				set $@HM_Count_Win_1,$@HM_Count_Win_1+1;
+			}
+		}
+		if(rand(2)==0){
+			set $@RacingNumber4X_1,$@RacingNumber4X_1+1;
+			movenpc "RacingNumber [ 4 ]#1",$@RacingNumber4X_1,50;	// เลขจุดเริ่มตัวที่ 4
+			if($@RacingNumber4X_1==38){				// เลขจุดจบ
+				set $@HM_Check_1,4;
+				set $@HM_Count_Win_1,$@HM_Count_Win_1+1;
+			}
+		}										
+		sleep 1000;
+	}
+	if($@HM_Count_Win_1==1){
+		specialeffect 68;
+		donpcevent "RacingNumber [ "+$@HM_Check_1+" ]#1::OnEffect";
+		setd "$HM_Number_"+$@HM_Check_1+"_1",getd("$HM_Number_"+$@HM_Check_1+"_1")+1;
+		npctalk "ยินดีด้วย !! นักแข่งตัวที่ [ "+$@HM_Check_1+" ] เข้าเส้นชัย";
+		sleep 1800;
+		npctalk "เราจะเตรียมการแข่งรอบใหม่ กรุณารอสักครู่ !!!";
+			delwaitingroom "RacingMachine#P1";
+			delwaitingroom "RacingMachine#P2";
+			delwaitingroom "RacingMachine#P3";
+			delwaitingroom "RacingMachine#P4";
+			delwaitingroom "RacingMachine#P5";
+		if($@HM_Check_1==$@HM_Choose_1) {	getitem 40002,$@HM_Coin_1*3,$@HM_ID_1;	}
+		if($@HM_Check_1==$@HM_Choose_2) {	getitem 40002,$@HM_Coin_2*3,$@HM_ID_2;	}
+		if($@HM_Check_1==$@HM_Choose_3) {	getitem 40002,$@HM_Coin_3*3,$@HM_ID_3;	}
+		if($@HM_Check_1==$@HM_Choose_4) {	getitem 40002,$@HM_Coin_4*3,$@HM_ID_4;	}
+		if($@HM_Check_1==$@HM_Choose_5) {	getitem 40002,$@HM_Coin_5*3,$@HM_ID_5;	}
+		set $@PL_DE_1,0;
+		set $@PL_DE_2,0;
+		set $@PL_DE_3,0;
+		set $@PL_DE_4,0;
+		set $@PL_DE_5,0;
+		set $@MA_PLAY,0;
+		set $@HM_ID_1,0;
+		set $@HM_ID_2,0;
+		set $@HM_ID_3,0;
+		set $@HM_ID_4,0;
+		set $@HM_ID_5,0;
+	}
+	else{
+		npctalk "เสียใจด้วย !! มีนักแข่งเข้าเส้นชัยมากกว่า 1 ตัว";
+	sleep 1000;
+		set $HM_Number_Same_1,$HM_Number_Same_1+1;
+		for(set $@HM_i_1,1;$@HM_i_1<15;set $@HM_i_1,$@HM_i_1+1){specialeffect 68;sleep 500;}
+		delwaitingroom "RacingMachine#P1";
+		delwaitingroom "RacingMachine#P2";
+		delwaitingroom "RacingMachine#P3";
+		delwaitingroom "RacingMachine#P4";
+		delwaitingroom "RacingMachine#P5";
+		set $@PL_DE_1,0;
+		set $@PL_DE_2,0;
+		set $@PL_DE_3,0;
+		set $@PL_DE_4,0;
+		set $@PL_DE_5,0;
+		set $@MA_PLAY,0;
+		set $@HM_ID_1,0;
+		set $@HM_ID_2,0;
+		set $@HM_ID_3,0;
+		set $@HM_ID_4,0;
+		set $@HM_ID_5,0;
+	}
+	sleep 6500;
+	movenpc "RacingNumber [ 1 ]#1",23,59;		// เลขจุดเริ่มย้ายกลับ
+	movenpc "RacingNumber [ 2 ]#1",23,56;		// เลขจุดเริ่มย้ายกลับ
+	movenpc "RacingNumber [ 3 ]#1",23,53;		// เลขจุดเริ่มย้ายกลับ
+	movenpc "RacingNumber [ 4 ]#1",23,50;		// เลขจุดเริ่มย้ายกลับ
+	set $@RacingNumber1X_1,23;	// เลขจุดเริ่ม
+	set $@RacingNumber2X_1,23;	// เลขจุดเริ่ม
+	set $@RacingNumber3X_1,23;	// เลขจุดเริ่ม
+	set $@RacingNumber4X_1,23;	// เลขจุดเริ่ม
+	set $@HM_Playing_1,0;
+		delwaitingroom "RacingMachine#P1";
+		delwaitingroom "RacingMachine#P2";
+		delwaitingroom "RacingMachine#P3";
+		delwaitingroom "RacingMachine#P4";
+		delwaitingroom "RacingMachine#P5";
+		set $@PL_DE_1,0;
+		set $@PL_DE_2,0;
+		set $@PL_DE_3,0;
+		set $@PL_DE_4,0;
+		set $@PL_DE_5,0;
+		set $@MA_PLAY,0;
+		set $@HM_ID_1,0;
+		set $@HM_ID_2,0;
+		set $@HM_ID_3,0;
+		set $@HM_ID_4,0;
+		set $@HM_ID_5,0;
+end;
+
+OnInit:
+	set $@HM_Playing_1,0; // สถานะการเล่น 0:ไม่ได้เล่น 1:กำลังเล่น
+	set $@HM_Check_1,0; // นักแข่งที่เข้าเส้นชัย 0:ไม่มีตัวไหนเข้าเส้นชัย
+	set $@HM_Count_Win_1,0; // จำนวนนักแข่งที่เข้าเส้นชัย หากเกิน 1 แสดงว่าเสมอ
+	set $@RacingNumber1X_1,23;	// เลขจุดเริ่ม
+	set $@RacingNumber2X_1,23;	// เลขจุดเริ่ม
+	set $@RacingNumber3X_1,23;	// เลขจุดเริ่ม
+	set $@RacingNumber4X_1,23;	// เลขจุดเริ่ม
+end;
+}
+
+trinity,23,64,6	script	RacingMachine#P1	901,{
+if($@HM_ID_1 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_2 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_3 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_4 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_5 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@MA_PLAY == 1) { mes "ม้ากำลังวิ่งอยู่";	end;	}
+if($@PL_DE_1 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+Manum1:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 เลือกนักแข่งที่ต้องการแทง";
+	next;
+	input .@HM_Choose;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ใส่จำนวนเหรียญที่ต้องการแทง";
+	mes "^FF0000*คำเตือน เหรียญจะมีในตัวได้ไม่เกิน 30,000ชิ้น^000000";
+	next;
+	input .@HM_Coin;
+	if(.@HM_Choose<=0)
+		set .@HM_Choose,1;
+	else if(.@HM_Choose>4)
+		set .@HM_Choose,4;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ท่านเลือกนักแข่งเลข [ ^55AA55"+.@HM_Choose+"^000000 ]";
+	mes "^FF9900•^000000 ท่านแทงจำนวน [ ^5555AA"+.@HM_Coin+"^000000 ]";
+	mes "^FF9900•^000000 ตกลงตามนี้ใช่มั้ย";
+	next;
+	if(select("^FF0000•^000000 แทงใหม่","^FF9900•^000000 ตกลง")==1)
+		goto Manum1;
+	if($@HM_Playing_1==1){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ขณะนี้นักแข่งกำลังวิ่งอยู่ !!";
+		mes "^FF9900•^000000 กรุณารอสักหน่อย";
+		end;
+		end;
+	}
+	else if(.@HM_Coin<=0){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านต้องแทงอย่างน้อย 1 เหรียญ";
+		mes " กรุณาแทงใหม่นะท่าน";
+		end;
+		end;
+	}
+
+	else if(countitem(40002)<.@HM_Coin){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านมีเหรียญไม่พอในการแทง";
+		mes " กรุณาหามาก่อนนะท่าน";
+		end;
+		end;
+	}
+	if($@PL_DE_1 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+	delitem 40002,.@HM_Coin;
+	set $@HM_Choose_1,.@HM_Choose;
+	set $@HM_Coin_1,.@HM_Coin;
+	set $@HM_ID_1,getcharid(3);
+	set $@PL_DE_1,1;
+	waitingroom ""+strcharinfo(0)+" แทงเลข [ "+$@HM_Choose_1+" : "+$@HM_Coin_1+" ]",0;
+	end;
+end;	}
+
+
+trinity,27,64,6	script	RacingMachine#P2	901,{
+if($@HM_ID_1 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_2 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_3 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_4 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_5 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+
+if($@MA_PLAY == 1) { mes "ม้ากำลังวิ่งอยู่";	end;	}
+if($@PL_DE_2 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+Manum2:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 เลือกนักแข่งที่ต้องการแทง";
+	next;
+	input .@HM_Choose;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ใส่จำนวนเหรียญที่ต้องการแทง";
+	mes "^FF0000*คำเตือน เหรียญจะมีในตัวได้ไม่เกิน 30,000ชิ้น^000000";
+	next;
+	input .@HM_Coin;
+	if(.@HM_Choose<=0)
+		set .@HM_Choose,1;
+	else if(.@HM_Choose>4)
+		set .@HM_Choose,4;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ท่านเลือกนักแข่งเลข [ ^55AA55"+.@HM_Choose+"^000000 ]";
+	mes "^FF9900•^000000 ท่านแทงจำนวน [ ^5555AA"+.@HM_Coin+"^000000 ]";
+	mes "^FF9900•^000000 ตกลงตามนี้ใช่มั้ย";
+	next;
+	if(select("^FF0000•^000000 แทงใหม่","^FF9900•^000000 ตกลง")==1)
+		goto Manum2;
+	if($@HM_Playing_1==1){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ขณะนี้นักแข่งกำลังวิ่งอยู่ !!";
+		mes "^FF9900•^000000 กรุณารอสักหน่อย";
+		end;
+		end;
+	}
+	else if(.@HM_Coin<=0){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านต้องแทงอย่างน้อย 1 เหรียญ";
+		mes " กรุณาแทงใหม่นะท่าน";
+		end;
+		end;
+	}
+
+	else if(countitem(40002)<.@HM_Coin){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านมีเหรียญไม่พอในการแทง";
+		mes " กรุณาหามาก่อนนะท่าน";
+		end;
+		end;
+	}
+	if($@PL_DE_2 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+	delitem 40002,.@HM_Coin;
+	set $@HM_Choose_2,.@HM_Choose;
+	set $@HM_Coin_2,.@HM_Coin;
+	set $@HM_ID_2,getcharid(3);
+	set $@PL_DE_2,1;
+	waitingroom ""+strcharinfo(0)+" แทงเลข [ "+$@HM_Choose_2+" : "+$@HM_Coin_2+" ]",0;
+	end;
+
+end;	}
+
+trinity,31,64,6	script	RacingMachine#P3	901,{
+if($@HM_ID_1 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_2 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_3 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_4 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_5 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+
+if($@MA_PLAY == 1) { mes "ม้ากำลังวิ่งอยู่";	end;	}
+if($@PL_DE_3 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+Manum3:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 เลือกนักแข่งที่ต้องการแทง";
+	next;
+	input .@HM_Choose;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ใส่จำนวนเหรียญที่ต้องการแทง";
+	mes "^FF0000*คำเตือน เหรียญจะมีในตัวได้ไม่เกิน 30,000ชิ้น^000000";
+	next;
+	input .@HM_Coin;
+	if(.@HM_Choose<=0)
+		set .@HM_Choose,1;
+	else if(.@HM_Choose>4)
+		set .@HM_Choose,4;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ท่านเลือกนักแข่งเลข [ ^55AA55"+.@HM_Choose+"^000000 ]";
+	mes "^FF9900•^000000 ท่านแทงจำนวน [ ^5555AA"+.@HM_Coin+"^000000 ]";
+	mes "^FF9900•^000000 ตกลงตามนี้ใช่มั้ย";
+	next;
+	if(select("^FF0000•^000000 แทงใหม่","^FF9900•^000000 ตกลง")==1)
+		goto Manum3;
+	if($@HM_Playing_1==1){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ขณะนี้นักแข่งกำลังวิ่งอยู่ !!";
+		mes "^FF9900•^000000 กรุณารอสักหน่อย";
+		end;
+		end;
+	}
+	else if(.@HM_Coin<=0){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านต้องแทงอย่างน้อย 1 เหรียญ";
+		mes " กรุณาแทงใหม่นะท่าน";
+		end;
+		end;
+	}
+
+	else if(countitem(40002)<.@HM_Coin){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านมีเหรียญไม่พอในการแทง";
+		mes " กรุณาหามาก่อนนะท่าน";
+		end;
+		end;
+	}
+	if($@PL_DE_3 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+	delitem 40002,.@HM_Coin;
+	set $@HM_Choose_3,.@HM_Choose;
+	set $@HM_Coin_3,.@HM_Coin;
+	set $@HM_ID_3,getcharid(3);
+	set $@PL_DE_3,1;
+	waitingroom ""+strcharinfo(0)+" แทงเลข [ "+$@HM_Choose_3+" : "+$@HM_Coin_3+" ]",0;
+	end;
+
+end;	}
+
+trinity,35,64,6	script	RacingMachine#P4	901,{
+if($@HM_ID_1 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_2 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_3 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_4 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_5 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+
+if($@MA_PLAY == 1) { mes "ม้ากำลังวิ่งอยู่";	end;	}
+if($@PL_DE_4 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+Manum4:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 เลือกนักแข่งที่ต้องการแทง";
+	next;
+	input .@HM_Choose;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ใส่จำนวนเหรียญที่ต้องการแทง";
+	mes "^FF0000*คำเตือน เหรียญจะมีในตัวได้ไม่เกิน 30,000ชิ้น^000000";
+	next;
+	input .@HM_Coin;
+	if(.@HM_Choose<=0)
+		set .@HM_Choose,1;
+	else if(.@HM_Choose>4)
+		set .@HM_Choose,4;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ท่านเลือกนักแข่งเลข [ ^55AA55"+.@HM_Choose+"^000000 ]";
+	mes "^FF9900•^000000 ท่านแทงจำนวน [ ^5555AA"+.@HM_Coin+"^000000 ]";
+	mes "^FF9900•^000000 ตกลงตามนี้ใช่มั้ย";
+	next;
+	if(select("^FF0000•^000000 แทงใหม่","^FF9900•^000000 ตกลง")==1)
+		goto Manum4;
+	if($@HM_Playing_1==1){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ขณะนี้นักแข่งกำลังวิ่งอยู่ !!";
+		mes "^FF9900•^000000 กรุณารอสักหน่อย";
+		end;
+		end;
+	}
+	else if(.@HM_Coin<=0){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านต้องแทงอย่างน้อย 1 เหรียญ";
+		mes " กรุณาแทงใหม่นะท่าน";
+		end;
+		end;
+	}
+
+	else if(countitem(40002)<.@HM_Coin){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านมีเหรียญไม่พอในการแทง";
+		mes " กรุณาหามาก่อนนะท่าน";
+		end;
+		end;
+	}
+	if($@PL_DE_4 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+	delitem 40002,.@HM_Coin;
+	set $@HM_Choose_4,.@HM_Choose;
+	set $@HM_Coin_4,.@HM_Coin;
+	set $@HM_ID_4,getcharid(3);
+	set $@PL_DE_4,1;
+	waitingroom ""+strcharinfo(0)+" แทงเลข [ "+$@HM_Choose_4+" : "+$@HM_Coin_4+" ]",0;
+	end;
+
+end;	}
+
+/*trinity,152,125,6	script	RacingMachine#P5	901,{
+if($@HM_ID_1 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_2 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_3 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_4 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+if($@HM_ID_5 == getcharid(3)) { mes "คุณได้แทงไว้กับ คนรับแทงท่านอื่นละนิ";	end;	}
+
+if($@MA_PLAY == 1) { mes "ม้ากำลังวิ่งอยู่";	end;	}
+if($@PL_DE_5 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+Manum5:
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 เลือกนักแข่งที่ต้องการแทง";
+	next;
+	input .@HM_Choose;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ใส่จำนวนเหรียญที่ต้องการแทง";
+	mes "^FF0000*คำเตือน เหรียญจะมีในตัวได้ไม่เกิน 30,000ชิ้น^000000";
+	next;
+	input .@HM_Coin;
+	if(.@HM_Choose<=0)
+		set .@HM_Choose,1;
+	else if(.@HM_Choose>4)
+		set .@HM_Choose,4;
+	mes "^FF0000[ RacingMachine ]^000000";
+	mes "^FF9900•^000000 ท่านเลือกนักแข่งเลข [ ^55AA55"+.@HM_Choose+"^000000 ]";
+	mes "^FF9900•^000000 ท่านแทงจำนวน [ ^5555AA"+.@HM_Coin+"^000000 ]";
+	mes "^FF9900•^000000 ตกลงตามนี้ใช่มั้ย";
+	next;
+	if(select("^FF0000•^000000 แทงใหม่","^FF9900•^000000 ตกลง")==1)
+		goto Manum5;
+	if($@HM_Playing_1==1){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ขณะนี้นักแข่งกำลังวิ่งอยู่ !!";
+		mes "^FF9900•^000000 กรุณารอสักหน่อย";
+		end;
+		end;
+	}
+	else if(.@HM_Coin<=0){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านต้องแทงอย่างน้อย 1 เหรียญ";
+		mes " กรุณาแทงใหม่นะท่าน";
+		end;
+		end;
+	}
+
+	else if(countitem(40002)<.@HM_Coin){
+		mes "^FF0000[ RacingMachine ]^000000";
+		mes "^FF9900•^000000 ท่านมีเหรียญไม่พอในการแทง";
+		mes " กรุณาหามาก่อนนะท่าน";
+		end;
+		end;
+	}
+	if($@PL_DE_5 == 1) { mes "มีผู้เล่นแทงกับข้าไปแล้ว ลองไปถามเจ้าอื่นสิ";	end;	}
+	delitem 40002,.@HM_Coin;
+	set $@HM_Choose_5,.@HM_Choose;
+	set $@HM_Coin_5,.@HM_Coin;
+	set $@HM_ID_5,getcharid(3);
+	set $@PL_DE_5,1;
+	waitingroom ""+strcharinfo(0)+" แทงเลข [ "+$@HM_Choose_5+" : "+$@HM_Coin_5+" ]",0;
+	end;
+
+end;	}*/

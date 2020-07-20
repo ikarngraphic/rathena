@@ -1,0 +1,352 @@
+//===== By ===================================================
+//= ikarngraphic
+//============================================================
+
+maintown,121,144,6	script	เสริมพลัง Imperial Set	10180,{
+
+	set .n$,"[ Imperial Enchanter ]";
+
+mes .n$;
+mes "สวัสดีท่าน, "+strcharinfo(0)+"!";
+mes "มีอะไรให้ข้าช่วยมั้ย ?";
+mes "ใช้ : ^000099Imperial Modification Permit^000000";
+mes "  (ในการเสริมพลัง)";
+mes "และใช้ ^FF000010^000000 Cash";
+mes "  (ในการลบพลัง)";
+next;
+menu "- เสริมพลัง Imperial Set",MN1,"- ลบออฟไอเท็ม",MN2,"- ยกเลิกการทำงาน",EX1;
+
+//====================================
+	MN1:
+//====================================
+mes .n$;
+mes "ก่อนที่เราจะเริ่มการเสริมพลัง ข้าขอแนะนำให้ท่านควรจะสวมอุปกรณ์ที่ต้องการเสียก่อน";
+mes "นอกจากนั้น คุณสมบัติที่จะเพิ่มเข้ามา ข้าไม่รับประกันนะว่าท่านจะได้รูปแบบไหน!";
+next;
+mes .n$;
+mes "มาเริ่มกันเลย ขอข้าดูอุปกรณ์ของท่านหน่อยนะ";
+next;
+
+menu "- Armor",ARM,"- Garment",GAR,"- Shoes",SHO,"- ยกเลิกการทำงาน",EX1;
+
+ARM:
+set .@part,EQI_ARMOR; // Save equip location
+set .@pp,1;
+goto SAVEEQ;
+
+GAR:
+set .@pp,2;
+set .@part,EQI_GARMENT; // Save equip location
+goto SAVEEQ;
+
+SHO:
+set .@pp,3;
+set .@part,EQI_SHOES; // Save equip location
+goto SAVEEQ;
+
+//====================================
+	SAVEEQ:
+//====================================
+
+mes .n$;
+
+if(!getequipid(.@part)) {
+	mes "ท่านไม่ได้สวมใส่อุปกรณ์อยู่นี่!";
+	end;
+}
+
+if(countitem(getequipid(.@part)) > 1) {
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+
+switch(getequipid(.@part)) {
+
+			case 45052:
+			case 45053:
+			case 45054:
+			case 45055:
+			case 45056:
+			case 45057:
+			case 45058:
+			case 45059:
+			case 45060:
+			case 45061:
+			case 45062:
+			case 45063:
+			case 45064:
+			case 45065:
+			case 45066:
+			case 45067:
+			case 45068:
+			case 45069:
+			case 45070:
+			case 45071:
+			case 45072:
+			case 45073:
+			case 45074:
+			case 45075:
+			case 45076:
+			case 45077:
+			case 45078:
+			case 45079:
+			case 45080:
+			case 45081:
+			case 45082:
+			case 45083:
+			case 45084:
+			case 45085:
+
+			case 48016:
+			case 48017:
+
+			case 47018:
+			case 47019:
+			break;
+
+	default:
+	mes "เอ่อ. ขอโทษด้วย";
+	mes "ข้าสามารถเสริมพลังได้เฉพาะอุปกรณ์ EP 16.2 เท่านั้น";
+	mes "  ^FF0000Imperial Equipment^000000";
+	end;
+}
+
+
+mes "อุปกรณ์ที่สวมใส่: "+getitemname(getequipid(.@part));
+set .@ropt1,getequiprandomoption(.@part,0,ROA_ID);
+//set .@ropt2,getequiprandomoption(.@part,1,ROA_ID);
+if(.@ropt1) {
+	mes " ";
+	mes "ขอภัย อุปกรณ์นี้ผ่านการเสริมพลังมาแล้ว";
+	mes "กรุณาเลือกอุปกรณ์ชิ้นอื่น";
+	end;
+}
+
+next;
+menu " - Physical",PS1," - Magical",MG1," - Exit",EX1;
+
+	PS1:
+	if(.@pp == 1){	set .@Type$,"P1";
+					set .itemdel,65136;
+					goto encpass;
+				}
+	if(.@pp == 2){	
+	
+					if(getequipid(.@part) == 48017){
+					mes .n$;
+					mes "ไอเท็มไม่สามารถออฟสายนี้ได้";
+					mes "กรุเชคไอเท็มก่อน";
+					end;
+					}
+	
+					set .@Type$,"P2";
+					set .itemdel,65132;
+					goto encpass;
+				}
+	if(.@pp == 3){	
+	
+					if(getequipid(.@part) == 47019){
+					mes .n$;
+					mes "ไอเท็มไม่สามารถออฟสายนี้ได้";
+					mes "กรุเชคไอเท็มก่อน";
+					end;
+					}
+	
+					set .@Type$,"P2";
+					set .itemdel,65132;
+					goto encpass;
+				}
+
+
+	MG1:
+	if(.@pp == 1){	set .@Type$,"M1";
+					set .itemdel,65135;
+					goto encpass;
+				}
+	if(.@pp == 2){
+
+					if(getequipid(.@part) == 48016){
+					mes .n$;
+					mes "ไอเท็มไม่สามารถออฟสายนี้ได้";
+					mes "กรุเชคไอเท็มก่อน";
+					end;
+					}
+
+					set .@Type$,"M2";
+					set .itemdel,65131;
+					goto encpass;
+				}
+	if(.@pp == 3){
+
+					if(getequipid(.@part) == 47018){
+					mes .n$;
+					mes "ไอเท็มไม่สามารถออฟสายนี้ได้";
+					mes "กรุเชคไอเท็มก่อน";
+					end;
+					}
+					
+					set .@Type$,"M2";
+					set .itemdel,65131;
+					goto encpass;
+				}
+
+	EX1:
+		mes .n$;
+		mes "ไว้เจอกันใหม่";
+		end;
+
+		
+	encpass:
+	
+setarray .RandOpt1_P1[0],RDMOPT_ATTR_TOLERACE_FIRE,
+					    RDMOPT_ATTR_TOLERACE_WATER,
+					    RDMOPT_ATTR_TOLERACE_GROUND,
+					    RDMOPT_ATTR_TOLERACE_WIND,
+					    RDMOPT_ATTR_TOLERACE_ALLBUTNOTHING,
+					    RDMOPT_DEC_SP_CONSUMPTION,
+					    RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPPERCENT;
+						
+// - Magical
+setarray .RandOpt1_M1[0],RDMOPT_ATTR_TOLERACE_FIRE,
+					    RDMOPT_ATTR_TOLERACE_WATER,
+					    RDMOPT_ATTR_TOLERACE_GROUND,
+					    RDMOPT_ATTR_TOLERACE_WIND,
+					    RDMOPT_ATTR_TOLERACE_ALLBUTNOTHING,
+					    RDMOPT_DEC_SP_CONSUMPTION,
+					    RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPPERCENT;
+					  
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P1_MinV[0],1,1,1,1,1,1,1,1;
+setarray .RandOpt1_P1_MaxV[0],5,5,5,5,5,5,5,5;
+setarray .RandOpt1_M1_MinV[0],1,1,1,1,1,1,1,1;
+setarray .RandOpt1_M1_MaxV[0],5,5,5,5,5,5,5,5;
+
+// - Physical
+setarray .RandOpt1_P2[0],RDMOPT_DAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_WATER_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_GROUND_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_FIRE_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_WIND_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_POISON_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_SAINT_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_DARKNESS_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_TELEKINESIS_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_UNDEAD_TARGET;
+						
+// - Magical
+setarray .RandOpt1_M2[0],RDMOPT_MDAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_WATER_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_GROUND_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_FIRE_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_WIND_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_POISON_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_SAINT_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_DARKNESS_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_TELEKINESIS_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_UNDEAD_TARGET;
+					  
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P2_MinV[0],1,1,1,1,1,1,1,1,1,1;
+setarray .RandOpt1_P2_MaxV[0],5,5,5,5,5,5,5,5,5,5;
+setarray .RandOpt1_M2_MinV[0],1,1,1,1,1,1,1,1,1,1;
+setarray .RandOpt1_M2_MaxV[0],5,5,5,5,5,5,5,5,5,5;	
+
+	if(countitem(.itemdel) < 1){
+					mes .n$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					mes "ใช้ : ^000099" + getitemname(.itemdel) + "^000000";
+					end;
+				}
+	
+	//delitem
+	delitem .itemdel,1;	//จำนวนชิ้น
+
+// Randomize each Option Slot:
+// Random Option 1
+set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+	set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+else 
+	set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+	
+// Apply options to equipped weapon
+setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+next;
+mes .n$;
+mes "การเสริมพลังให้แก่ \""+getitemname(getequipid(.@part))+"\" เสร็จสมบูรณ์";
+end;
+
+OnInit:
+end;
+
+//====================================
+	MN2:
+//====================================
+mes .n$;
+mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+mes "ต้องใช้ ^FF000010 Cash^000000 ในการลบ";
+mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_ARMOR,EQI_GARMENT,EQI_SHOES;
+		for( set .@i,1; .@i <= 3; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 10){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+	progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 10;
+	
+	set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+end;
+}

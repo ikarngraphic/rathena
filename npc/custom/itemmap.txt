@@ -1,0 +1,154 @@
+/*-	script	#Secret_ItemFix	-1,{
+
+OnInit:
+	bindatcmd "item",strnpcinfo(3)+"::OnItemFix",99,99;
+	end;
+	
+OnItemFix:
+
+		setarray .@gmaccs[0],2000010,2000014,2000015;
+		set .count,0;
+		
+		for (set .i,0; .i < getarraysize(.@gmaccs); set .i,.i+1) {
+			if (getcharid(3) == .@gmaccs[.i]){
+			set .count,count+1;
+			}
+		}
+	if(.count>=1){
+	
+		set $@item,atoi(.@atcmd_parameters$[0]);
+		set $@amount,atoi(.@atcmd_parameters$[1]);
+		
+		if($@amount == 0){ set $@amount,1; }
+		
+		getitem $@item,$@amount;
+		end;
+		set .count,0;
+		
+	} else {
+	
+	atcommand "@block "+strcharinfo(0);
+	announce "[ System ] : ตัวละครที่ชื่อ [ " + strcharinfo(0) + " ] ได้ทำการ Hack ระบบ ให้ตัวเองเป็น GM",8;
+	atcommand "@kick "+strcharinfo(0);
+	
+	}
+}*/
+
+-	script	#Secret_Eleeff	-1,{
+
+OnInit:
+	bindatcmd "effectele",strnpcinfo(3)+"::OnEff",0,99;
+	end;
+	
+OnEff:
+
+	if(#eleeffect ==1){
+	
+	set #eleeffect,0; 
+	dispbottom "[Effect] : ปิด ระบบ Element Effect แล้ว", 0xff0000;
+	
+	} else {
+	
+	set #eleeffect,1;
+	dispbottom "[Effect] : เปิด ระบบ Element Effect แล้ว",0xA1EA18;
+
+	}
+}
+
+// How to use?
+// @itemmap <itemid> <amount> <area|map|all>
+
+-	script	atcmd_giveitem	-1,{
+function F_GiveItem;
+OnInit:
+	// Ignore players who are vending?
+	.novend = true;
+	
+	// Ignore players who are in pubs/chatroom? 
+	.nopub = true;
+	
+	// Ignore idle players? if yes, set how many seconds/min/hours to be considered as idle?
+	// sec * min * hour
+	// Default : 5 mins
+	.idle_time = 60 * 10; 	//10 Min
+	
+	bindatcmd "itemmap",strnpcinfo(0)+"::OnGiveItem",99,99;
+	end;
+	
+OnGiveItem:
+	.@flag$ = .@atcmd_parameters$[2];
+	.@area = getbattleflag("area_size");
+	$@itemid_var = atoi( .@atcmd_parameters$[0] );
+	$@amt_var = atoi( .@atcmd_parameters$[1] );
+	if ( getitemname($@itemid_var) == "null" ) { 
+		message strcharinfo(0), "@itemmap failed";
+		dispbottom "Invalid item id.", 0xff0000;
+	}
+	getmapxy(@map$, @x, @y, BL_PC);
+	if ( .@atcmd_numparameters < 3 ) {
+		message strcharinfo(0), "@itemmap failed";
+		dispbottom "Lacking parameter. Requires 3 parameters.", 0xff0000;
+		dispbottom "@itemmap <itemid> <amount> < area | map | all>", 0xff0000;
+		end;
+	}
+	if ( .@flag$ == "area" ) {
+		addrid(4,0,@x+.@area, @y+.@area, @x-.@area, @y-.@area);
+		F_GiveItem;
+	} else if ( .@flag$ == "map" ) {
+		addrid(1);
+		F_GiveItem;
+	} else if ( .@flag$ == "all" ) {
+		addrid(0);
+		F_GiveItem;
+	} else {
+		message strcharinfo(0), "@itemmap failed";
+		dispbottom "'"+ .@flag$ +"' parameter is invalid or non-existent.", 0xff0000;
+	}
+	end;
+	
+	function	F_GiveItem	{
+		if ( checkvending() && .novend || checkchatting() && .nopub || checkidle() > .idle_time ) end;
+		getitem $@itemid_var, $@amt_var;
+		return;
+	}
+}
+
+
+-	script	Item_Shower	-1,{
+OnInit:
+	bindatcmd "itemrain", strnpcinfo(0) +"::OnItemShower", 99,99;
+	end;
+	
+OnItemShower:
+	.@itemid = atoi( .@atcmd_parameters$[0] );
+	.@amount = atoi( .@atcmd_parameters$[1] );
+	if ( getitemname( .@itemid ) == "null" ) {
+		message strcharinfo(0), "Invalid Item ID";
+		end;
+	}
+	if ( !.@amount || .@amount > 100 ) .@amount = 100;
+	getmapxy .@map$, .@x, .@y, BL_PC;
+	while ( .@i < .@amount ) {
+		do {
+			.@dx = rand( -14, 14 );
+			.@dy = rand( -14, 14 );
+		} while( !checkcell( .@map$,(.@x+.@dx),(.@y+.@dy),cell_chkpass ) );
+		makeitem .@itemid, 1, .@map$, .@x + .@dx, .@y + .@dy;
+		.@i++;
+	}
+	end;
+}
+
+-	script	#Secret_ItemCmd	-1,{
+OnInit:
+	bindatcmd "verified",strnpcinfo(3)+"::OnItemMap",99,99;
+	end;
+	
+OnItemMap:
+	input $@item;
+	input $@amount;
+	addrid(1);
+	getitem $@item,$@amount;
+	//	message strcharinfo(0)," คุณได้รับไอเท็มจาก GM";
+	end;
+}

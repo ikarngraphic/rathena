@@ -619,7 +619,7 @@ void pet_set_intimate(struct pet_data *pd, int value)
  * @param item_id : item ID of tamer
  * @return true:success, false:failure
  */
-bool pet_create_egg(struct map_session_data *sd, uint32 item_id)
+bool pet_create_egg(struct map_session_data *sd, unsigned short item_id)
 {
 	std::shared_ptr<s_pet_db> pet = pet_db_search(item_id, PET_EGG);
 
@@ -1202,8 +1202,7 @@ int pet_catch_process2(struct map_session_data* sd, int target_id)
 	if(!md || md->bl.type != BL_MOB || md->bl.prev == NULL) { // Invalid inputs/state, abort capture.
 		clif_pet_roulette(sd,0);
 		sd->catch_target_class = PET_CATCH_FAIL;
-		sd->itemid = 0;
-		sd->itemindex = -1;
+		sd->itemid = sd->itemindex = -1;
 		return 1;
 	}
 
@@ -1414,7 +1413,7 @@ int pet_change_name_ack(struct map_session_data *sd, char* name, int flag)
 int pet_equipitem(struct map_session_data *sd,int index)
 {
 	struct pet_data *pd;
-	uint32 nameid;
+	unsigned short nameid;
 
 	nullpo_retr(1, sd);
 
@@ -1467,7 +1466,7 @@ int pet_equipitem(struct map_session_data *sd,int index)
 static int pet_unequipitem(struct map_session_data *sd, struct pet_data *pd)
 {
 	struct item tmp_item;
-	uint32 nameid;
+	unsigned short nameid;
 	unsigned char flag = 0;
 
 	if(pd->pet.equip == 0)

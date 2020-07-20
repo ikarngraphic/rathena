@@ -1,0 +1,450 @@
+//**********************************************************************************
+// ____                    _                                            _   _  ____ 
+//|  _ \ ___   ___   ____ | |  ___   ____   ___   ___   __  ___   _  _ | |_| |/ __ |
+//| |__// _ \ / _ \ |  _ \| | / _ \ |  _ \ / _ \ /  _| / _)/ _ \ | \| ||___  |\__  |
+//| |  |  __/ ||_|| | |__/||| __/ | |__/|  __/ | |  _\ \ ||_|| | \\ |    | |   | |
+//|_|___\___|_\___/_| |___|_|_\___|_| |____\___|_|_|_(___/ \___/_|_|\_|____|_|___|_|
+//------------------|_|-------------|_|---------------------------------------------
+//**********************************************************************************
+//===== rAthena Script =============================================================
+//= Zombie Tag (Renewal)
+//===== By: ========================================================================
+//= Peopleperson49 (Eddie)
+//===== Start Date: ================================================================
+//= 05SEP2019
+//===== Current Version: ===========================================================
+//= 1.3
+//===== Compatible With: ===========================================================
+//= rAthena SVN
+//===== Description: ===============================================================
+//= Zombie tag is a pvp script that spawns a number of custom zombies mobs every
+//= 	minute. The goal is for players to survive for the full 10 minutes. When a
+//= 	player gets killed they respawn as a zombie. Once a zombie they are
+//= 	unkillable, but can still kill any other surviving players.
+//===== Version Control: ===========================================================
+//= 1.0 First Version (Version 1.0)
+//= 1.1	Added my callfunc RankingUpdateFunc to the script and the associated SQL to
+//= 	the bottom of the script.
+//= 1.2	Added tracker to script.
+//= 1.3 Added variable .ZombieSpawnCount to make it easier to set the number of
+//= 	zombies that spawn each round.
+//===== NOTICE TO SERVER OWNERS:====================================================
+//= For simplicity it was scripted using the map pvp_n_7-5, but I suggest you use a
+//= 	custom map dedicated to this. It will prevent this from conflicting with
+//= 	other scripts such as MVP Arena or such.
+//==================================================================================
+
+function	script	RankingUpdateFunc	{
+if(playerattached()==0) { end; }
+if(getgmlevel()<20) {
+	set .@cid,getcharid(0);
+	set .@NetWorth,(zeny+#bankvault+trustfundbalance);
+	set .mithriltotal,countitem(674)+(countitem(677)*100);
+	set .@cashpoints,#CASHPOINTS;
+	set .@cointotal,((countitem(673)*1)+(countitem(675)*100)+(countitem(671)*10000)+(countitem(674)*25000000)+(countitem(677)*250000000));	//Reduced Mithril/Platinum value/100.
+	query_sql("SELECT char_id FROM RoUGRank WHERE char_id="+.@cid,.@HasRankRecord);
+	if(.@HasRankRecord) {
+		query_sql("UPDATE RoUGRank SET OnHand="+zeny+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET BABalance="+#bankvault+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET TFBalance="+trustfundbalance+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET NetBalance="+.@NetWorth+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Bronze="+countitem(673)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Silver="+countitem(675)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Gold="+countitem(671)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Mithril="+.mithriltotal+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Platinum="+countitem(677)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET coinpoints="+.@cointotal+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET cashpoints="+.@cashpoints+" WHERE char_id="+.@cid);
+	} else { query_sql("INSERT INTO RoUGRank (char_id,OnHand,BABalance,TFBalance,NetBalance,Bronze,Silver,Gold,Mithril,Platinum,coinpoints,cashpoints) VALUES ("+.@cid+","+zeny+","+#bankvault+","+trustfundbalance+","+.@NetWorth+","+countitem(673)+","+countitem(675)+","+countitem(671)+","+.mithriltotal+","+countitem(677)+","+.@cointotal+","+.@cashpoints+")"); }
+}
+return;
+}
+
+pvp_n_7-5	mapflag	nowarpto
+pvp_n_7-5	mapflag	nowarp
+pvp_n_7-5	mapflag	noskill
+pvp_n_7-5	mapflag	nosave
+pvp_n_7-5	mapflag	nomemo
+pvp_n_7-5	mapflag	noteleport
+pvp_n_7-5	mapflag	nocommand	80
+
+maintown,41,68,6	script	Zombie Tag Concierge#ZT	494,{
+ignoretimeout 1;
+set .ZombieSpawnCount,5;	//Set the number of zombies that spawn each round.
+if(getgmlevel()>=20) {
+	mes "-----GameMaster Tracker-----";
+	mes "Survived:";
+	mes "ช่วง 1 นาที - "+callfunc("F_InsertComma",$ZT1MinTracker)+" Time"+($ZT1MinTracker!=1?"s":"")+"";
+	mes "ช่วง 2 นาที - "+callfunc("F_InsertComma",$ZT2MinTracker)+" Time"+($ZT2MinTracker!=1?"s":"")+"";
+	mes "ช่วง 3 นาที - "+callfunc("F_InsertComma",$ZT3MinTracker)+" Time"+($ZT3MinTracker!=1?"s":"")+"";
+	mes "ช่วง 4 นาที - "+callfunc("F_InsertComma",$ZT4MinTracker)+" Time"+($ZT4MinTracker!=1?"s":"")+"";
+	mes "ช่วง 5 นาที - "+callfunc("F_InsertComma",$ZT5MinTracker)+" Time"+($ZT5MinTracker!=1?"s":"")+"";
+	mes "ช่วง 6 นาที - "+callfunc("F_InsertComma",$ZT6MinTracker)+" Time"+($ZT6MinTracker!=1?"s":"")+"";
+	mes "ช่วง 7 นาที - "+callfunc("F_InsertComma",$ZT7MinTracker)+" Time"+($ZT7MinTracker!=1?"s":"")+"";
+	mes "ช่วง 8 นาที - "+callfunc("F_InsertComma",$ZT8MinTracker)+" Time"+($ZT8MinTracker!=1?"s":"")+"";
+	mes "ช่วง 9 นาที - "+callfunc("F_InsertComma",$ZT9MinTracker)+" Time"+($ZT9MinTracker!=1?"s":"")+"";
+	mes "ช่วง 10 นาที - "+callfunc("F_InsertComma",$ZT10MinTracker)+" Time"+($ZT10MinTracker!=1?"s":"")+"";
+	mes "เวลา 10 นาที - "+callfunc("F_InsertComma",$ZT11MinTracker)+" Time"+($ZT11MinTracker!=1?"s":"")+"";
+	mes "Total Times Played - "+callfunc("F_InsertComma",($ZT1MinTracker+$ZT2MinTracker+$ZT3MinTracker+$ZT4MinTracker+$ZT5MinTracker+$ZT6MinTracker+$ZT7MinTracker+$ZT8MinTracker+$ZT9MinTracker+$ZT10MinTracker+$ZT11MinTracker))+" Time"+(($ZT1MinTracker+$ZT2MinTracker+$ZT3MinTracker+$ZT4MinTracker+$ZT5MinTracker+$ZT6MinTracker+$ZT7MinTracker+$ZT8MinTracker+$ZT9MinTracker+$ZT10MinTracker+$ZT11MinTracker)!=1?"s":"")+"";
+	if(select("Continue:"+(getgmlevel()>=20?"Reset Tracker":"")+"")==2) {
+		set $ZT1MinTracker,0;
+		set $ZT2MinTracker,0;
+		set $ZT3MinTracker,0;
+		set $ZT4MinTracker,0;
+		set $ZT5MinTracker,0;
+		set $ZT6MinTracker,0;
+		set $ZT7MinTracker,0;
+		set $ZT8MinTracker,0;
+		set $ZT9MinTracker,0;
+		set $ZT10MinTracker,0;
+		set $ZT11MinTracker,0;
+		dispbottom "The tracker has been reset.";
+	}
+next;
+}
+mes "[Zombie Tag Concierge]";
+mes "ฉันสามารถวาร์ปคุณไปที่ Zombie Tag Arena","หากคุณถูกซอมบี้ฆ่าคุณจะกลายเป็นซอมบี้จนกว่ากิจกรรมจะจบลง";
+mes " ";
+mes "ข้อมูลทั่วไป :";
+mes "1) ในช่วงเริ่มต้นของเกมซอมบี้ 5 ตัวที่ไร้ทักษะจะถูกวางไข่และทุก ๆ 5 นาทีจะเกิดใหม่";
+mes " ";
+mes "2) เมื่อผู้เล่นถูกฆ่าโดยซอมบี้ (หรือผู้เล่นอื่น) พวกเขาจะกลายเป็นซอมบี้จนกระทั่งเหตุการณ์จบลง";
+mes " ";
+mes "3) แม้ในขณะที่ผู้เล่นซอมบี้สามารถฆ่าผู้เล่นคนอื่นได้ รางวัลจะมอบให้ตามระยะเวลาที่ผู้เล่นมีชีวิตอยู่";
+next;
+mes "รางวัลการอยู่รอด :";
+mes " ";
+mes "1min - 5x Cash";
+mes " ";
+mes "2min - 5x Cash";
+mes " ";
+mes "3min - 5x Cash";
+mes " ";
+mes "4min - 5x Cash";
+mes " ";
+mes "5min - 5x Cash";
+mes " ";
+mes "6min - 10x Cash";
+mes " ";
+mes "7min - 10x Cash";
+mes " ";
+mes "8min - 10x Cash";
+mes " ";
+mes "9min - 10x Cash";
+mes " ";
+mes "10min - 10x Cash";
+next;
+switch(select("Enter Arena:"+((getgmlevel()>=40)?"Start Event":"")+":"+((getgmlevel()>=40)?"Stop Event":"")+":Cancel")) {
+case 1:
+	if($ZombieTagOn!=1) { mes "[Zombie Tag Concierge]"; mes "Their is currently no Zombie Tag in progress."; end; }
+    if($ZombieRound>=1) { mes "[Zombie Tag Concierge]"; mes "Their is currently no Zombie Tag in progress."; end; }
+	//callfunc "RankingUpdateFunc";
+	announce strcharinfo(0)+" ได้เข้าสู่ Zombie Tag Arena.", bc_npc;
+	percentheal 100,100;
+	warp "pvp_n_7-5",0,0;
+	close;
+case 2:
+	mes "[Zombie Tag Concierge]";
+	if($ZombieTagOn==1) { mes "Zombie Tag เริ่มแล้ว"; } else { mes "เริ่มเกม Zombie Tag ใหม่";	donpcevent strnpcinfo(0)+"::OnStartEvent"; }
+	close;
+case 3:
+	mes "[Zombie Tag Concierge]";
+	mes "Ending the current Zombie Tag game.";
+	donpcevent strnpcinfo(0)+"::OnStopEvent";
+	end;
+case 4:
+	break;
+}
+mes "[Zombie Tag Concierge]";
+mes "Arg...";
+close;
+
+OnStartEvent:
+//OnClock0122:
+
+	if($ZombieTagOn==1) { end; }
+	set $ZombieTagOn,1;
+	killmonsterall "pvp_n_7-5";
+	announce "Zombie Tag Arena เปิดให้เล่นแล้วสำหรับผู้เล่น Event จะเริ่มใน 3 นาที",bc_all;
+	sleep 60000;
+	announce "Zombie Tag Arena Event จะเริ่มใน 2 นาที",bc_all;
+	sleep 60000;
+	announce "Zombie Tag Arena Event จะเริ่มใน 1 นาที",bc_all;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","Zombie Tag will begin in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will begin in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will begin in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will begin in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will begin in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	pvpon "pvp_n_7-5";
+	announce "Zombie Tag has began! The Arena is now closed to new players.",bc_all;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,1;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 1 minute has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,2;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 2 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,3;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 3 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,4;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 4 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,5;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 5 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,6;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 6 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,7;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 7 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,8;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 8 minutes has ellapsed.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,9;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","More zombies will arrive in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	if(!getmapusers("pvp_n_7-5")) { goto OnStopEvent; }
+	mapannounce "pvp_n_7-5","More zombies have arrived! 9 minutes has ellapsed. Last round.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	monster "pvp_n_7-5",0,0,"Zombie",21217,.ZombieSpawnCount,"ZombieEvent::OnZombieKill";
+	set $ZombieRound,10;
+	sleep 55000;
+	mapannounce "pvp_n_7-5","Zombie Tag will end in 5 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will end in 4 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will end in 3 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will end in 2 seconds.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	mapannounce "pvp_n_7-5","Zombie Tag will end in 1 second.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	sleep 1000;
+	set $ZombieRound,11;
+	mapannounce "pvp_n_7-5","This game of Zombie Tag has ended Thank you for playing!.",bc_map,"0x00CCFF",FW_NORMAL,12;
+	goto OnStopEvent;
+	end;
+
+OnZombieKill:
+	end;
+
+OnPCDieEvent:
+	if(playerattached()==0||strcharinfo(3)!="pvp_n_7-5") { end; }
+	atcommand "@alive";
+	disguise 1015;
+	atcommand "@fakename Zombie";
+	atcommand "@refresh";
+	setpcblock PCBLOCK_IMMUNE, true;
+	set @ZombifiedCheck,1;
+	set @ZombiePrize,$ZombieRound;
+	end;
+
+OnStopEvent:
+	pvpoff "pvp_n_7-5";
+	killmonsterall "pvp_n_7-5";
+	set $ZombieTagOn,0;
+	set .Round,0;
+	set .Mob,0;
+	announce "Zombie Tag has ended!",bc_all;
+	end;
+
+OnInit:
+	if($ZombieTagOn!=0) { set $ZombieTagOn,0; }
+	if($ZombieRound!=0) { set $ZombieRound,0; }
+	end;
+}
+
+pvp_n_7-5,99,100,4	script	Zombie Tag Concierge#GT2	1298,{
+mes "[Zombie Tag Concierge]";
+mes "Arg... arg...";
+switch(select("Stay:Leave")) {
+case 1:
+	end;
+case 2:
+	close2;
+	if(@ZombifiedCheck==1) {
+		setpcblock PCBLOCK_IMMUNE, false;
+		atcommand "@fakename";
+		undisguise;
+	}
+	warp "SavePoint",0,0;
+	sleep2 2000;
+	if(@ZombiePrize==1||(@ZombiePrize==0&&$ZombieRound==1)) { if(getgmlevel()<20) { set $ZT1MinTracker,$ZT1MinTracker+1; } announce "You survived almost 1 minute!",bc_self; }
+	if(@ZombiePrize==2||(@ZombiePrize==0&&$ZombieRound==2)) { if(getgmlevel()<20) { set $ZT2MinTracker,$ZT2MinTracker+1; } announce "You survived almost 2 minutes!",bc_self; getitem 41003,5; }
+	if(@ZombiePrize==3||(@ZombiePrize==0&&$ZombieRound==3)) { if(getgmlevel()<20) { set $ZT3MinTracker,$ZT3MinTracker+1; } announce "You survived almost 3 minutes!",bc_self; getitem 41003,10; }
+	if(@ZombiePrize==4||(@ZombiePrize==0&&$ZombieRound==4)) { if(getgmlevel()<20) { set $ZT4MinTracker,$ZT4MinTracker+1; } announce "You survived almost 4 minutes!",bc_self; getitem 41003,15; }
+	if(@ZombiePrize==5||(@ZombiePrize==0&&$ZombieRound==5)) { if(getgmlevel()<20) { set $ZT5MinTracker,$ZT5MinTracker+1; } announce "You survived almost 5 minutes!",bc_self; getitem 41003,20; }
+	if(@ZombiePrize==6||(@ZombiePrize==0&&$ZombieRound==6)) { if(getgmlevel()<20) { set $ZT6MinTracker,$ZT6MinTracker+1; } announce "You survived almost 6 minutes!",bc_self; getitem 41003,25; }
+	if(@ZombiePrize==7||(@ZombiePrize==0&&$ZombieRound==7)) { if(getgmlevel()<20) { set $ZT7MinTracker,$ZT7MinTracker+1; } announce "You survived almost 7 minutes!",bc_self; getitem 41003,35; }
+	if(@ZombiePrize==8||(@ZombiePrize==0&&$ZombieRound==8)) { if(getgmlevel()<20) { set $ZT8MinTracker,$ZT8MinTracker+1; } announce "You survived almost 8 minutes!",bc_self; getitem 41003,45; }
+	if(@ZombiePrize==9||(@ZombiePrize==0&&$ZombieRound==9)) { if(getgmlevel()<20) { set $ZT9MinTracker,$ZT9MinTracker+1; } announce "You survived almost 9 minutes!",bc_self; getitem 41003,55; }
+	if(@ZombiePrize==10||(@ZombiePrize==0&&$ZombieRound==10)) { if(getgmlevel()<20) { set $ZT10MinTracker,$ZT10MinTracker+1; } announce "You survived almost 10 minutes!",bc_self; getitem 41003,65; }
+	if(@ZombiePrize==0&&$ZombieRound==11) { if(getgmlevel()<20) { set $ZT11MinTracker,$ZT11MinTracker+1; } announce ""+strcharinfo(0)+" has survived the entire Zombie Tag game!",bc_all; getitem 41003,75; }
+	//callfunc "RankingUpdateFunc";
+	set @ZombiePrize,0;
+	end;
+}
+
+OnPCLoadMapEvent:
+	if(strcharinfo(3)!="pvp_n_7-5") { end; }
+	dispbottom "Welcome to Zombie Tag!";
+	set @ZombifiedCheck,0;
+	end;
+}
+
+pvp_n_7-5	mapflag	nodrop
+pvp_n_7-5	mapflag	noexp
+pvp_n_7-5	mapflag	nogo
+pvp_n_7-5	mapflag	noitemconsumption
+pvp_n_7-5	mapflag	noloot
+pvp_n_7-5	mapflag	nomemo
+pvp_n_7-5	mapflag	nopenalty
+pvp_n_7-5	mapflag	partylock
+pvp_n_7-5	mapflag	nosave	SavePoint
+pvp_n_7-5	mapflag	noteleport
+pvp_n_7-5	mapflag	notomb
+pvp_n_7-5	mapflag	notrade
+pvp_n_7-5	mapflag	novending
+pvp_n_7-5	mapflag	nowarpto
+pvp_n_7-5	mapflag	noicewall
+pvp_n_7-5	mapflag	nobranch
+pvp_n_7-5	mapflag	noskill
+
+/*
+//mob_db.txt
+//Zombie Tag Monster
+21217,Zombie_Tag,Zombie,Zombie,1,99999999,1,0,0,1,9999999,9999999,9999,9999,9999,9999,9999,9999,9999,9999,10,12,1,1,49,0x3195,300,2852,1152,840,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+//mob_avail.txt
+21217,1015
+*/
+
+/*
+CREATE TABLE `RoUGRank` (
+  `char_id` int(11) NOT NULL DEFAULT '0',
+  `OnHand` int(11) NOT NULL DEFAULT '0',
+  `BABalance` int(11) NOT NULL DEFAULT '0',
+  `TFBalance` int(11) NOT NULL DEFAULT '0',
+  `NetBalance` int(11) NOT NULL DEFAULT '0',
+  `bronze` int(11) NOT NULL DEFAULT '0',
+  `silver` int(11) NOT NULL DEFAULT '0',
+  `gold` int(11) NOT NULL DEFAULT '0',
+  `mithril` int(11) NOT NULL DEFAULT '0',
+  `platinum` int(11) NOT NULL DEFAULT '0',
+  `coinpoints` int(11) NOT NULL DEFAULT '0',
+  `cashpoints` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`char_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+*/

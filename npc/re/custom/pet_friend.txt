@@ -1,0 +1,14 @@
+maintown,93,83,4	script	Pet Friendly	10242,{
+if( getpetinfo(2) == "null" && gethominfo(2) == "null" ){
+	npctalk "คุณไม่มีสัตว์เลี้ยงนี่"; 
+}else if( getpetinfo(3) >= 1000 ){
+	if ( gethominfo(3) >= 1000 ) npctalk "สัตว์เลี้ยงและโฮมุนหลงรักคุณสุดๆอยู่แล้ว";
+	npctalk "สัตว์เลี้ยงหลงรักคุณสุดๆอยู่แล้ว";
+}else{
+	atcommand "@petfriendly 1000";
+	atcommand "@homfriendly 1000";
+	npctalk "สัตว์เลี้ยงและโฮมุนหลงรักคุณเข้าแล้ว";
+	specialeffect2 1019;
+}
+end;
+}

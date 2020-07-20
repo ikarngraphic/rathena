@@ -1,0 +1,97 @@
+// callfunc "Enc_Lann_Cos"; 
+
+function	script	Enc_TCG_Cos	{
+	bonus bAllStats,3;
+	bonus2 bSubRace,RC_DemiHuman,-3;
+	bonus2 bSubRace,RC_Player,-3;
+	bonus2 bMagicAddEle,Ele_All,3;
+	bonus2 bSubEle,Ele_All,3;
+	bonus2 bSubEle,Ele_All,3;
+	
+	bonus2 bAddClass,Class_Boss,25;
+}
+
+function	script	Enc_World_Cos	{
+	bonus bAllStats,4;
+	bonus2 bSubRace,RC_DemiHuman,-4;
+	bonus2 bSubRace,RC_Player,-4;
+	bonus2 bMagicAddEle,Ele_All,4;
+	bonus2 bSubEle,Ele_All,4;
+	
+	bonus2 bDropAddRace,RC_All,10;
+}
+
+function	script	Enc_Lann_Cos	{
+	bonus bAllStats,5;
+	bonus2 bSubRace,RC_DemiHuman,-5;
+	bonus2 bSubRace,RC_Player,-5;
+	bonus2 bMagicAddEle,Ele_All,5;
+	bonus2 bSubEle,Ele_All,5;
+	
+	bonus2 bAddClass,Class_All,2;
+	bonus2 bAddClass,Class_All,2;
+}
+
+
+function	script	Supreme_Enchant_C	{
+//	bonus bAllStats,7;
+//	bonus bMaxHPrate,7;
+//	bonus bMaxSPrate,7;
+//	bonus bCritAtkRate,6;
+//	bonus2 bAddClass,Class_All,3;
+//	bonus bMatkRate,3;
+//	bonus bFixedCast,-200;
+//	bonus2 bSubRace,RC_All,2;
+//	bonus bDelayRate,-5;
+//	bonus2 bExpAddRace,RC_All,5;
+//	bonus2 bDropAddRace,RC_All,5;
+}
+//
+function	script	Limited_Enchant_C	{
+//	bonus bAllStats,5;
+//	bonus bMaxHPrate,5;
+//	bonus bMaxSPrate,5;
+//	bonus bCritAtkRate,5;
+//	bonus2 bAddClass,Class_All,2;
+//	bonus bMatkRate,2;
+//	bonus2 bSubRace,RC_All,2;
+//	bonus bDelayRate,-3;
+//	bonus2 bExpAddRace,RC_All,3;
+//	bonus2 bDropAddRace,RC_All,3;
+}
+//
+function	script	Legendary_Enchant_C	{
+//	bonus bAllStats,4;
+//	bonus bMaxHPrate,4;
+//	bonus bMaxSPrate,4;
+//	bonus bCritAtkRate,4;
+//	bonus2 bAddClass,Class_All,2;
+//	bonus bMatkRate,2;
+//	bonus2 bSubRace,RC_All,2;
+//	bonus bDelayRate,-2;
+//	bonus2 bExpAddRace,RC_All,2;
+//	bonus2 bDropAddRace,RC_All,2;
+}
+//
+function	script	Epic_Enchant_C	{
+//	bonus bAllStats,3;
+//	bonus bMaxHPrate,2; 
+//	bonus bMaxSPrate,2; 
+//	bonus2 bAddClass,Class_All,2; 
+//	bonus bMatkRate,2; 
+//	bonus bDelayRate,-2; 
+//	bonus2 bExpAddRace,RC_All,2; 
+}
+//
+function	script	Heroic_Enchant_C	{
+//	bonus bAllStats,2; 
+//	bonus2 bAddClass,Class_All,1; 
+//	bonus bMatkRate,1; 
+//	bonus bDelayRate,-1;
+}
+//
+function	script	Rare_Enchant_C	{
+//	bonus bAllStats,1; 
+//	bonus2 bAddClass,Class_All,1; 
+//	bonus bMatkRate,1;
+}

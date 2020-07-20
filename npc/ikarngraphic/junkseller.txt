@@ -1,0 +1,597 @@
+//|-----------------------------------------------------------------------------
+//|	Item Hoarder																
+//|-----------------------------------------------------------------------------
+//|Created for 	www.blitzro.org													
+//|-----------------------------------------------------------------------------
+//|Made by PottScilgrim															
+//|-----------------------------------------------------------------------------
+//|Description: Bulk item seller with personal blacklist and item type functions
+//|-----------------------------------------------------------------------------
+//|Versions: 																	
+//|1.0:	Script Created															
+//|1.1:	Added "Overcharge" compatibility
+//|1.2:	Added personal blacklist function
+//|1.3:	Added choice to include cards and to toggle blacklist message at the end
+//|_____________________________________________________________________________
+
+/* 
+
+To utilize the personal blacklist system, create this table in your DB.
+
+CREATE TABLE `junkerblacklist` (
+  `char_id` varchar(100) DEFAULT NULL,
+  `item_name` varchar(100) DEFAULT NULL,
+  `item_id` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+*/
+
+-	shop	Generalshop	-1,607:-1;
+
+maintown,75,72,4	script	พ่อค้ารับร้อน(OCมีผล)#1	824,{		
+		
+		// Sets the #JS_ITEM_TYPE variable to ^4 
+		// This variable tracks which type(s) of item will be auto sold.
+		if(!#JS_FIRST_TIME){
+			if(!#JS_ITEM_TYPE) { set #JS_ITEM_TYPE,#JS_ITEM_TYPE^4; }
+			if(!#ASRarity){ set #ASRarity,10000; }
+			set #JS_FIRST_TIME,1;
+		}
+		
+		.name$ = "[ ^FF0000ขายขยะ Auto-sell^000000 ]";	// Sets NPC Name in message boxes
+		.@showbl = 1;								// Shows how many items were removed by the blacklist system.
+		
+		//	Initiate functions
+		function changerarity;
+		function getsellableinv;
+		function changeblacklist;
+		function changeitemtype;
+		function explanation;
+		function addblloop;
+		
+		//Clear @Blacklist array to prevent "ghost" items appearing
+		cleararray @Blacklist[0],0,127;
+
+		// Set the default item blacklist here.
+		// add or remove item IDs as you require
+		setarray @Blacklist[0],674,41003,41004,41002,41001;
+		
+		mes .name$;
+		mes "เราสามารถขายสินค้าขยะที่อยู่ในตัว","แบบรวดเร็วได้! สนใจไหมหละ";
+		mes "- ^000088ไอเท็มสวมใส่จะขาย Auto เมื่อถูกส่องไอเท็มแล้วเท่านั้น!!^000000";
+		mes "- ไอเท็มราคา ^FF00000^000000 จะไม่สามารถขายได้";
+		
+		disable_items;
+		
+		switch(select("[^5fbd3aAuto-Sell^000000] - ขยะสินค้าในตัว:[^5fbd3aManual Sell^000000] - เปิดร้านค้าขายของ:[^5fbd3aSettings^000000] - เปลี่ยนการตั้งค่า:[^5fbd3aInfo^000000] - ข้อมูลเพิ่มเติม:ไม่เป็นไร - [^FF0000Cancel^000000]")){
+		case 1:
+				if(!#JS_ITEM_TYPE){
+					clear;
+					mes .name$; 
+					mes "...คุณยังไม่ได้เลือกประเภทรายการขายไอเท็ม คุณต้องการเปลี่ยนการตั้งค่าของคุณหรือไม่?";
+					switch(select("ตกลง:ไม่เป็นไร")){
+						case 1:
+							changeitemtype;
+						case 2:
+							clear;
+							mes .name$;
+							mes "แล้วพบกันใหม่";
+							close;
+					}
+				}
+			getsellableinv;
+			clear;
+			if(!@itemstosell){ mes .name$; mes "ดูเหมือนคุณจะไม่มีรายการขายไอเท็ม"; close; }
+			
+				//Get user skill "Overcharge" and calculate % increase
+				.@over = getskilllv("MC_OVERCHARGE");
+				if(.@over > 0){ .@plus = 5 + 2*.@over - .@over/10; }
+			
+			mes .name$;
+			mes "ขายไอเท็มดรอป ^0000FF"+#ASRarity/100+"^000000% ขึ้นไป";
+			if(.@over > 0){ mes "คุณมีทักษะ 'Overcharge', คุณจะได้รับเพิ่มเงินเติม ^FF0000"+.@plus+"^000000% จากการขายครั้งนี้!"; }
+			mes "ตกลงซื้อขายสินค้า...";
+			mes " ";
+			
+			freeloop(1);
+			for(@i = 0; @i < getarraysize(@itemstosell); @i++) {
+				if(!isequippedcnt(@itemstosell[@i])){
+					mes "^d94100"+(@i+1) + "^000000) ^c27e17"+ ((getiteminfo(@itemstosell[@i],1)*countitem(@itemstosell[@i])) * (100 + .@plus) / 100) + "^000000z - [^0071c7" + getitemname(@itemstosell[@i]) + "^000000]  x" +countitem(@itemstosell[@i])+".";
+					set @tempsell,@tempsell+((getiteminfo(@itemstosell[@i],1)*countitem(@itemstosell[@i])) * (100 + .@plus) / 100 );
+				} else {
+					mes "^d94100"+(@i+1) + "^000000) ^c27e17"+ ((getiteminfo(@itemstosell[@i],1)*(countitem(@itemstosell[@i])-isequippedcnt(@itemstosell[@i]))) * (100 + .@plus) / 100) + "^000000z - [^0071c7" + getitemname(@itemstosell[@i]) + "^000000]  x" +(countitem(@itemstosell[@i])-isequippedcnt(@itemstosell[@i]))+".";
+					set @tempsell,@tempsell+((getiteminfo(@itemstosell[@i],1)*(countitem(@itemstosell[@i])-isequippedcnt(@itemstosell[@i]))) * (100 + .@plus) / 100);
+				}
+			}
+			freeloop(0);
+			switch(select("ขาย ^c27e17"+callfunc("F_InsertComma",@tempsell)+"^000000z:ยกเลิก - [^FF0000Cancel^000000]")){
+				case 1:
+					for(@i = 0; @i < getarraysize(@itemstosell); @i++) {
+						if(!isequippedcnt(@itemstosell[@i])){
+							delitem @itemstosell[@i],countitem(@itemstosell[@i]);
+						} else {
+							delitem @itemstosell[@i],(countitem(@itemstosell[@i])-isequippedcnt(@itemstosell[@i]));
+						}
+					}
+						set Zeny,Zeny+@tempsell;
+						set @tempsell,0;
+						clear;
+						mes .name$;
+						mes "ขอบคุณสำหรับการขายครั้งนี้!";
+						close;
+				case 2: close;
+				}
+			close;
+		case 2:
+			close2;
+			callshop "Generalshop",2;
+			end;
+		case 3:
+			clear;
+			mes .name$;
+			mes "Okidoki! คุณอยากจะทำอะไร?";
+			mes "^0071c7Rarity^000000: เปลี่ยน min drop % ที่จะขาย.";
+			mes "^0071c7Blacklist^000000: ดูหรือแก้ไข blacklist";
+			mes "^0071c7Item type^000000: ขายสินค้าประเภทต่าง ๆ";
+			switch(select("เปลี่ยนการตั้งค่าความหายาก(Drop Rate):เปลี่ยนการตั้งค่า blacklist:เปลี่ยนการตั้งค่าประเภทรายการสินค้า:คำอธิบายการตั้งค่าเหล่านี้:[^FF0000Cancel^000000]")){
+				case 1:
+					changerarity;
+				case 2:
+					changeblacklist;
+				case 3:
+					changeitemtype;
+				case 4:
+					clear;
+					explanation;
+				default:
+					close;
+			}
+		case 4:
+			clear;
+			mes .name$;
+			mes "ฉันจะสแกนสินค้าคงคลังของคุณอย่างรวดเร็วและลบรายการ 'ขยะ' ทั้งหมดในคราวเดียว! คุณจะได้รับ zeny เต็มจำนวน มันเหมือนกับการขายที่ร้าน แต่เร็วและง่ายกว่า!";
+			next;
+			explanation;
+		default:
+			close;
+		}
+		
+		function changerarity {
+		L_Main:
+			clear;
+			mes .name$;
+			mes "Auto-sell เรทไอเท็มของคุณ : ^FF0000"+ #ASRarity/100+"^000000%";
+			if(!#ASRarity){mes "^FF0000!!! Warning !!!^000000: การตั้งค่านี้เป็น 0 หมายถึง Rate ทั้งหมดจะถูกขาย!";}else{mes "เราจะขายเรทที่ เท่ากับ หรือสูงกว่าเท่านั้นจากที่กำหนด";}
+			switch(select("เปลี่ยน Rate Drops:[^FF0000Cancel^000000]")){
+				case 1: 
+					input .@tempval; 
+					if(.@tempval < 0) { set #ASRarity,0; goto L_Main; }
+					if(.@tempval > 100) { set #ASRarity,100*100; goto L_Main; }
+					set #ASRarity,.@tempval*100; 
+					goto L_Main;
+				case 2: close;
+				}
+		}
+		
+		function changeblacklist {
+		L_ADDBLMain:
+			clear;
+			mes .name$;
+			mes "อยากจะทำอะไร";
+			switch(select("จัดการ blacklist:เพิ่ม blacklist ไอเท็ม:[^FF0000Cancel^000000]")){
+				case 1:
+					clear;
+					mes .name$;
+					mes "หากคุณต้องการลบรายการออกจาก blacklist ของคุณ","โปรด เลือกจากรายการด้านล่าง";
+					
+						cleararray .@menulist$,"",31;
+						cleararray .@menuref,0,31;
+						query_sql("SELECT `char_id`, `item_id`  FROM `junkerblacklist` WHERE char_id="+ getcharid(0)+" ORDER BY CAST(junkerblacklist.item_id AS UNSIGNED)", .@charid, .@itemid);
+					
+							for (.@i = 0; .@i < getarraysize(.@charid); .@i++){
+								.@menulist$[.@i] = "[^00ad8b"+.@itemid[.@i]+"^000000] - "+getitemname(.@itemid[.@i]);
+								.@menuref[.@i] = .@itemid[.@i];
+							}
+							
+							.@i = .@i+1;
+							.@menulist$[.@i] = "[^FF0000Cancel^000000]";
+							@breakmenu = .@i;
+								
+					menu 	.@menulist$[0],-,.@menulist$[1],-,.@menulist$[2],-,.@menulist$[3],-,.@menulist$[4],-,.@menulist$[5],-,.@menulist$[6],-,.@menulist$[7],-,.@menulist$[8],-,.@menulist$[9],-,.@menulist$[10],-,
+							.@menulist$[11],-,.@menulist$[12],-,.@menulist$[13],-,.@menulist$[14],-,.@menulist$[15],-,.@menulist$[16],-,.@menulist$[17],-,.@menulist$[18],-,.@menulist$[19],-,.@menulist$[20],-,.@menulist$[21],-,
+							.@menulist$[22],-,.@menulist$[23],-,.@menulist$[24],-,.@menulist$[25],-,.@menulist$[26],-,.@menulist$[27],-,.@menulist$[28],-,.@menulist$[29],-,.@menulist$[30],-;
+					
+					if(@menu == getarraysize(.@menulist$)){clear; mes .name$; mes "Goodbye!"; close;}
+					
+					clear;
+					mes .name$;
+					set .@itemiddelete,.@itemid[@menu-1];
+					mes "คุณได้เลือก :";
+					mes "ID ["+ .@itemiddelete +"] "+ getitemname(.@itemid[@menu-1]);
+					mes "อยากจะทำอะไร";
+						switch(select("ลบออกจาก blacklist:ย้อนกลับ:[^FF0000Cancel^000000]")){
+							case 1:
+								query_sql "DELETE FROM `junkerblacklist` WHERE (`char_id` = "+ getcharid(0)+" AND `item_id` = '"+.@itemiddelete+ "')";
+								clear;
+								mes .name$;
+								mes "ฉันได้ลบสิ่งนี้ออกจาก blacklist ของคุณ";
+								close;
+							case 2:
+								clear;
+								mes .name$;
+								mes "คุณอยากจะทำอะไร";
+								goto L_ADDBLMain;
+							case 3:
+								clear;
+								mes .name$;
+								mes "Okay! ลาก่อน!";
+								close;
+						}
+					close;
+				case 2:
+					goto L_ADDBL;
+				case 3:
+					close;
+			}
+				
+		L_ADDBL:
+			clear;
+				mes .name$;
+				mes "คุณต้องการที่จะเพิ่มรายการโดยตรงจาก ID รายการหรือเลือกจากรายการสินค้าของคุณ?";
+				switch(select("เพิ่มโดยใช้ ID:เพิ่มจากคลังไอเท็มในตัว:[^FF0000Cancel^000000]")){
+					case 1:
+						query_sql("SELECT `char_id`, `item_name`, `item_id`  FROM `junkerblacklist` WHERE char_id="+ getcharid(0)+" ORDER BY CAST(junkerblacklist.item_id AS UNSIGNED)", .@charid, .@name$, .@itemid);
+							clear;
+							mes .name$;
+							mes "กรอก ID ของไอเท็มที่ต้องการ";
+							switch(select("ใส่ไอเท็ม ID:ยกเลิก")){
+								case 1:
+									break;
+								case 2:
+									goto L_ADDBLMain;
+							}
+							input .@tbltwo;
+							clear;
+							if(getitemname(.@tbltwo) == "null"){
+									mes .name$;
+									mes "ไม่มีรายการนี้!";
+									next;
+									goto L_ADDBL;
+							}
+							mes .name$;
+							mes "ไอเท็มนี้ถูกต้องหรือไม่?";
+							mes "ID: "+.@tbltwo;
+							mes "Name: <ITEM>"+getitemname(.@tbltwo)+"<INFO>"+.@tbltwo+"</INFO></ITEM>";
+								switch(select("ใช่:ไม่ใช่")){
+									case 1:
+										break;
+									case 2:
+										goto L_ADDBL;
+									}
+							set .@tempname$,getitemname(.@tbltwo);
+							for(@i = 0; @i < getarraysize(.@itemid); @i++ ){
+								if(.@tbltwo == .@itemid[@i]) {
+									clear;
+									mes .name$;
+									mes "รายการนั้นอยู่ใน blacklist ของคุณแล้ว!";
+									next;
+									goto L_ADDBL;
+								}
+							}
+							query_sql("INSERT INTO `junkerblacklist` (`char_id`,`item_name`,`item_id`) VALUES (" + getcharid(0) + ",'" + .@tempname$ + "'," + .@tbltwo + ")");
+							clear;
+							mes .name$;
+							mes "ฉันได้เพิ่มลงใน blacklist! ของคุณแล้ว";
+							next;
+							goto L_ADDBLMain;
+						
+					case 2:
+						addblloop;
+					case 3:
+						goto L_ADDBLMain;
+				}
+				
+		}
+				
+function addblloop {
+		
+	// SCARY MULTI MENU BIT
+	// This will attempt to break up big inventories into smaller lists
+					
+	clear;
+	mes .name$;
+	mes "ด้านล่างนี้เป็นรายการสินค้าในคลังของคุณที่มีคุณสมบัติในการขายอัตโนมัติ รายการที่ขึ้น blacklist แล้วจะไม่ปรากฏในรายการนี้";
+
+//============================================================//	
+//	This segment impersonates the "getsellableinv" function
+//	to create a dynamic menu based on your inventory.
+//============================================================//	
+						
+	query_sql("SELECT `char_id`, `item_id`  FROM `junkerblacklist` WHERE char_id="+ getcharid(0)+" ORDER BY CAST(junkerblacklist.item_id AS UNSIGNED)", .@charid, .@itemid);
+	getinventorylist(getcharid(0));	
+	cleararray .@menulist$,"",31;
+	cleararray .@menuref,0,31;
+	deletearray .@tempblacklist[0],127;
+	set .@j,0;
+	set .@w,0;
+	freeloop(1);
+	for(@i = 0; @i < @inventorylist_count; @i++) {	
+		if(!@inventorylist_equip[@i] && @inventorylist_identify[@i] && getiteminfo(@inventorylist_id[@i],1) != 0){
+			set .@iid,@inventorylist_id[@i];
+			if(getiteminfo(.@iid,2) ==  3 || getiteminfo(.@iid,2) ==  2 || getiteminfo(.@iid,2) ==  0 || getiteminfo(.@iid,2) ==  4 || getiteminfo(.@iid,2) == 7 || getiteminfo(.@iid,2) == 5 || getiteminfo(.@iid,2) == 8){
+				for(.@k = 0; .@k < getarraysize(@Blacklist); .@k++) {
+					if(@Blacklist[.@k] == .@iid) { set .@tempchk,.@tempchk+1; }
+				}
+				for(.@p = 0; .@p < getarraysize(.@itemid); .@p++) {
+					if(.@itemid[.@p] == .@iid) { set .@tempchk,.@tempchk+1; }
+				}
+				if(getarraysize(.@tempblacklist) > 0){
+					for(.@q = 0; .@q < getarraysize(.@tempblacklist); .@q++) {
+						if(.@tempblacklist[.@q] == .@iid) { set .@tempchk,.@tempchk+1; }
+					}
+				}
+						if(!.@tempchk) { setarray .@tempblacklist[.@w],@inventorylist_id[@i]; setarray .@tempmenuarray[.@j],@inventorylist_id[@i]; set .@w,.@w+1; set .@j,.@j+1; set .@tempchk,0;}
+							else { set .@tempchk,0; }
+			}
+		}
+	}
+	freeloop(0);
+//============================================================//	
+//	This is the dynamic menu
+//============================================================//	
+
+	set .@page,1;
+	set .@j,0;
+	for (.@i = 0; .@i < getarraysize(.@tempmenuarray); .@i++){
+		if(.@i == 30 || .@i == 61 || .@i == 92){
+		.@menulist$[.@i] = "[^0000FFNEXT PAGE^000000]";
+		} else {
+		.@menulist$[.@i] = "[^00ad8b"+.@tempmenuarray[.@j]+"^000000] - "+getitemname(.@tempmenuarray[.@j]);
+		.@j = .@j+1;
+		}
+	}	
+		.@i = .@i+1;
+		.@menulist$[.@i] = "[^FF0000Cancel^000000]";
+				
+	menu 	.@menulist$[0],-,.@menulist$[1],-,.@menulist$[2],-,.@menulist$[3],-,.@menulist$[4],-,.@menulist$[5],-,.@menulist$[6],-,.@menulist$[7],-,.@menulist$[8],-,.@menulist$[9],-,.@menulist$[10],-,
+			.@menulist$[11],-,.@menulist$[12],-,.@menulist$[13],-,.@menulist$[14],-,.@menulist$[15],-,.@menulist$[16],-,.@menulist$[17],-,.@menulist$[18],-,.@menulist$[19],-,.@menulist$[20],-,.@menulist$[21],-,
+			.@menulist$[22],-,.@menulist$[23],-,.@menulist$[24],-,.@menulist$[25],-,.@menulist$[26],-,.@menulist$[27],-,.@menulist$[28],-,.@menulist$[29],-,.@menulist$[30],-;
+	if(@menu <= 30) goto L_PROCEED;
+	set .@page,.@page+1;
+	menu 	.@menulist$[31],-,.@menulist$[32],-,.@menulist$[33],-,.@menulist$[34],-,.@menulist$[35],-,.@menulist$[36],-,.@menulist$[37],-,.@menulist$[38],-,.@menulist$[39],-,.@menulist$[40],-,.@menulist$[41],-,
+			.@menulist$[42],-,.@menulist$[43],-,.@menulist$[44],-,.@menulist$[45],-,.@menulist$[46],-,.@menulist$[47],-,.@menulist$[48],-,.@menulist$[49],-,.@menulist$[50],-,.@menulist$[51],-,.@menulist$[52],-,
+			.@menulist$[53],-,.@menulist$[54],-,.@menulist$[55],-,.@menulist$[56],-,.@menulist$[57],-,.@menulist$[58],-,.@menulist$[59],-,.@menulist$[60],-,.@menulist$[61],-;
+	if(@menu <= 30) goto L_PROCEED;
+	set .@page,.@page+1;
+	menu 	.@menulist$[62],-,.@menulist$[63],-,.@menulist$[64],-,.@menulist$[65],-,.@menulist$[66],-,.@menulist$[67],-,.@menulist$[68],-,.@menulist$[69],-,.@menulist$[70],-,.@menulist$[71],-,.@menulist$[72],-,
+			.@menulist$[73],-,.@menulist$[74],-,.@menulist$[75],-,.@menulist$[76],-,.@menulist$[77],-,.@menulist$[78],-,.@menulist$[79],-,.@menulist$[80],-,.@menulist$[81],-,.@menulist$[82],-,.@menulist$[83],-,
+			.@menulist$[84],-,.@menulist$[85],-,.@menulist$[86],-,.@menulist$[87],-,.@menulist$[88],-,.@menulist$[89],-,.@menulist$[90],-,.@menulist$[91],-,.@menulist$[92],-;
+	if(@menu <= 30) goto L_PROCEED;
+	set .@page,.@page+1;
+	menu 	.@menulist$[93],-,.@menulist$[94],-,.@menulist$[95],-,.@menulist$[96],-,.@menulist$[97],-,.@menulist$[98],-,.@menulist$[99],-,.@menulist$[100],-,.@menulist$[101],-,.@menulist$[102],-,.@menulist$[103],-,
+			.@menulist$[104],-,.@menulist$[105],-,.@menulist$[106],-,.@menulist$[107],-,.@menulist$[108],-,.@menulist$[109],-,.@menulist$[110],-,.@menulist$[111],-,.@menulist$[112],-,.@menulist$[113],-,.@menulist$[114],-,
+			.@menulist$[115],-,.@menulist$[116],-,.@menulist$[117],-,.@menulist$[118],-,.@menulist$[119],-,.@menulist$[120],-,.@menulist$[121],-,.@menulist$[122],-,.@menulist$[123],-;
+	
+L_PROCEED:		
+	if(@menu == getarraysize(.@menulist$)){clear; mes .name$; mes "Goodbye!"; close;}
+		clear;
+		mes .name$;
+		switch(.@page){
+			case 1:
+				set .@itembladd,.@tempmenuarray[@menu-1];
+				break;
+			case 2:
+				set .@itembladd,.@tempmenuarray[@menu+29];
+				break;
+			case 3:
+				set .@itembladd,.@tempmenuarray[@menu+59];
+				break;
+			case 4:
+				set .@itembladd,.@tempmenuarray[@menu+89];
+				break;
+		}
+		
+		mes "คุณได้เลือก :";
+		mes "ID ["+ .@itembladd +"] "+ getitemname(.@itembladd);
+		mes "คุณอยากจะทำอะไร?";
+			switch(select("เพิ่มลงใน blacklist:[^FF0000Cancel^000000]")){
+				case 1:
+					query_sql("INSERT INTO `junkerblacklist` (`char_id`,`item_name`,`item_id`) VALUES (" + getcharid(0) + ",'" + getitemname(.@itembladd) + "'," + .@itembladd + ")");
+					clear;
+					mes .name$;
+					mes "ฉันได้เพิ่มสิ่งนี้ลงใน blacklist ของคุณแล้ว!";
+					close;
+				case 2:
+					clear;
+					mes .name$;
+					mes "Okay! คุณอยากจะทำอะไร?";
+					goto L_ADDBLMain;
+			}
+		close;
+}
+		
+		function changeitemtype {
+		L_ITEMTOGGLE:
+			clear;
+			mes .name$;
+			mes "การขายไอเท็มอัตโนมัติ:";
+			mes "Usable Items: "+((#JS_ITEM_TYPE&1)?"^00FF00 เปิด":"^FF0000 ปิด")+"^000000";
+			mes "Equipment Items: "+((#JS_ITEM_TYPE&2)?"^00FF00 เปิด":"^FF0000 ปิด")+"^000000";
+			mes "Etc Items: "+((#JS_ITEM_TYPE&4)?"^00FF00 เปิด":"^FF0000 ปิด")+"^000000";
+			switch(select("เปิด/ปิด Usable Items:เปิด/ปิด Equipment:เปิด/ปิด Etc:[^FF0000Cancel^000000]")){
+				case 1: set #JS_ITEM_TYPE,#JS_ITEM_TYPE^1; goto L_ITEMTOGGLE;
+				case 2:	set #JS_ITEM_TYPE,#JS_ITEM_TYPE^2; goto L_ITEMTOGGLE;
+				case 3:	set #JS_ITEM_TYPE,#JS_ITEM_TYPE^4; goto L_ITEMTOGGLE;
+				case 4: close;
+			}
+			close;
+		}
+		
+		function explanation {
+			mes .name$;
+			mes "การตั้งค่าที่คุณสามารถแก้ไขได้:";
+			mes "^0000FF1^000000) ความหายาก(Rate)";
+			mes "อัตราการดรอปของไอเท็ม, ยิ่งไอเท็มธรรมดามากเท่าไหร่ก็ยิ่งมีอัตราการดร็อปสูง"; 
+			mes " ";
+			mes "หากคุณต้องการขายไอเท็มทั่วไปให้ตั้งค่าความหายากของคุณสูง หากคุณต้องการกำจัดรายการที่หายากให้ตั้งค่าความหายากของคุณให้ต่ำลง";
+			next;
+			mes .name$;
+			mes "การตั้งค่าที่คุณสามารถแก้ไขได้:";
+			mes "^0000FF2^000000) Blacklist";
+			mes "คุณมี blacklist ที่คุณสามารถเพิ่มรหัสรายการลงใน blacklist ของคุณ","^FF0000ไอเท็มจะไม่ถูกขายให้กับฉัน^000000"; 
+			mes " ";
+			mes "คุณสามารถเพิ่มหรือลบได้ทุกเวลาโดยพูดกับฉันหรือโดยใช้คำสั่ง '^0000FF@blacklist^000000'!";
+			next;
+			mes .name$;
+			mes "การตั้งค่าที่คุณสามารถแก้ไขได้:";
+			mes "^0000FF3^000000) Item Type";
+			mes "คุณสามารถเลือกรายการที่คุณต้องการให้ฉันใช้ โดยค่าเริ่มต้นฉันจะเอาเฉพาะรายการที่มีป้ายกำกับ 'Etc' เท่านั้น, แต่หากคุณต้องการให้ฉันรวม usables และ equipment กรุณาแจ้งให้เราทราบ!";
+			mes "^FF0000ระวัง!!^000000 แม้ว่าจะเป็นความเสี่ยงของคุณเอง ดังนั้นให้ดูที่ใบเสร็จรับเงินก่อนการขายทุกครั้ง ก่อนรับเงิน!!";
+			close;
+		}
+		function getsellableinv {
+		
+		cleararray @itemstosell[0],0,127;
+		deletearray .@tempblacklist[0],127;
+		@j = 0;
+		@w = 0;
+		@tempsell = 0;
+		.@tempbl = 0;
+		freeloop(1);
+		query_sql("SELECT `char_id`, `item_id`  FROM `junkerblacklist` WHERE char_id="+ getcharid(0)+" ORDER BY CAST(junkerblacklist.item_id AS UNSIGNED)", .@charid, .@itemid);
+		
+				// gets inventory list from character
+				getinventorylist(getcharid(0));		
+				
+				// First loop, parses entire inventory
+				for(@i = 0; @i < @inventorylist_count; @i++) {		
+				
+					// If statement requiring the following:
+					// 1) Item is NOT equipped
+					// 2) Item is identified
+					// 3) Item is equal to or above the #ASRarity variable
+					// 4) Item is worth over 0z
+					if(!@inventorylist_equip[@i] && @inventorylist_identify[@i] && getiteminfo(@inventorylist_id[@i],3) >= #ASRarity && getiteminfo(@inventorylist_id[@i],1) != 0){
+						
+						// sets a temporary variable of the item ID if it meets the if statement above
+						set .@iid,@inventorylist_id[@i];
+						
+							if(#JS_ITEM_TYPE & 1){
+								
+								// Checks if item is a Healing item (0) or a usable item (2)
+								if(getiteminfo(.@iid,2) ==  0 || getiteminfo(.@iid,2) == 2){
+						
+									// Second loop, compares the item ID to the global blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempchk"
+									for(@k = 0; @k < getarraysize(@Blacklist); @k++) {
+										if(@Blacklist[@k] == .@iid) { set .@tempchk,.@tempchk+1; }
+									}
+									
+									// Third loop, compares the item ID to the personal blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempchk"
+									for(@p = 0; @p < getarraysize(.@itemid); @p++) {
+										if(.@itemid[@p] == .@iid) { set .@tempchk,.@tempchk+1; }
+									}
+									
+									// if temporary variable .@tempchk is zero it means it passed all blacklist checks
+									// it is then added to the @itemstosell array. If @tempchck has a value higher than
+									// zero it will set +1 to temporary scope variable .@tempbl as a blacklist counter
+									if(!.@tempchk) { setarray @itemstosell[@j],.@iid; set @j,@j+1; set .@tempchk,0;}
+										else {set .@tempbl,.@tempbl+1; set .@tempchk,0; }
+								}
+							} 
+							if(#JS_ITEM_TYPE & 2){
+								
+								// Checks if item is a Armor/Garment/Boots/Headgear/Accessory (4)
+								// weapon (5), pet egg (7) or pet equipment (8)
+								if(getiteminfo(.@iid,2) ==  4 || getiteminfo(.@iid,2) == 7 || getiteminfo(.@iid,2) == 5 || getiteminfo(.@iid,2) == 8){
+									
+									// Second loop, compares the item ID to the global blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempchk"
+									for(.@k = 0; .@k < getarraysize(@Blacklist); .@k++) {
+										if(@Blacklist[.@k] == .@iid) { set .@tempchk,.@tempchk+1; }
+									}
+									
+									//DEBUG
+									//if(.@tempchk != 0 ) { dispbottom getitemname(.@iid)+" EQUIP First loop failed [tempchk] "+.@tempchk,0xFF0000; } else { dispbottom getitemname(.@iid)+" EQUIP First loop passed [tempchk] "+.@tempchk,0x00FF00; }
+									//if(.@tempblchk != 0 ) { dispbottom getitemname(.@iid)+" EQUIP First loop failed [tempblchk] "+.@tempblchk,0xFF0000; }  else { dispbottom getitemname(.@iid)+" EQUIP First loop passed [tempblchk] "+.@tempblchk,0x00FF00; }
+									
+									// Third loop, compares the item ID to the personal blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempchk"
+									for(.@p = 0; .@p < getarraysize(.@itemid); .@p++) {
+										if(.@itemid[.@p] == .@iid) { set .@tempchk,.@tempchk+1; }
+									}
+									
+									//DEBUG
+									//if(.@tempchk != 0 ) { dispbottom getitemname(.@iid)+" EQUIP Second loop failed [tempchk] "+.@tempchk,0xFF0000; } else { dispbottom getitemname(.@iid)+" EQUIP Second loop passed [tempchk] "+.@tempchk,0x00FF00; }
+									//if(.@tempblchk != 0 ) { dispbottom getitemname(.@iid)+" EQUIP Second loop failed [tempblchk] "+.@tempblchk,0xFF0000; }  else { dispbottom getitemname(.@iid)+" EQUIP Second loop passed [tempblchk] "+.@tempblchk,0x00FF00; }
+									
+									// Fourth loop, compares the item ID to the temporary blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempblchk"
+									for(.@q = 0; .@q < getarraysize(.@tempblacklist); .@q++) {
+										if(.@tempblacklist[.@q] == .@iid) { set .@tempblchk,.@tempblchk+1; }
+									}
+									
+									//DEBUG
+									//if(.@tempchk != 0 ) { dispbottom getitemname(.@iid)+" EQUIP Third loop failed [tempchk] "+.@tempchk,0xFF0000; } else { dispbottom getitemname(.@iid)+" EQUIP Third loop passed [tempchk] "+.@tempchk,0x00FF00; }
+									//if(.@tempblchk != 0 ) { dispbottom getitemname(.@iid)+" EQUIP Third loop failed [tempblchk] "+.@tempblchk,0xFF0000; }  else { dispbottom getitemname(.@iid)+" EQUIP Third loop passed [tempblchk] "+.@tempblchk,0x00FF00; }
+									
+									// if temporary variable .@tempchk is zero it means it passed all blacklist checks
+									// it is then added to the @itemstosell array. If @tempchck has a value higher than
+									// zero it will set +1 to temporary scope variable .@tempbl as a blacklist counter
+									if(.@tempchk == 0 && .@tempblchk == 0) { setarray .@tempblacklist[@w],.@iid; setarray @itemstosell[@j],.@iid; set @w,@w+1; set @j,@j+1; set .@tempchk,0; set .@tempblchk,0;}
+										else { if(.@tempchk != 0) { set .@tempbl,.@tempbl+1; set .@tempchk,0; set .@tempblchk,0; } else {if(.@tempblchk != 0) { set .@tempblchk,0; set .@tempchk,0; }}}
+									
+								}
+							} 
+							if(#JS_ITEM_TYPE & 4){
+								
+								// Checks if item is an Etc item (3)
+								// Comment this line and uncomment the line below if you want Cards to be included
+								if(getiteminfo(.@iid,2) ==  3){
+								
+								// Comment the above line and uncomment this line if you want Cards to be included
+								//if(getiteminfo(.@iid,2) ==  3 || getiteminfo(.@iid,2) ==  6){
+								
+
+									// Second loop, compares the item ID to the global blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempchk"
+									for(@k = 0; @k < getarraysize(@Blacklist); @k++) {
+										if(@Blacklist[@k] == .@iid) { set .@tempchk,.@tempchk+1; }
+									}
+									
+									// Third loop, compares the item ID to the personal blacklist
+									// if it matches it assigns +1 to the temporary variable ".@tempchk"
+									for(@p = 0; @p < getarraysize(.@itemid); @p++) {
+										if(.@itemid[@p] == .@iid) { set .@tempchk,.@tempchk+1; }
+									}
+									
+									// if temporary variable .@tempchk is zero it means it passed all blacklist checks
+									// it is then added to the @itemstosell array. If @tempchck has a value higher than
+									// zero it will set +1 to temporary scope variable .@tempbl as a blacklist counter
+									if(!.@tempchk) { setarray @itemstosell[@j],.@iid; set @j,@j+1; set .@tempchk,0;}
+										else {set .@tempbl,.@tempbl+1; set .@tempchk,0; }
+								}
+							} 
+						
+					}
+				}
+				freeloop(0);
+				if(.@showbl) { dispbottom "[Blacklist]: Removed "+.@tempbl+" items from the sell list",0xff3d9e; }
+				
+				//DEBUG
+				//for(.@i = 0; .@i < getarraysize(.@tempblacklist); .@i++){
+				//	.@tempp$ = .@tempblacklist[.@i];
+				//	dispbottom .@tempp$ + " - " + getitemname(.@tempblacklist[.@i]);}
+				
+				return;
+		}
+		
+//OnTouch:
+//	showscript "[ Bulk Item Sell ]",getnpcid(0);
+//	end;	
+	
+OnInit: 
+waitingroom "  ขายขยะ Auto",0;
+end;	
+}

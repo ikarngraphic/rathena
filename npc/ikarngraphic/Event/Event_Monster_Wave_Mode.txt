@@ -1,0 +1,560 @@
+//===== rAthena Script =======================================
+//= Monster Wave Mode
+//===== By: ==================================================
+//= mr.TAURUS
+//===== Current Version: =====================================
+//= 1.2
+//===== Compatible With: =====================================
+//= rAthena Project
+//============================================================
+
+maintown,44,64,6	script	 Monster Wave Mode	4_M_NFDEADMAN,{
+
+	//= Config : ตั้งค่าต่างๆ =========================
+	set .NPC$, "^00FF00[ Monster Wave Mode ]^000000";
+	set .@LvReq,300;			// เลเวลขั้นต่ำที่เข้าได้
+	set .@MaxUser,10;		// จำกัดจำนวนผู้เล่นที่เข้าได้ต่อรอบ
+	set .@Price,1000000;		// ค่าใช้จ่ายในการเข้าแต่ละครั้ง
+	//========================================
+	
+	mes .NPC$;
+	mes "ยินดีต้อนรับผู้กล้าทั้งหลายเข้าประตูทางผ่านสู่ลาน ^FF0000Monster Wave Mode^000000";
+	mes "ถ้าเจ้าออกหรือตาย เจ้าจะไม่สามารถเข้ามาได้อีกจนกว่าจะถึงเวลาอีกครั้ง";
+	mes "เจ้าต้องการที่จะเข้าไปเลยหรือไม่?";
+	next;
+	switch(select("^009933•^000000 แน่นอนข้าจะเข้าไป :^009933•^000000 ข้าต้องการฟังรายละเอียดอีกครั้ง :^FF0000•^000000 ไม่ละข้าไม่เอาด้วยหรอก")) 
+	{
+		case 1:
+			if(Baselevel < .@LvReq) {
+				mes .NPC$;
+				mes "เจ้าต้องมีเลเวลอย่างน้อย ^FF0000"+.@LvReq+"^000000 ถึงจะเข้าไปได้.";
+			close;
+			}
+			if(Zeny < .@Price) {
+				mes .NPC$;
+				mes "เจ้าต้องจ่ายค่าลงทะเบียนจำนวน ^FF0000"+.@Price+"^000000z.";
+			close;
+			}
+			if($inf == 1) {
+				if (getmapusers("guild_vs1")==.@MaxUser) {
+					mes .NPC$;
+					mes "ข้าเสียใจขณะนี้มีผู้กล้าเข้าไปครบจำนวนแล้ว";
+					mes "ผู้กล้าจะเข้าไปได้จำนวนสูงสุด ^FF0000"+.@MaxUser+"^000000 คนเท่านั้น";
+					set $inf,0;
+				close;
+				end;
+				}
+				set Zeny,Zeny - .@Price;
+				announce ""+strcharinfo(0)+" ได้เข้าไปสู่ Monster Wave Mode แล้ว",8;
+				percentheal 100,100;
+				switch(rand(1,4)) {
+					case 1:  set .@x,7;   set .@y,49;   break;
+					case 2:  set .@x,50;  set .@y,7;    break;
+					case 3:  set .@x,92;  set .@y,49;   break;
+					case 4:  set .@x,49;  set .@y,92;   break;
+				}
+			warp "guild_vs1",.@x,.@y;
+			end;
+			}
+			mes .NPC$;
+			mes "ขณะนี้ประตูสู่ Monster Wave Mode ได้ปิดลงแล้ว ";
+			mes "Monster Wave Mode จะเปิดอีกครั้งเมื่อถึง";
+			mes "วันอังคาร และ วันเสาร์ เวลา 12.00 และ 23.00 น.";
+			close;
+			
+		case 2:
+			mes .NPC$;
+			mes "เมื่อเจ้าเข้าสู่ Monster Wave Mode แล้ว จะมีมอนสเตอร์ทั้งหมด 10 ระดับด้วยกัน";
+			mes "ระดับยิ่งสูงมอนสเตอร์ก็จะเก่งขึ้นตามลำดับ";
+			mes "ถ้าเจ้าสามารถพิชิตมันได้ทั้ง 10 ระดับ เจ้าก็สามารถเข้าไปเปิดหีบขุมทรัพย์ข้างในได้ซึ่งในหีบจะมีไอเทมหายากต่างๆมากมาย";
+			close;
+			end;
+
+		case 3:
+			mes .NPC$;
+			mes "ไม่เป็นไรท่านผู้กล้าถ้าท่านพร้อมก็ค่อยมาหาข้าใหม่ ";
+			close;	
+	}
+	
+	OnInit:
+		waitingroom "Monster Wave Mode",0;
+		initnpctimer; 
+	end;
+}	
+
+-	script	Checking	-1,{
+
+	//= ประกาศต่างๆ ===================================
+	OnTimer30000:
+		if (getmapusers("guild_vs1") == 0) Announce "ผู้กล้าทั้งหมดได้พ่ายแพ้ใน Monster Wave Mode แล้ว",8;
+		if (getmapusers("guild_vs1") == 0) set $status,1;
+		if (getmapusers("guild_vs1") == 0) killmonsterall "guild_vs1";
+		if (getmapusers("guild_vs1") == 0) end;
+		Announce getmapusers("guild_vs1") + " ยังคงมีผู้กล้ารอดชีวิตใน Monster Wave Mode",8;
+		initnpctimer;
+	end;
+	//=======================================
+}
+
+-	script	WaveModeNpc	-1,{
+
+	//= เวลาเริ่มกิจกรรม ==================================
+	OnTue1200:	// เริ่มวัน อังคาร เวลา 12.00
+	OnThu2300:	// เริ่มวัน พฤหัสบดี เวลา 23.00
+	OnThu1200:	// เริ่มวัน พฤหัสบดี เวลา 12.00
+	OnTue2300:	// เริ่มวัน อังคาร เวลา 23.00
+		Announce "Monster Wave Mode กำลังจะเปิดใน 5 นาที ให้ผู้กล้าทั้งหลายจงเตรียมพร้อม!!",8;
+		disablenpc "OutSide";
+		initnpctimer;
+		set $inf,1;
+		set $status,0;
+		killmonsterall "guild_vs1";
+	end;
+	//=======================================
+	//= นับถอยหลัง 5 นาที ================================
+	OnTimer60000:
+		Announce "Monster Wave Mode จะเริ่มต้นภายใน 4 นาที!!",8;
+	end;
+	OnTimer120000:
+		Announce "Monster Wave Mode จะเริ่มต้นภายใน 3 นาที!!",8;
+	end;
+	OnTimer180000:
+		Announce "Monster Wave Mode จะเริ่มต้นภายใน 2 นาที!!",8;
+	end;
+	OnTimer240000:
+		Announce "Monster Wave Mode จะเริ่มต้นภายใน 1 นาที!!",8;
+	end;
+	OnTimer300000: 
+		Announce "Monster Wave Mode ได้เริ่มต้นขึ้นแล้ว ณ บัดนี้ !!",8;
+		initnpctimer "Checking";
+		goto OnWave1;
+	end;	
+	//=======================================
+	//= เริ่มกิจกกรม ====================================
+	//= ด่านที่ 1
+	OnWave1:
+		Announce "Monster Wave Mode: ด่านที่ 1 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,61;
+		areamonster "guild_vs1",31,67,67,32,"[W1] Ghoul",1036,10,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",31,67,67,32,"[W1] Whisper",1179,10,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",71,50,28,50,"[W1] Leaf Cat",1586,10,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",31,67,67,32,"[W1] Leaf Cat Ringleader",2781,5,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",71,50,28,50,"[W1] Furious Tamruan",2639,5,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",31,31,68,68,"[W1] Kraben",1180,10,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",31,31,68,68,"[W1] Tamruan",1584,10,"WaveModeNpc::OnMobDead";
+		areamonster "guild_vs1",49,49,49,49,"[W1] Lady Tanee",1688,1,"WaveModeNpc::OnMobDead";
+	end;
+	
+	OnMobDead:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave2; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 2
+	OnWave2:
+		Announce "Monster Wave Mode: ด่านที่ 2 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W2] Miyabi Ningyo",1404,10,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",31,31,68,68,"[W2] Antique Firelock",1403,10,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",71,50,28,50,"[W2] Shinobi",1401,10,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",71,50,28,50,"[W2] Tengu",1405,10,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",31,67,67,32,"[W2] The Paper",1375,10,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",31,31,68,68,"[W2] Poison Toad",1402,10,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",31,67,67,32,"[W2] Miyabi Doll Ringleader",2746,5,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",31,67,67,32,"[W2] Furious Shinobi ",2664,5,"WaveModeNpc::OnMobDead2";
+		areamonster "guild_vs1",49,49,49,49,"[W2] Incantation Samurai",1492,1,"WaveModeNpc::OnMobDead2";
+	end;
+	
+	OnMobDead2:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave3; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 3
+	OnWave3:
+		Announce "Monster Wave Mode: ด่านที่ 3 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W3] Bathory",1102,10,"WaveModeNpc::OnMobDead3";
+		areamonster "guild_vs1",31,31,68,68,"[W3] Rideword",1195,10,"WaveModeNpc::OnMobDead3";
+		areamonster "guild_vs1",71,50,28,50,"[W3] Elder",1377,10,"WaveModeNpc::OnMobDead3";
+		areamonster "guild_vs1",31,67,67,32,"[W3] Clock",1269,15,"WaveModeNpc::OnMobDead3";
+		areamonster "guild_vs1",31,31,68,68,"[W3] Alarm",1193,15,"WaveModeNpc::OnMobDead3";
+		areamonster "guild_vs1",31,67,67,32,"[W3] Solid Rideword",2682,10,"WaveModeNpc::OnMobDead3";
+		areamonster "guild_vs1",49,49,49,49,"[W3] White Lady",1630,1,"WaveModeNpc::OnMobDead3";
+	end;
+	
+	OnMobDead3:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave4; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 4
+	OnWave4:
+		Announce "Monster Wave Mode: ด่านที่ 4 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W4] Assaulter",1315,10,"WaveModeNpc::OnMobDead4";
+		areamonster "guild_vs1",31,31,68,68,"[W4] Permeter",1314,15,"WaveModeNpc::OnMobDead4";
+		areamonster "guild_vs1",71,50,28,50,"[W4] Assaulter",1315,10,"WaveModeNpc::OnMobDead4";
+		areamonster "guild_vs1",31,67,67,32,"[W4] Heater",1318,15,"WaveModeNpc::OnMobDead4";
+		areamonster "guild_vs1",31,31,68,68,"[W4] Freezer",1319,15,"WaveModeNpc::OnMobDead4";
+		areamonster "guild_vs1",31,67,67,32,"[W4] Assaulter Ringleader",2889,5,"WaveModeNpc::OnMobDead4";
+		areamonster "guild_vs1",49,49,49,49,"[W4] Turtle General",1312,1,"WaveModeNpc::OnMobDead4";
+	end;
+	
+	OnMobDead4:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave5; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 5
+	OnWave5:
+		Announce "Monster Wave Mode: ด่านที่ 5 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,77;
+		areamonster "guild_vs1",31,67,67,32,"[W5] Orc Skeleton",1152,10,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",31,31,68,68,"[W5] Orc Aecher",1189,15,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",71,50,28,50,"[W5] Orc Baby",1686,15,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",31,67,67,32,"[W5] Orc Warrior",1023,10,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",31,31,68,68,"[W5] High Orc",1213,15,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",31,67,67,32,"[W5] Swift Orc Skeleton",2724,10,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",49,49,49,49,"[W5] Orc Hero",1087,1,"WaveModeNpc::OnMobDead5";
+		areamonster "guild_vs1",49,49,49,49,"[W5] Orc Lord",1190,1,"WaveModeNpc::OnMobDead5";
+	end;
+	
+	OnMobDead5:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave6; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 6
+	OnWave6:
+		Announce "Monster Wave Mode: ด่านที่ 6 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W6] Assaulter",1315,10,"WaveModeNpc::OnMobDead6";
+		areamonster "guild_vs1",31,31,68,68,"[W6] ORC ARCHER",1189,15,"WaveModeNpc::OnMobDead6";
+		areamonster "guild_vs1",71,50,28,50,"[W6] Isis",1165,10,"WaveModeNpc::OnMobDead6";
+		areamonster "guild_vs1",31,67,67,32,"[W6] ARCHER SKELETON",1016,15,"WaveModeNpc::OnMobDead6";
+		areamonster "guild_vs1",31,31,68,68,"[W6] Nine Tail",1180,15,"WaveModeNpc::OnMobDead6";
+		areamonster "guild_vs1",31,67,67,32,"[W6] Cat o' Nine Tails",1307,5,"WaveModeNpc::OnMobDead6";
+		areamonster "guild_vs1",49,49,49,49,"[W6] Moonlight Flower",1150,1,"WaveModeNpc::OnMobDead6";
+	end;
+	
+	OnMobDead6:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave7; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 7
+	OnWave7:
+		Announce "Monster Wave Mode: ด่านที่ 7 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W7] Assaulter",1315,10,"WaveModeNpc::OnMobDead7";
+		areamonster "guild_vs1",31,31,68,68,"[W7] ORC ARCHER",1189,15,"WaveModeNpc::OnMobDead7";
+		areamonster "guild_vs1",71,50,28,50,"[W7] Isis",1165,10,"WaveModeNpc::OnMobDead7";
+		areamonster "guild_vs1",31,67,67,32,"[W7] ARCHER SKELETON",1016,15,"WaveModeNpc::OnMobDead7";
+		areamonster "guild_vs1",31,31,68,68,"[W7] Nine Tail",1180,15,"WaveModeNpc::OnMobDead7";
+		areamonster "guild_vs1",31,67,67,32,"[W7] Cat o' Nine Tails",1307,5,"WaveModeNpc::OnMobDead7";
+		areamonster "guild_vs1",49,49,49,49,"[W7] Moonlight Flower",1150,1,"WaveModeNpc::OnMobDead7";
+	end;
+	
+	OnMobDead7:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave8; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 8
+	OnWave8:
+		Announce "Monster Wave Mode: ด่านที่ 8 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W8] Assaulter",1315,10,"WaveModeNpc::OnMobDead8";
+		areamonster "guild_vs1",31,31,68,68,"[W8] ORC ARCHER",1189,15,"WaveModeNpc::OnMobDead8";
+		areamonster "guild_vs1",71,50,28,50,"[W8] Isis",1165,10,"WaveModeNpc::OnMobDead8";
+		areamonster "guild_vs1",31,67,67,32,"[W8] ARCHER SKELETON",1016,15,"WaveModeNpc::OnMobDead8";
+		areamonster "guild_vs1",31,31,68,68,"[W8] Nine Tail",1180,15,"WaveModeNpc::OnMobDead8";
+		areamonster "guild_vs1",31,67,67,32,"[W8] Cat o' Nine Tails",1307,5,"WaveModeNpc::OnMobDead8";
+		areamonster "guild_vs1",49,49,49,49,"[W8] Moonlight Flower",1150,1,"WaveModeNpc::OnMobDead8";
+	end;
+	
+	OnMobDead8:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave9; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 9
+	OnWave9:
+		Announce "Monster Wave Mode: ด่านที่ 9 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W9] Assaulter",1315,10,"WaveModeNpc::OnMobDead9";
+		areamonster "guild_vs1",31,31,68,68,"[W9] ORC ARCHER",1189,15,"WaveModeNpc::OnMobDead9";
+		areamonster "guild_vs1",71,50,28,50,"[W9] Isis",1165,10,"WaveModeNpc::OnMobDead9";
+		areamonster "guild_vs1",31,67,67,32,"[W9] ARCHER SKELETON",1016,15,"WaveModeNpc::OnMobDead9";
+		areamonster "guild_vs1",31,31,68,68,"[W9] Nine Tail",1180,15,"WaveModeNpc::OnMobDead9";
+		areamonster "guild_vs1",31,67,67,32,"[W9] Cat o' Nine Tails",1307,5,"WaveModeNpc::OnMobDead9";
+		areamonster "guild_vs1",49,49,49,49,"[W9] Moonlight Flower",1150,1,"WaveModeNpc::OnMobDead9";
+	end;
+	
+	OnMobDead9:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) { 
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end; 
+		}
+		if($mob == 5) { 
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว",0; 
+			end; 
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 5000;
+			goto OnWave10; 
+			end;
+		}
+	end;
+	//=======================================
+	//= ด่านที่ 10
+	OnWave10:
+		Announce "Monster Wave Mode: ด่านที่ 10 ได้เริ่มขึ้นแล้ว !!",8;	
+		set $inf,0;
+		set $mob,71;
+		areamonster "guild_vs1",31,67,67,32,"[W10] Assaulter",1315,10,"WaveModeNpc::OnMobDead10";
+		areamonster "guild_vs1",31,31,68,68,"[W10] ORC ARCHER",1189,15,"WaveModeNpc::OnMobDead10";
+		areamonster "guild_vs1",71,50,28,50,"[W10] Isis",1165,10,"WaveModeNpc::OnMobDead10";
+		areamonster "guild_vs1",31,67,67,32,"[W10] ARCHER SKELETON",1016,15,"WaveModeNpc::OnMobDead10";
+		areamonster "guild_vs1",31,31,68,68,"[W10] Nine Tail",1180,15,"WaveModeNpc::OnMobDead10";
+		areamonster "guild_vs1",31,67,67,32,"[W10] Cat o' Nine Tails",1307,5,"WaveModeNpc::OnMobDead10";
+		areamonster "guild_vs1",49,49,49,49,"[W10] Moonlight Flower",1150,1,"WaveModeNpc::OnMobDead10";
+	end;
+	
+	OnMobDead10:
+		if ($status == 1) end;
+		set $mob,$mob-1;
+		if($mob == 25) {
+			Announce "เหลือมอนสเตอร์อีก 25 ตัว",0; 
+			end;
+		}
+		if($mob == 5) {
+			Announce "เหลือมอนสเตอร์อีก 5 ตัว",0; 
+			end;
+		}
+		if($mob == 1) {
+			Announce "เหลือมอนสเตอร์อีก 1 ตัว!",0;
+			end;
+		}
+		if($mob == 0) { 
+			Announce "มอนสเตอร์ทั้งหมดถูกกำจัดแล้ว",0; 
+			sleep2 1000;
+			Announce "ท่านได้พิชิต Monster Wave Mode แล้วมหาสมบัติกำลังรอท่านอยู่จงรีบไป!",8;
+			goto OnTreasureBox; 
+			end;
+		}
+	end;
+	//=======================================
+	//= จบกิจกรรม กล่องสมบัติเกิด
+	OnTreasureBox:
+		set $mob,6;
+		monster "guild_vs1",44,51,"Treasure Box",1324,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",44,48,"Treasure Box",1328,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",55,51,"Treasure Box",1332,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",55,48,"Treasure Box",1336,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",47,51,"Treasure Box",1340,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",47,48,"Treasure Box",1344,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",52,51,"Treasure Box",1348,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",52,48,"Treasure Box",1352,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",49,50,"Treasure Box",1356,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",49,49,"Treasure Box",1360,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",50,50,"Treasure Box",1356,1,"WaveModeNpc::Onboxdead";
+		monster "guild_vs1",50,49,"Treasure Box",1360,1,"WaveModeNpc::Onboxdead";
+	end;	
+	
+	Onboxdead:
+		enablenpc "OutSide";
+		if ($status == 1) end;
+		set $mob, $mob - 1;
+		Announce "Monster Wave Mode : " + strcharinfo(0) +" ได้เปิดกล่องสมบัติแล้ว",8;
+		getitem 41003,10; end;
+		if($mob == 6) { Announce "เหลือกล่องสมบัติอีก 6 กล่อง!",0; end; }
+		if($mob == 5) { Announce "เหลือกล่องสมบัติอีก 5 กล่อง!",0; end; }
+		if($mob == 4) { Announce "เหลือกล่องสมบัติอีก 4 กล่อง!",0; end; }
+		if($mob == 3) { Announce "เหลือกล่องสมบัติอีก 3 กล่อง!",0; end; }
+		if($mob == 2) { Announce "เหลือกล่องสมบัติอีก 2 กล่อง!",0; end; }
+		if($mob == 1) { Announce "เหลือกล่องสมบัติอีก 1 กล่อง!",0; end; }
+		if($mob == 0) { Announce "กล่องสมบัติได้ถูกเปิดทั้งหมดแล้ว!",0; end; }
+	end;
+	//=======================================
+}
+
+// -- Mapflags
+guild_vs1	mapflag	nowarp
+guild_vs1	mapflag	nowarpto
+guild_vs1	mapflag	noteleport
+guild_vs1	mapflag	nosave	SavePoint
+guild_vs1	mapflag	nomemo
+guild_vs1	mapflag	nobranch
+guild_vs1	mapflag	nopenalty
+// -- End of Mapflags
+
+guild_vs1,50,57,4	script	OutSide	4_M_NFDEADMAN,{
+	
+	mes "[ทางออก]";
+	mes "นี่คือทางออกจาก Monster Wave Mode ขอให้ท่านจงโชคดี";
+	next;
+	warp "SavePoint",0,0;
+	close;
+}

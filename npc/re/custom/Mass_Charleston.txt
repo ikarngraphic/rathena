@@ -1,0 +1,246 @@
+verus04,69,109,4	script	Mass Charleston#1	4_F_CHARLESTON01,{
+	cutin "dalle03.bmp",2;
+	mes "After defeating Charleston you can create very powerful objects.";
+	next;
+	cutin "dalle01.bmp",2;
+	mes "[Charleston's Clone]";
+	mes "Each of the objects that I will show here occupies ^000000Charleston Parts ^000000, so do not forget it";
+	next;
+	mes "[Charleston's Clone]";
+	mes "Also for the creation of each of these I will exchange with 10 Charleston Parts";
+	next;
+	mes "[Charleston's Clone]";
+	mes "What do you want to do?";
+	next;
+	switch(select("Create Supplement Part Con","Create Supplement Part Agi","Create Supplement Part Dex","Create Upgrade Part Engine","Create Upgrade Part Booster","Create Upgrade Part Barrel","No,Thank you.")) {
+		case 1:
+			cutin "dalle03.bmp",2;
+			mes "[Charleston's Clone]";
+			mes "<ITEM>Supplement Part Con[1]<INFO>20732</INFO></ITEM>","trade with 10 Charleston Parts";
+			next;
+			mes "Are you ready to create?";
+			switch(select("Yes","No")) {
+				case 1:
+				if (checkweight(20732,1)) {
+					if (countitem(6752) >= 10) {
+						next;
+						mes "[Charleston's Clone]";
+						mes "Agree,Thank you.","Please come again if you want. Good bye.";
+						delitem 6752,10;
+						getitem 20732,1;
+						close2;
+						cutin "dalle03.bmp",255;
+						end; 
+					}
+					else {
+					next;
+					mes "[Charleston's Clone]";
+					mes "You don't have sufficient item";
+					close2;
+					cutin "dalle03.bmp",255;
+					end;
+					}
+				}
+				else callfunc "charles_weight";
+				case 2:
+					next;
+					mes "[Charleston's Clone]";
+					mes "Good bye. See ya";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; }
+		case 2:
+			cutin "dalle03.bmp",2;
+			mes "[Charleston's Clone]";
+			mes "<ITEM>Supplement Part Agi[1]<INFO>22043</INFO></ITEM>","trade with 10 Charleston Parts";
+			next;
+			mes "Are you ready to create?";
+			switch(select("Yes","No")) {
+				case 1:
+					if (checkweight(20732,1)) {
+					if (countitem(6752) >= 10) {
+						next;
+						mes "[Charleston's Clone]";
+						mes "Agree,Thank you.","Please come again if you want. Good bye.";
+						delitem 6752,10;
+						getitem 22043,1;
+						close2;
+						cutin "dalle03.bmp",255;
+						end; 
+					}
+					else {
+					next;
+					mes "[Charleston's Clone]";
+					mes "You don't have sufficient item";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; 
+					}
+				}
+				else callfunc "charles_weight";
+				case 2:
+					next;
+					mes "[Charleston's Clone]";
+					mes "Good bye. See ya";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; }
+		case 3:
+			cutin "dalle03.bmp",2;
+			mes "[Charleston's Clone]";
+			mes "<ITEM>Supplement Part Dex[1]<INFO>2995</INFO></ITEM>","trade with 10 Charleston Parts";
+			next;
+			mes "Are you ready to create?";
+			switch(select("Yes","No")) {
+				case 1: 
+				if (checkweight(20732,1)) {
+					if (countitem(6752) >= 10) {
+						next;
+						mes "[Charleston's Clone]";
+						mes "Agree,Thank you.","Please come again if you want. Good bye.";
+						delitem 6752,10;
+						getitem 2995,1;
+						close2;
+						cutin "dalle03.bmp",255;
+						end; 
+					}
+					else {
+					next;
+					mes "[Charleston's Clone]";
+					mes "You don't have sufficient item";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; 
+					}
+				}
+				else callfunc "charles_weight";
+				case 2:
+					next;
+					mes "[Charleston's Clone]";
+					mes "Good bye. See ya";
+					close2;
+					cutin "dalle03.bmp",255;
+					end;  }
+		case 4:
+			cutin "dalle03.bmp",2;
+			mes "[Charleston's Clone]";
+			mes "<ITEM>Upgrade Part - Engine[1]<INFO>20733</INFO></ITEM>","trade with 10 Charleston Parts";
+			next;
+			mes "Are you ready to create?";
+			switch(select("Yes","No")) {
+				case 1: 
+				if (checkweight(20732,1)) {
+					if (countitem(6752) >= 10) {
+						next;
+						mes "[Charleston's Clone]";
+						mes "Agree,Thank you.","Please come again if you want. Good bye.";
+						delitem 6752,10;
+						getitem 20733,1;
+						close2;
+						cutin "dalle03.bmp",255;
+						end; 
+					}
+					else {
+					next;
+					mes "[Charleston's Clone]";
+					mes "You don't have sufficient item";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; 
+					}
+				}
+				else callfunc "charles_weight";
+				case 2:
+					next;
+					mes "[Charleston's Clone]";
+					mes "Good bye. See ya";
+					close2;
+					cutin "dalle03.bmp",255;
+					end;  }
+		case 5:
+			cutin "dalle03.bmp",2;
+			mes "[Charleston's Clone]";
+			mes "<ITEM>Upgrade Part - Booster[1]<INFO>22044</INFO></ITEM>","trade with 10 Charleston Parts";
+			next;
+			mes "Are you ready to create?";
+			switch(select("Yes","No")) {
+				case 1: 
+				if (checkweight(20732,1)) {
+					if (countitem(6752) >= 10) {
+						next;
+						mes "[Charleston's Clone]";
+						mes "Agree,Thank you.","Please come again if you want. Good bye.";
+						delitem 6752,10;
+						getitem 22044,1;
+						close2;
+						cutin "dalle03.bmp",255;
+						end; 
+					}
+					else {
+					next;
+					mes "[Charleston's Clone]";
+					mes "You don't have sufficient item";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; 
+					}
+				}
+				else callfunc "charles_weight";	
+				case 2:
+					next;
+					mes "[Charleston's Clone]";
+					mes "Good bye. See ya";
+					close2;
+					cutin "dalle03.bmp",255;
+					end;  }
+		case 6:
+			cutin "dalle03.bmp",2;
+			mes "[Charleston's Clone]";
+			mes "<ITEM>Upgrade Part - Gun Barrel[1]<INFO>2996</INFO></ITEM>","trade with 10 Charleston Parts";
+			next;
+			mes "Are you ready to create?";
+			switch(select("Yes","No")) {
+				case 1: 
+				if (checkweight(20732,1)) {
+					if (countitem(6752) >= 10) {
+						next;
+						mes "[Charleston's Clone]";
+						mes "Agree,Thank you.","Please come again if you want. Good bye.";
+						delitem 6752,10;
+						getitem 2996,1;
+						close2;
+						cutin "dalle03.bmp",255;
+						end; 
+					}
+					else {
+					next;
+					mes "[Charleston's Clone]";
+					mes "You don't have sufficient item";
+					close2;
+					cutin "dalle03.bmp",255;
+					end; 
+					}
+				}
+				else callfunc "charles_weight";
+				case 2:
+					next;
+					mes "[Charleston's Clone]";
+					mes "Good bye. See ya";
+					close2;
+					cutin "dalle03.bmp",255;
+					end;  }
+		case 7:
+			next;
+			mes "[Charleston's Clone]";
+			mes "Good bye. See ya";
+			close2;
+			cutin "dalle03.bmp",255;
+			end;
+	}
+}
+
+function	script	charles_weight	{
+	next;
+	mes "Sorry, Your inventory is full.";
+	close;
+}

@@ -1,0 +1,75 @@
+maintown,41,90,4	script	Fadhgridh#M200	722,{
+set .@GID, GetCastleData("prtg_cas03",1);
+mes "[ บ้าน Fadhgridh ]";
+
+if(.@GID == 0){	mes "[ ^FF0000บ้านยังไม่ถูกยึดครอง^000000 ]";	end;	} else {
+mes "หัวกิล: [^ff0000"+GetGuildName(.@GID)+"^000000]";
+
+mes "คือ: ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+
+end;
+}
+
+OnRecvCastlePt03:
+
+FlagEmblem GetCastleData("prtg_cas03",1);
+
+end;
+}
+
+maintown,44,90,4	script	Kriemhild#M400	722,{
+set .@GID, GetCastleData("prtg_cas01",1);
+mes "[ บ้าน Kriemhild ]";
+
+if(.@GID == 0){	mes "[ ^FF0000บ้านยังไม่ถูกยึดครอง^000000 ]";	end;	} else {
+mes "หัวกิล: [^ff0000"+GetGuildName(.@GID)+"^000000]";
+
+mes "คือ: ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+
+end;
+}
+
+OnRecvCastlePt01:
+
+FlagEmblem GetCastleData("prtg_cas01",1);
+
+end;
+}
+
+
+maintown,47,90,4	script	Hohenschwangau#M600	722,{
+set .@GID, GetCastleData("aldeg_cas02",1);
+mes "[ บ้าน Hohenschwangau ]";
+
+if(.@GID == 0){	mes "[ ^FF0000บ้านยังไม่ถูกยึดครอง^000000 ]";	end;	} else {
+mes "หัวกิล: [^ff0000"+GetGuildName(.@GID)+"^000000]";
+
+mes "คือ: ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+
+end;
+}
+
+OnRecvCastleA02:
+FlagEmblem GetCastleData("aldeg_cas02",1);
+
+end;
+}
+
+
+maintown,50,90,4	script	Sacred Altar#M800	722,{
+set .@GID, GetCastleData("payg_cas04",1);
+mes "[ บ้าน Sacred Altar]";
+
+if(.@GID == 0){	mes "[ ^FF0000บ้านยังไม่ถูกยึดครอง^000000 ]";	end;	} else {
+mes "หัวกิล: [^ff0000"+GetGuildName(.@GID)+"^000000]";
+
+mes "คือ: ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+
+end;
+}
+
+OnRecvCastlePy04:
+FlagEmblem GetCastleData("payg_cas04",1);
+
+end;
+}

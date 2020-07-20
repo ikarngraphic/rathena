@@ -1,0 +1,63 @@
+maintown,126,123,6	script	Purified Enchant	616,{
+
+	mes "[ Purified Enchant ]";
+	mes "เลือกไอเท็มที่จะออฟ";
+	next;
+
+	setarray .@indices[1], EQI_HAND_L;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+	if(.@part == 28942){ set .@idenc,23545; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28945){ set .@idenc,23546; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28946){ set .@idenc,23547; set .@modeenc,3; goto SUCC; }
+	
+		end;
+	
+SUCC:
+				
+	if (countitem(.@idenc) < 1 ) {
+	next;
+					mes "[ Purified Enchant ]";
+					mes "ไม่มีไอเท็ม ที่กำหนด";
+					mes "ไปหามาก่อน";
+					end;
+				}
+				
+	if (countitem(.@part) > 1 ) {
+	next;
+					mes "[ Purified Enchant ]";
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}			
+	
+	.@last_lapine_card1 = getequipcardid(.@id,0);
+	.@last_lapine_card2 = getequipcardid(.@id,1);
+	.@last_lapine_card3 = getequipcardid(.@id,2);
+	.@last_lapine_card4 = getequipcardid(.@id,3);
+	.@last_lapine_refine = getequiprefinerycnt(.@id);
+	
+	delitem .@idenc,1;
+	delitem .@part,1;	
+	
+	if(.@modeenc == 1){ callfunc("F_Lapine_Cursed_Blood", .@opts[0], .@vals[0], .@opts[1], .@vals[1], .@opts[2], .@vals[2]); }
+	if(.@modeenc == 2){ callfunc("F_Lapine_Cursed_Blood", .@opts[0], .@vals[0], .@opts[1], .@vals[1], .@opts[2], .@vals[2]); }
+	if(.@modeenc == 3){ callfunc("F_Lapine_Gold_Statue", .@opts[0], .@vals[0], .@opts[1], .@vals[1], .@opts[2], .@vals[2]); }
+   
+    .@params[0] = 0;
+    getitem3(.@part,1,1,.@last_lapine_refine,0,.@last_lapine_card1,.@last_lapine_card2,.@last_lapine_card3,.@last_lapine_card4,.@opts,.@vals,.@params);
+	equip .@part;
+	end;
+
+
+}

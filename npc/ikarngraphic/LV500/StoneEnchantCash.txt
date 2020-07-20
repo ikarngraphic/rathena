@@ -1,0 +1,181 @@
+//===== Current Version: =====================================
+//= 1.1 
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Exchange cards for points?.?
+//============================================================
+
+-	shop	enchantcot2_shop	-1,909:-1
+
+maintown,139,124,4	script	Input Stone Bonus	10122,{
+	mes "[ Enchanter Costume ]";
+	mes "หวัดดี, "+strcharinfo(0)+"!";
+	mes "มีอะไรให้ข้ารับใช้ไหม ?";
+	next;
+	switch(select(" - ยัด Stone[Bonus]: - ออก")) {
+	case 1:
+		mes "[ Enchanter Costume ]";
+		mes "กรุณาเลือก Stone";
+		mes "ที่เจ้าต้อง";
+		mes "แล้วใส่ไอเท็มไว้ในตัว";		
+		deletearray @sold_nameid[0],getarraysize(@sold_nameid);
+		callshop "enchantcot2_shop",2;
+		npcshopattach "enchantcot2_shop";
+		end;
+	case 2:
+		mes "[ Enchanter Costume ]";
+		mes "แล้วมาใหม่น่ะ!";
+		close;		
+	}
+
+OnSellItem:
+
+	//EQI_SHADOW_ARMOR (15)	Shadow Armor			sh_armor;
+	//EQI_SHADOW_WEAPON (16)	Shadow Weapon       sh_weapon;
+	//EQI_SHADOW_SHIELD (17)	Shadow Shield       sh_shield;
+	//EQI_SHADOW_SHOES (18)	Shadow Shoes            sh_shoes;
+	//EQI_SHADOW_ACC_R (19)	Shadow Accessory 2      sh_right_acc;
+	//EQI_SHADOW_ACC_L (20)	Shadow Accessory 1		sh_left_acc;
+	
+	//EQI_HEAD_TOP (1)	Upper head gear
+	//EQI_ARMOR (2)	Armor (Where you keep your Jackets and Robes)
+	//EQI_HAND_L (3)	What is in your Left hand.
+	//EQI_HAND_R (4)	What is in your Right hand.
+	//EQI_GARMENT (5)	The garment slot (Mufflers, Hoods, Manteaus)
+	//EQI_SHOES (6)	What foot gear the player has on.
+	//EQI_ACC_L (7)	Accessory 1.
+	//EQI_ACC_R (8)	Accessory 2.
+	//EQI_HEAD_MID (9)	Middle Headgear (masks and glasses)
+	//EQI_HEAD_LOW (10)	Lower Headgear (beards, some masks)
+	//EQI_COSTUME_HEAD_LOW (11)	Lower Costume Headgear
+	//EQI_COSTUME_HEAD_MID (12)	Middle Costume Headgear
+	//EQI_COSTUME_HEAD_TOP (13)	Upper Costume Headgear
+	//EQI_COSTUME_GARMENT (14)	Costume Garment
+	//EQI_SHADOW_ARMOR (15)	Shadow Armor
+	//EQI_SHADOW_WEAPON (16)	Shadow Weapon
+	//EQI_SHADOW_SHIELD (17)	Shadow Shield
+	//EQI_SHADOW_SHOES (18)	Shadow Shoes
+	//EQI_SHADOW_ACC_R (19)	Shadow Accessory 2
+	//EQI_SHADOW_ACC_L (20)	Shadow Accessory 1
+
+	//EQI_COSTUME_HEAD_TOP8
+	//if(@sold_nameid[0] == 25490) goto eq_c_top;
+
+//=======================================================================================================
+					mes "[ Enchanter Costume ]";
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "เลือกไอเท็มที่เจ้าต้องการจะออฟ ?";
+					next;
+	setarray .@indices[1], EQI_COSTUME_HEAD_TOP,EQI_COSTUME_HEAD_MID,EQI_COSTUME_HEAD_LOW,EQI_COSTUME_GARMENT;
+		for( set .@i,1; .@i <= 4; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+	set .itemcarduse,@sold_nameid[0];	
+	set .@idcard,.@id;
+	
+	if(getequipid(.@id) == 0){	goto ErrMes;	end;	}
+	
+//===========================================================
+
+	enchantsucc:
+
+//===========================================================
+	
+	if(.itemcarduse == 45701){ goto encsucc; }
+	if(.itemcarduse == 45702){ goto encsucc; }
+	if(.itemcarduse == 45703){ 
+	
+	if(.@id != 13){
+	
+	mes "[ Enchanter Costume ]";
+	mes "หินออฟสามารถใช้ได้แค่ ^777777Cos-Garment^000000";
+	end;
+	
+	}
+		
+	goto encsucc; }
+	
+	mes "[ Enchanter Costume ]";
+	mes "ไอเท็มไม่สามารถออฟชั่นได้";
+	end;
+	
+	
+	
+	encsucc:
+	
+	mes "[ Enchanter Costume ]";
+	//mes " "+.@part+" ";
+	//mes " "+.@id+" ";
+	mes "ไอเท็ม : "+getitemname(.@part)+"";
+	mes "หิน : "+getitemname(.itemcarduse)+"";
+	mes "ถูกต้องหรือไม่ ?";
+	
+	if (.@part == 50105){ next;	mes "[Costume Enchanter]","ไอเท็มเช่าไม่สามารถใช้งานได้";	end; }
+	if (.@part == 52052){ next;	mes "[Costume Enchanter]","ไอเท็มเช่าไม่สามารถใช้งานได้";	end; }
+	if (.@part == 54039){ next;	mes "[Costume Enchanter]","ไอเท็มเช่าไม่สามารถใช้งานได้";	end; }
+	
+	if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	
+	next;
+	
+	menu "ถูกต้องแล้ว",-,"ไม่ใช่ไอเท็มนี้",NoMes;
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@idcard,0);
+	@card2 = getequipcardid(.@idcard,1);
+	@card3 = getequipcardid(.@idcard,2);
+	@card4 = getequipcardid(.@idcard,3);
+	
+	//if(@card4 != 0){ end; }
+		
+	set .@ropt1,getequiprandomoption(.@idcard,0,ROA_ID);
+	set .@ropt2,getequiprandomoption(.@idcard,0,ROA_VALUE);
+	set .@ropt3,getequiprandomoption(.@idcard,1,ROA_ID);
+	set .@ropt4,getequiprandomoption(.@idcard,1,ROA_VALUE);
+	
+		
+		specialeffect2 154;
+		delitem .@part,1;		
+		if(@card1 == 0){ getitem2 .@part, 1, 1, @ref, 0, .itemcarduse, @card2, @card3, @card4; goto succMes; }
+		
+succMes:
+
+		delitem .itemcarduse,1;
+		equip .@part;
+	
+	if(.@ropt1 == 0){ end; }
+	if(.@ropt3 == 0){ end; }		
+	
+	if(.@ropt1 != 0){	setrandomoption(.@idcard,0,.@ropt1,.@ropt2,0); }
+	if(.@ropt3 != 0){	setrandomoption(.@idcard,1,.@ropt3,.@ropt4,0);	}
+	
+		end;
+		
+	
+ErrMes:
+mes "[ Enchanter Costume ]";
+mes "คุณไม่ได้สวมใส่ไอเท็ม Input";
+mes "กรุณาสวมใส่ไอเท็มก่อน";
+end;	
+
+NoMes:
+mes "ไว้เจอกันใหม่";
+end;
+
+
+OnInit:
+//	waitingroom "  Enchanter Class",0;
+end;
+}

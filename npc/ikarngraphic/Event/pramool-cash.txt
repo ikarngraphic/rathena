@@ -1,0 +1,384 @@
+/* SQL Tables
+
+CREATE TABLE IF NOT EXISTS `e_auction_bid_list` (
+	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`nameid` INT(11) NOT NULL DEFAULT '0',
+	`refine` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+	`amount` INT(11) NOT NULL DEFAULT '1',
+	`bid_min` INT(11) NOT NULL DEFAULT '0',
+	`bid_max` INT(11) NOT NULL DEFAULT '0',
+	`minute` INT(11) NOT NULL DEFAULT '0',
+	`status` TINYINT(3) UNSIGNED NOT NULL DEFAULT '1',
+	`date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE IF NOT EXISTS `e_auction_list_log` (
+	`id` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	`nameid` INT(11) NOT NULL DEFAULT '0',
+	`refine` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+	`amount` INT(11) NOT NULL DEFAULT '0',
+	`date` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	
+	`aid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	`cid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	`bid` INT(11) NOT NULL DEFAULT '0',
+	`claim` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	
+	PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE IF NOT EXISTS `e_auction_bid_log` (
+	`aid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	`cid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	`bid` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+	`time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	PRIMARY KEY (`aid`)
+) ENGINE=MyISAM;
+
+*/
+
+
+mooc,166,80,4	script	ประมูลของ	4_F_KAFRA9,{
+	doevent "auction_bid_main::OnTalk";
+	
+	OnInit:
+	waitingroom "   ประมูล ITEM",0;
+	end;
+	
+}
+
+
+-	script	auction_bid_main	FAKE_NPC,{
+	function func_getitemname;
+	
+	function	func_getitemname	{
+		.@refine = getarg( 0,0 );
+		.@itemid = getarg( 1,0 );
+		.@amount = getarg( 2,0 );
+		
+		.@name$ = getitemname( .@itemid );
+		
+		if ( .@name$ != "null" && .@amount > 0 ) {
+			.@slot = getitemslots( .@itemid );
+			.@itemtype = getiteminfo( .@itemid,2 );
+			
+			if ( .@itemtype == IT_ARMOR || .@itemtype == IT_WEAPON ) {
+				.@name$ = .@name$ + " ["+.@slot+"]";
+				if ( .@refine ) 
+				.@name$ = "+" + .@refine +" "+.@name$;
+			}
+			
+			if ( .@amount > 1 ) {
+				.@name$ = .@amount + "x " + .@name$;
+			}
+		}
+		else {
+			.@name$ = "ID#"+.@itemid;
+		}
+		
+		return .@name$;
+	}
+	
+	OnInit:
+		.gm_level = 99;
+		.npc_name$ = strnpcinfo(3);
+		bindatcmd "auction",.npc_name$+"::OnAtcommand",.gm_level,.gm_level;
+		end;
+		
+	OnTalk:
+		.@aid = getcharid(3);
+		.@cid = getcharid(0);
+		
+		mes "[ลานประมูล]";
+		switch ( .status ) {
+			default:
+				.@is_gm = ( getgmlevel() >= .gm_level && .gm_level > 80 );
+				switch ( select( 
+					"รับสินค้าที่ประมูลไว้",
+					( .@is_gm ) ? "^FF0000[GM]^000000 Manage Auction Item(s)" : "",
+					( .@is_gm && !.status ) ? "^FF0000[GM]^000000 เริ่มการประมูล " : "",
+					( .@is_gm && .status ) ? "^FF0000[GM]^000000 จบการประมูล " : "",
+					"ดูรายละเอียด"
+				) ) {
+					case 1:
+						.@sql$ = "SELECT `id`,`nameid`,`refine`,`amount`,`bid`,`date` FROM `e_auction_list_log` WHERE `aid` = "+.@aid+" AND `claim` = '0000-00-00 00:00:00' LIMIT 50";
+						query_sql( .@sql$, .@id, .@nameid, .@refine, .@amount, .@bid, .@date$ );
+						.@size = getarraysize( .@id );
+						if ( !.@size ) {
+							mes "ไม่มีของที่ท่านประมูลได้เลย.";
+						}
+						else {
+							for ( .@i = 0; .@i < .@size; .@i++ )
+								.@menu$ = .@menu$ + replacestr( func_getitemname( .@refine[.@i], .@nameid[.@i], .@amount[.@i] ), ":", " " ) + ":";
+							next;
+							.@i = select( .@menu$ ) - 1;
+							mes "คุณจะประมูล "+func_getitemname( .@refine[.@i], .@nameid[.@i], .@amount[.@i] )+" ในราคา "+F_InsertComma( .@bid[.@i] )+" Cash. คุณจะรับสินค้าตอนนี้เลยหรือไม่.";
+							if ( #CASHPOINTS >= .@bid[.@i] )
+								if ( select( "จ่ายเงิน","ยกเลิก" ) == 1 ) {
+									if ( !checkweight( .@nameid[.@i], .@amount[.@i] ) ) {
+										mes "ท่านไม่สามารถรับสินค้าปริมาณขนาดนี้ได้นะ.";
+									}
+									else {
+										#CASHPOINTS -= .@bid[.@i];
+										.@sql$ = "UPDATE `e_auction_list_log` SET `claim` = NOW() WHERE `id` = "+.@id[.@i]+" LIMIT 1";
+										query_sql( .@sql$ );
+										getitem2 .@nameid[.@i],.@amount[.@i],1,.@refine[.@i],0,0,0,0,0;
+										mes "ได้รับ "+func_getitemname( .@refine[.@i], .@nameid[.@i], .@amount[.@i] );
+									}
+								}
+						}
+						break;
+					case 2:
+						mes "สินค้าที่อยู่ในรายการประมูล :";
+						.@sql$ = "SELECT `id`,`nameid`,`refine`,`amount`,`bid_min`,`bid_max`,`minute`,`date` FROM `e_auction_bid_list` WHERE `status` = 1 LIMIT 50";
+						query_sql( .@sql$, .@id, .@nameid, .@refine, .@amount, .@bid_min, .@bid_max, .@minute, .@date$ );
+						.@size = getarraysize( .@id );
+						
+						if ( !.@size ) {
+							mes " ~ ไม่มีข้อมูล";
+						}
+						else {
+							for ( .@i = 0; .@i < .@size; .@i++ ) {
+								.@name$ = func_getitemname( .@refine[.@i], .@nameid[.@i], .@amount[.@i] );
+								.@menu$ = .@menu$ + replacestr( .@name$, ":", " " ) + ":";
+								mes " ~ "+.@name$;
+							}
+						}
+						next;
+						
+						switch( select( 
+							"เพิ่มสินค้าที่จะประมูล ",
+							( .@size ) ? "นำสินค้าออก": "",
+							"Cancel"
+						) ) {
+							case 1:
+								do {
+
+									if ( .@new_nameid ) {
+										.@type = getiteminfo( .@new_nameid,2 );
+										.@is_equipment = ( .@type != IT_ARMOR && .@type != IT_WEAPON );
+										if ( .@is_equipment )
+											.@new_refine = 0;
+										
+										if ( .@new_amount <= 0 )
+											.@new_amount = 1;
+									}
+									
+									.@new_incomplete = ( 
+										getitemname( .@new_nameid ) == "null"
+										|| .@new_amount <= 0
+										|| .@new_bid_min <= 0
+										|| .@new_bid_max <= .@new_bid_min
+										|| .@new_minute <= 0
+									);
+									
+									mes "[ตั้งค่าสินค้าที่จะประมูล]";
+									mes "Item : "+func_getitemname( .@new_refine, .@new_nameid, .@new_amount );
+									mes "ราคา : "+F_InsertComma( .@new_bid_min )+" ~ "+F_InsertComma( .@new_bid_max )+" Cash";
+									mes "ระยะเวลา : "+.@new_minute+" นาที";
+									
+									switch ( select( 
+										"รหัส ItemID",
+										( .@is_equipment ) ? "" : "จำนวนตีบวก",
+										"เปลี่ยนจำนวน",
+										"ราคาเริ่มขั้นต่ำ (Cash)",
+										"ราคาสูงสุด (Cash)",
+										"ระยะเวลาประมูล",
+										( .@new_incomplete ) ? "" : "เรียบร้อยแล้ว",
+										"Cancel"
+									) ) {
+										case 1:
+											input .@new_nameid,0,99999;
+											break;
+										case 2:
+											input .@new_refine,0,MAX_REFINE;
+											break;
+										case 3:
+											input .@new_amount,1,30000;
+											break;
+										case 4:
+											input .@new_bid_min,0,MAX_ZENY;
+										case 5:
+											input .@new_bid_max,.@new_bid_min,MAX_ZENY;
+											break;
+										case 6:
+											input .@new_minute,0,60;
+											break;
+										case 7:
+											.@sql$ = "INSERT INTO `e_auction_bid_list` ( `nameid`,`refine`,`amount`,`bid_min`,`bid_max`,`minute`,`date` ) VALUES ( "+.@new_nameid+","+.@new_refine+","+.@new_amount+","+.@new_bid_min+","+.@new_bid_max+","+.@new_minute+", NOW() ) ";
+											query_sql( .@sql$ );
+											mes "เพิ่มสินค้าเรียบร้อย";
+										default:
+										 close;
+									}
+									next;
+								} while ( 1 );
+								break;
+							case 2:
+								.@i = select( .@menu$ ) - 1;
+								.@sql$ = "UPDATE `e_auction_bid_list` SET `status` = 2 WHERE `id` = "+.@id[.@i]+" LIMIT 1";
+								query_sql( .@sql$ );
+								mes func_getitemname( .@refine[.@i], .@nameid[.@i], .@amount[.@i] ) + " ถูกนำออกจากรายการประมูล.";
+								break;
+							default:
+								break;
+						}
+						break;
+					case 3:
+						mes "[กิจกรรมประมูล] กำลังเริ่ม...";
+						donpcevent .npc_name$+"::OnStart";
+						break;
+					case 4:
+						mes "[กิจกรรมประมูล] กำลังยกเลิก...";
+						donpcevent .npc_name$+"::OnTerminate";
+						break;
+					default: 
+						mes "[กิจกรรมประมูล]. ";
+						mes "ทางทีมงานกิจกรรมจะนำสินค้ามาลงให้ผู้เล่นประมูลแข่งกัน โดยผู้ที่ให้ราคาสูงสุดจะได้สินค้านั้นไป.";
+						break;
+				
+				}
+				break;
+			case 1:
+			
+				mes "ขณะนี้ ทีมงาน";
+				mes "กำลังดำเนินการ รอสักครู่~";
+				break;
+			case 2:
+				mes "สินค้าประมูล:";
+				mes "^0055FF"+func_getitemname( .bid_refine, .bid_nameid, .bid_amount )+"^000000";
+				mes "ราคาประมูล  "+F_InsertComma( .bid_min )+" - "+F_InsertComma( .bid_max )+" Cash";
+				mes " ";
+				input .@zeny,0,#CASHPOINTS;
+				if ( .@zeny ) {
+					if ( .@zeny < .bid_min || .@zeny > .bid_max ) {
+						mes "ยอดเงินไม่ถูกต้อง.";
+					}
+					else {
+						mes "ประมูลด้วยราคา "+F_InsertComma( .@zeny )+" Cash ?";
+						if ( select( "ตกลง","ยกเลิก" ) == 1 ) {
+							.@sql$ = "INSERT INTO `e_auction_bid_log` ( `aid`,`cid`,`bid`,`time` ) VALUES ( "+.@aid+","+.@cid+","+.@zeny+",NOW() ) ON DUPLICATE KEY UPDATE `bid` = "+.@zeny+",`time` = NOW() ";
+							query_sql( .@sql$ );
+							set .bid_min , .@zeny;
+							announce "[ประมูล] '"+strcharinfo(0)+"' จ่ายเงิน "+F_InsertComma( .@zeny )+" Cash เพื่อประมูล "+func_getitemname( .bid_refine, .bid_nameid, .bid_amount )+".",bc_all;
+							mes "ทำรายการสำเร็จ.";
+						}
+					}
+				}
+				break;
+		}
+		close;
+		
+	OnAtcommand:
+		if ( compare( .@atcmd_parameters$[0], "start" ) ) {
+			if ( .status ) {
+				dispbottom "กำลังจัดการประมูล...";
+			}
+			else {
+				dispbottom "เริ่มการประมูล...";
+				donpcevent .npc_name$+"::OnStart";
+			}
+		}
+		else if ( compare( .@atcmd_parameters$[0], "stop" ) ) {
+			if ( !.status ) {
+				dispbottom "ไม่มีการประมูลใดๆ...";
+			}
+			else {
+				dispbottom "ยกเลิกการประมูล...";
+				donpcevent .npc_name$+"::OnEnd";
+			}
+		}
+		else {
+			dispbottom "Usage: "+.@atcmd_command$+" <start/stop>";
+		}
+		end;
+		
+	OnStart:
+		if ( !.status ) {
+			.@sql$ = "SELECT `id`,`nameid`,`refine`,`amount`,`bid_min`,`bid_max`,`minute` "
+					+ "FROM `e_auction_bid_list` "
+					+ "WHERE `status` = 1 "
+					+ "AND `bid_min` <= `bid_max` "
+					+ "AND `bid_min` > 0 "
+					+ "AND `minute` > 0 "
+					+ "AND `status` = 1 "
+					+ "ORDER BY RAND() LIMIT 1";
+			query_sql( .@sql$ , .@bid_id, .bid_nameid, .bid_refine, .bid_amount, .bid_min, .bid_max, .bid_minute );
+			
+			if ( .@bid_id <= 0 || .bid_nameid <= 0 || .bid_amount <= 0 || .bid_min > .bid_max || .bid_minute <= 0 ) {
+				announce "<AUCTION EVENT> Cancelled due to invalid settings for 'Item-"+.@bid_id+"' detected.",bc_all;
+			}
+			else {
+				.status = 1;
+				for ( .@i = 3; .@i > 0 && .status; .@i-- ) {
+					announce "[ลานประมูล] "+func_getitemname( .bid_refine, .bid_nameid, .bid_amount )+" จะเริ่มประมูลใน "+.@i+" นาที",bc_all;
+					sleep 60000;
+				}
+				if ( .status ) {
+					query_sql( "TRUNCATE `e_auction_bid_log`" );
+					
+					.bid_timestamp = gettimetick(2);
+					.@sql$ = "INSERT INTO `e_auction_list_log` ( `id`,`nameid`,`refine`,`amount`,`date` ) VALUES ( "+.bid_timestamp+", "+.bid_nameid+", "+.bid_refine+", "+.bid_amount+", NOW() )";
+					query_sql( .@sql$ );
+					.status = 2;
+					announce "[ลานประมูล] เริ่มการประมูล"+func_getitemname( .bid_refine, .bid_nameid, .bid_amount )+" ในเวลา "+.bid_minute+" นาที",bc_all;
+					
+					initnpctimer;
+				}
+				else donpcevent .npc_name$+"::OnEnd";
+			}
+		}
+		end;
+		
+	OnEnd:
+		if ( .status ) {
+			if ( .status >= 2 ) {
+				.@sql$ = "SELECT `aid`,`cid`,`bid`,`time` FROM `e_auction_bid_log` ORDER BY `bid` DESC LIMIT 1";
+				query_sql( .@sql$, .@aid, .@cid, .@bid, .@time$ );
+				sleep 1000;
+				.@sql$ = "UPDATE `e_auction_list_log` SET `aid` = "+.@aid+", `cid` = "+.@cid+", `bid` = "+.@bid+" WHERE `id` = "+.bid_timestamp+" LIMIT 1";
+				query_sql( .@sql$ );
+				.@sql$ = "SELECT `name` FROM `char` WHERE `char_id` = "+.@cid+" LIMIT 1";
+				query_sql( .@sql$,.@name$ );
+				announce "[ลานประมูล] "+func_getitemname( .bid_refine, .bid_nameid, .bid_amount )+" ถูกประมูลโดย "+.@name$+" ด้วยราคา "+F_InsertComma( .@bid )+" Cash.",bc_all;
+			}
+			else {
+				announce "[ลานประมูล] การประมูลถูกยกเลิก",bc_all;
+			}
+			.bid_nameid = 0;
+			.bid_refine = 0;
+			.bid_amount = 0;
+			.bid_min = 0;
+			.bid_max = 0;
+			.bid_minute = 0;
+			.bid_timestamp = 0;
+			.status = 0;
+		}
+		end;
+		
+	OnTerminate:
+		if ( !.status ) end;
+		if ( .status == 1 )
+			awake .npc_name$;
+		.bid_minute = 0;
+	
+	OnTimer60000:
+		if ( .status ) {
+			.bid_minute--;
+			
+			if ( .bid_minute > 0 ) {
+				if ( .bid_minute > 0 && ( .bid_minute <= 3 || .bid_minute % 5 == 0 )) {
+					announce "[ลานประมูล] "+func_getitemname( .bid_refine, .bid_nameid, .bid_amount )+" | ราคาประมูล - "+F_InsertComma( .bid_min )+" ~ "+F_InsertComma( .bid_max )+" Cash | เหลือเวลาอีก - "+.bid_minute+" นาที",bc_all;
+				}
+				setnpctimer 0;
+			}
+			else {
+				stopnpctimer;
+				donpcevent .npc_name$+"::OnEnd";
+			}
+		}
+		end;
+}
+
+

@@ -94,7 +94,7 @@ ReadingSpellbookDatabase reading_spellbook_db;
 #define MAX_SKILL_CHANGEMATERIAL_DB 75
 #define MAX_SKILL_CHANGEMATERIAL_SET 3
 struct s_skill_changematerial_db {
-	uint32 nameid;
+	unsigned short nameid;
 	unsigned short rate;
 	unsigned short qty[MAX_SKILL_CHANGEMATERIAL_SET];
 	unsigned short qty_rate[MAX_SKILL_CHANGEMATERIAL_SET];
@@ -1670,7 +1670,7 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 			sc_start(src,bl,SC_STUN,70,skill_lv,skill_get_time2(skill_id,skill_lv));
 		break;
 	case GS_BULLSEYE: //0.1% coma rate.
-		if(tstatus->race == RC_BRUTE || tstatus->race == RC_DEMIHUMAN || tstatus->race == RC_PLAYER_HUMAN || tstatus->race == RC_PLAYER_DORAM)
+		if(tstatus->race == RC_BRUTE || tstatus->race == RC_DEMIHUMAN || tstatus->race == RC_PLAYER)
 			status_change_start(src,bl,SC_COMA,10,skill_lv,0,src->id,0,0,SCSTART_NONE);
 		break;
 	case GS_PIERCINGSHOT:
@@ -1866,7 +1866,7 @@ int skill_additional_effect(struct block_list* src, struct block_list *bl, uint1
 						break;
 					}
 			}
-			sd->itemid = 0;
+			sd->itemid = -1;
 		}
 		break;
 	case GN_HELLS_PLANT_ATK:
@@ -4056,8 +4056,7 @@ static int skill_check_condition_mercenary(struct block_list *bl, uint16 skill_i
 	struct status_data *status;
 	struct map_session_data *sd = NULL;
 	int i, hp, sp, hp_rate, sp_rate, state, mhp;
-	uint32 itemid[MAX_SKILL_ITEM_REQUIRE];
-	int amount[ARRAYLENGTH(itemid)], index[ARRAYLENGTH(itemid)];
+	int itemid[MAX_SKILL_ITEM_REQUIRE],amount[ARRAYLENGTH(itemid)],index[ARRAYLENGTH(itemid)];
 
 	nullpo_retr(0, bl);
 
@@ -4129,7 +4128,7 @@ static int skill_check_condition_mercenary(struct block_list *bl, uint16 skill_i
 	for( i = 0; i < ARRAYLENGTH(itemid); i++ )
 	{
 		index[i] = -1;
-		if( itemid[i] == 0 ) continue; // No item
+		if( itemid[i] < 1 ) continue; // No item
 		index[i] = pc_search_inventory(sd, itemid[i]);
 		if( index[i] < 0 || sd->inventory.u.items_inventory[index[i]].amount < amount[i] )
 		{
@@ -5074,7 +5073,7 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 		break;
 
 	case HT_POWER:
-		if( tstatus->race == RC_BRUTE || tstatus->race == RC_PLAYER_DORAM || tstatus->race == RC_INSECT )
+		if( tstatus->race == RC_BRUTE || tstatus->race == RC_INSECT )
 			skill_attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
 		break;
 
@@ -7878,7 +7877,7 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		if( dstmd )
 		{
 			if( status_get_lv(src) > status_get_lv(bl)
-			&&  (tstatus->race == RC_DEMON || tstatus->race == RC_DEMIHUMAN || tstatus->race == RC_PLAYER_HUMAN || tstatus->race == RC_PLAYER_DORAM || tstatus->race == RC_ANGEL)
+			&&  (tstatus->race == RC_DEMON || tstatus->race == RC_DEMIHUMAN || tstatus->race == RC_PLAYER || tstatus->race == RC_ANGEL)
 			&&  !status_has_mode(tstatus,MD_STATUS_IMMUNE) )
 				clif_skill_nodamage(src,bl,skill_id,skill_lv, sc_start2(src,bl,type,70,skill_lv,src->id,skill_get_time(skill_id,skill_lv)));
 			else
@@ -8105,11 +8104,47 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 				sd->state.prevend = 1;
 				sd->state.workinprogress = WIP_DISABLE_ALL;
 				sd->vend_skill_lv = skill_lv;
+				sd->vend_loot = 0;
 				ARR_FIND(0, MAX_CART, i, sd->cart.u.items_cart[i].nameid && sd->cart.u.items_cart[i].id == 0);
 				if (i < MAX_CART)
 					intif_storage_save(sd, &sd->cart);
-				else
-					clif_openvendingreq(sd,2+skill_lv);
+				if (battle_config.extended_vending) {
+					struct item_data *item;
+					char output[1024];
+					int c = 0, i, d = 0;
+					sd->vend_lvl = skill_lv;
+					if (battle_config.item_zeny)
+						d++;
+					if (battle_config.item_cash)
+						d++;
+					for (c = d, i = 0; i < ARRAYLENGTH(item_vend); i++) {
+						if ((item = itemdb_exists(item_vend[i].itemid)) != NULL &&
+							item->nameid != ITEMID_ZENY && item->nameid != ITEMID_CASH)
+							c++;
+					}
+
+					if (c > 1)
+						clif_vend(sd, sd->vend_lvl);
+					else {
+						sd->state.prevend = 1;
+						if (c) {
+							item = itemdb_exists(battle_config.item_zeny ? battle_config.item_zeny : battle_config.item_cash ? battle_config.item_cash : item_vend[0].itemid);
+							sd->vend_loot = item->nameid;
+							sprintf(output, msg_txt(sd, 1596), itemdb_jname(sd->vend_loot));
+							clif_messagecolor(&sd->bl, color_table[COLOR_CYAN], output, false, SELF);
+							clif_openvendingreq(sd, 2 + sd->vend_lvl);
+						}
+						else {
+							sd->vend_loot = 0;
+							clif_openvendingreq(sd, 2 + sd->vend_lvl);
+						}
+					}
+				}
+				else {
+					sd->vend_loot = 0;
+					sd->state.prevend = 1;
+					clif_openvendingreq(sd, 2 + skill_lv);
+				}
 			}
 		}
 		break;
@@ -11002,7 +11037,8 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		break;
 	case GN_SLINGITEM:
 		if( sd ) {
-			uint32 ammo_id;
+			int ammo_id;
+
 			i = sd->equip_index[EQI_AMMO];
 			if( i < 0 )
 				break; // No ammo.
@@ -13291,8 +13327,7 @@ struct skill_unit_group *skill_unitsetting(struct block_list *src, uint16 skill_
 	int i, val1 = 0, val2 = 0, val3 = 0;
 	t_tick limit;
 	int link_group_id = 0;
-	int target, interval, range;
-	uint32 req_item = 0;
+	int target, interval, range, req_item = 0;
 	struct s_skill_unit_layout *layout;
 	struct map_session_data *sd;
 	struct status_data *status;
@@ -15519,13 +15554,11 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
 				sd->inventory.u.items_inventory[i].amount < 1
 				)
 			{	//Something went wrong, item exploit?
-				sd->itemid = 0;
-				sd->itemindex = -1;
+				sd->itemid = sd->itemindex = -1;
 				return false;
 			}
 			//Consume
-			sd->itemid = 0;
-			sd->itemindex = -1;
+			sd->itemid = sd->itemindex = -1;
 			if( (skill_id == WZ_EARTHSPIKE && sc && sc->data[SC_EARTHSCROLL] && rnd()%100 > sc->data[SC_EARTHSCROLL]->val2) || sd->inventory_data[i]->flag.delay_consume == 2 ) // [marquis007]
 				; //Do not consume item.
 			else if( sd->inventory.u.items_inventory[i].expire_time == 0 )
@@ -16916,8 +16949,8 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
 		/* Skill level-dependent checks */
 		case NC_SHAPESHIFT: // NOTE: Magic_Gear_Fuel must be last in the ItemCost list depending on the skill's max level
 		case NC_REPAIR: // NOTE: Repair_Kit must be last in the ItemCost list depending on the skill's max level
-			req.itemid[1] = skill->require.itemid[skill->max];
-			req.amount[1] = skill->require.amount[skill->max];
+			req.itemid[1] = skill->require.itemid[skill->max - 1];
+			req.amount[1] = skill->require.amount[skill->max - 1];
 		case KO_MAKIBISHI:
 		case GN_FIRE_EXPANSION:
 		case SO_SUMMON_AGNI:
@@ -17502,7 +17535,7 @@ int skill_delayfix(struct block_list *bl, uint16 skill_id, uint16 skill_lv)
  * Weapon Repair [Celest/DracoRPG]
  *------------------------------------------*/
 void skill_repairweapon(struct map_session_data *sd, int idx) {
-	uint32 material, materials[4] = { ITEMID_IRON_ORE, ITEMID_IRON, ITEMID_STEEL, ITEMID_ORIDECON_STONE };
+	unsigned short material, materials[4] = { ITEMID_IRON_ORE, ITEMID_IRON, ITEMID_STEEL, ITEMID_ORIDECON_STONE };
 	struct item *item;
 	struct map_session_data *target_sd;
 
@@ -17571,6 +17604,41 @@ void skill_identify(struct map_session_data *sd, int idx)
 	clif_item_identified(sd,idx,flag);
 }
 
+/**
+* Extended Vending system [Lilith]
+**/
+int skill_vending(struct map_session_data *sd, unsigned short nameid) {
+	struct item_data *item;
+	char output[1024];
+	nullpo_ret(sd);
+	if (!pc_can_give_items(sd)) {
+		clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
+		sd->state.prevend = 0;
+		sd->state.workinprogress = WIP_DISABLE_NONE;
+		return 0;
+	}
+	if (nameid <= 0 || nameid >= (MAX_ITEMID)) {
+		clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
+		sd->state.prevend = 0;
+		sd->state.workinprogress = WIP_DISABLE_NONE;
+		return 0;
+	}
+	if ((item = itemdb_exists(nameid)) == NULL) {
+		clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
+		sd->state.prevend = 0;
+		sd->state.workinprogress = WIP_DISABLE_NONE;
+		return 0;
+	}
+
+	sd->vend_loot = nameid;
+	sd->state.prevend = 1;
+	clif_openvendingreq(sd, 2 + sd->vend_lvl);
+	sprintf(output, msg_txt(sd, 1594), item->jname);
+	clif_messagecolor(&sd->bl, color_table[COLOR_CYAN], output, false, SELF);
+
+	return 0;
+}
+
 /*==========================================
  * Weapon Refine [Celest]
  *------------------------------------------*/
@@ -17586,7 +17654,7 @@ void skill_weaponrefine(struct map_session_data *sd, int idx)
 
 		if(item->nameid > 0 && ditem->type == IT_WEAPON) {
 			int i = 0, per;
-			uint32 material[5] = { 0, ITEMID_PHRACON, ITEMID_EMVERETARCON, ITEMID_ORIDECON, ITEMID_ORIDECON };
+			unsigned short material[5] = { 0, ITEMID_PHRACON, ITEMID_EMVERETARCON, ITEMID_ORIDECON, ITEMID_ORIDECON };
 			if( ditem->flag.no_refine ) { 	// if the item isn't refinable
 				clif_skill_fail(sd,sd->menuskill_id,USESKILL_FAIL_LEVEL,0);
 				return;
@@ -19720,7 +19788,7 @@ void skill_unit_move_unit_group(struct skill_unit_group *group, int16 m, int16 d
  * @param qty Amount of item will be created
  * @return 0 If failed or Index+1 of item found on skill_produce_db[]
  */
-short skill_can_produce_mix(struct map_session_data *sd, uint32 nameid, int trigger, int qty)
+short skill_can_produce_mix(struct map_session_data *sd, unsigned short nameid, int trigger, int qty)
 {
 	short i, j;
 
@@ -19763,7 +19831,7 @@ short skill_can_produce_mix(struct map_session_data *sd, uint32 nameid, int trig
 
 	// Check on player's inventory
 	for (j = 0; j < MAX_PRODUCE_RESOURCE; j++) {
-		uint32 nameid_produce;
+		unsigned short nameid_produce;
 
 		if (!(nameid_produce = skill_produce_db[i].mat_id[j]))
 			continue;
@@ -19795,7 +19863,7 @@ short skill_can_produce_mix(struct map_session_data *sd, uint32 nameid, int trig
  * @param produce_idx Index of produce entry in skill_produce_db[]. (Optional. Assumed the requirements are complete, checked somewhere)
  * @return True is success, False if failed
  */
-bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, uint32 nameid, int slot1, int slot2, int slot3, int qty, short produce_idx)
+bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, unsigned short nameid, int slot1, int slot2, int slot3, int qty, short produce_idx)
 {
 	int slot[3];
 	int i, sc, ele, idx, equip, wlv, make_per = 0, flag = 0, skill_lv = 0;
@@ -20363,7 +20431,7 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, uint32 name
 			case GN_MIX_COOKING:
 				if (qty == 0) {
 					item tmp_item;
-					const uint32 compensation[5] = { ITEMID_BLACK_LUMP, ITEMID_BLACK_HARD_LUMP, ITEMID_VERY_HARD_LUMP, ITEMID_BLACK_MASS, ITEMID_MYSTERIOUS_POWDER };
+					const int compensation[5] = { ITEMID_BLACK_LUMP, ITEMID_BLACK_HARD_LUMP, ITEMID_VERY_HARD_LUMP, ITEMID_BLACK_MASS, ITEMID_MYSTERIOUS_POWDER };
 					int rate = rnd() % 1000 + 1;
 
 					memset(&tmp_item, 0, sizeof(tmp_item));
@@ -20418,7 +20486,7 @@ bool skill_produce_mix(struct map_session_data *sd, uint16 skill_id, uint32 name
  * @param nameid Item ID of material
  * @return True if created, False is failed
  */
-bool skill_arrow_create(struct map_session_data *sd, uint32 nameid)
+bool skill_arrow_create(struct map_session_data *sd, unsigned short nameid)
 {
 	short i, j, idx = -1;
 	struct item tmp_item;
@@ -20467,7 +20535,7 @@ bool skill_arrow_create(struct map_session_data *sd, uint32 nameid)
  * @param sd Player
  * @nameid Item ID of poison type
  */
-int skill_poisoningweapon(struct map_session_data *sd, uint32 nameid)
+int skill_poisoningweapon(struct map_session_data *sd, unsigned short nameid)
 {
 	nullpo_ret(sd);
 
@@ -20536,7 +20604,7 @@ void skill_toggle_magicpower(struct block_list *bl, uint16 skill_id)
 }
 
 
-int skill_magicdecoy(struct map_session_data *sd, uint32 nameid) {
+int skill_magicdecoy(struct map_session_data *sd, unsigned short nameid) {
 	int x, y, i, class_, skill;
 	struct mob_data *md;
 	nullpo_ret(sd);
@@ -20585,7 +20653,7 @@ int skill_magicdecoy(struct map_session_data *sd, uint32 nameid) {
 }
 
 // Warlock Spellbooks. [LimitLine/3CeAM]
-void skill_spellbook(struct map_session_data *sd, uint32 nameid) {
+void skill_spellbook(struct map_session_data *sd, unsigned short nameid) {
 	nullpo_retv(sd);
 
 	if (reading_spellbook_db.empty())
@@ -20682,9 +20750,8 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, uint16 skill_lv,
 		return 1;
 
 	for( i = 0; i < n; i++ ) {
-		uint32 nameid;
-		int add_amount, del_amount, idx;
-		uint32 product;
+		unsigned short nameid;
+		int add_amount, del_amount, idx, product;
 		struct item tmp_item;
 
 		idx = item_list[i*2+0]-2;
@@ -20750,7 +20817,7 @@ int skill_elementalanalysis(struct map_session_data* sd, int n, uint16 skill_lv,
 
 int skill_changematerial(struct map_session_data *sd, int n, unsigned short *item_list) {
 	int i, j, k, c, p = 0, amount;
-	uint32 nameid;
+	unsigned short nameid;
 
 	nullpo_ret(sd);
 	nullpo_ret(item_list);
@@ -22215,9 +22282,9 @@ uint64 SkillDatabase::parseBodyNode(const YAML::Node &node) {
 				return 0;
 
 			if (active)
-				skill->delaynodex |= constant;
+				skill->castnodex |= constant;
 			else
-				skill->delaynodex &= ~constant;
+				skill->castnodex &= ~constant;
 		}
 	}
 
@@ -22690,7 +22757,7 @@ uint64 ReadingSpellbookDatabase::parseBodyNode(const YAML::Node &node) {
  * @param nameid: Book Item ID
  * @return Spell data or nullptr otherwise
  */
-std::shared_ptr<s_skill_spellbook_db> ReadingSpellbookDatabase::findBook(uint32 nameid) {
+std::shared_ptr<s_skill_spellbook_db> ReadingSpellbookDatabase::findBook(int32 nameid) {
 	if (nameid < 1 || !itemdb_exists(nameid) || reading_spellbook_db.size() == 0)
 		return nullptr;
 
@@ -22764,7 +22831,7 @@ static bool skill_parse_row_producedb(char* split[], int columns, int current)
 {
 	unsigned short x, y;
 	unsigned short id = atoi(split[0]);
-	uint32 nameid = 0;
+	unsigned short nameid = 0;
 	bool found = false;
 
 	if (id >= ARRAYLENGTH(skill_produce_db)) {
@@ -22775,7 +22842,7 @@ static bool skill_parse_row_producedb(char* split[], int columns, int current)
 	// Clear previous data, for importing support
 	memset(&skill_produce_db[id], 0, sizeof(skill_produce_db[id]));
 	// Import just for clearing/disabling from original data
-	if (!(nameid = strtoul(split[1], NULL, 10))) {
+	if (!(nameid = atoi(split[1]))) {
 		//ShowInfo("skill_parse_row_producedb: Product list with ID %d removed from list.\n", id);
 		return true;
 	}
@@ -22918,8 +22985,7 @@ uint64 AbraDatabase::parseBodyNode(const YAML::Node &node) {
  */
 static bool skill_parse_row_changematerialdb(char* split[], int columns, int current)
 {
-	uint16 id = atoi(split[0]);
-	uint32 nameid = strtoul(split[1], NULL, 10);
+	uint16 id = atoi(split[0]), nameid = atoi(split[1]);
 	short rate = atoi(split[2]);
 	bool found = false;
 	int x, y;
@@ -22951,7 +23017,7 @@ static bool skill_parse_row_changematerialdb(char* split[], int columns, int cur
 	}
 
 	if (x >= MAX_SKILL_PRODUCE_DB) {
-		ShowError("skill_parse_row_changematerialdb: Not supported item ID (%u) for Change Material. \n", nameid);
+		ShowError("skill_parse_row_changematerialdb: Not supported item ID (%d) for Change Material. \n", nameid);
 		return false;
 	}
 

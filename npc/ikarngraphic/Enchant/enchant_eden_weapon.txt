@@ -1,0 +1,233 @@
+moc_para01,52,32,4	script	enchant eden Weapons	4_M_REPAIR,{
+	setarray .@wplist[0],
+		1197,	// P_Slayer3
+		13434,	// P_Saber3
+		13066,	// P_Dagger3
+		1289,	// P_Katar1
+		1391,	// P_Two_Handed_Axe1
+		1434,	// P_Spear I
+		1658,	// P_Staff3
+		16014,	// P_Mace3
+		18106,	// P_Bow3
+		1583,	// P.Book I
+		1931,	// P_Guitar I
+		1986,	// P_Tail1
+		13114,	// P_Revolver3
+		1831,	// P_Knuckle1
+		13310,	// P_Huuma_Shuriken1
+		26101;	// P_Foxtail III
+	.@menu$ = "Eden Group Slayer III:" +
+		"Eden Group Saber III:" +
+		"Eden Group Dagger III:" +
+		"Eden Group Katar I:" +
+		"Eden Group Axe I:" +
+		"Eden Group Spear I:" +
+		"Eden Group Staff III:" +
+		"Eden Group Mace III:" +
+		"Eden Group Bow III:" +
+		"Eden Group Dictionary I:" +
+		"Eden Group Guitar I:" +
+		"Eden Group Whip I:" +
+		"Eden Group Revolver III:" +
+		"Eden Group Knuckles I:" +
+		"Eden Group Huuma Shuriken I:" +
+		"Eden Group Foxtail III";
+	mes "[BK]";
+	mes "เกิดอะไรขึ้น ?";
+	mes "ไม่มีทางอ่ะ?!";
+	next;
+	if (select( "ออฟอาวุธ.", "อะไรนะ ?" ) == 2) {
+		mes "[BK]";
+		mes "เอ๋ ?";
+		mes "เจ้าถามสิ่งที่ข้ารู้หรอ ?";
+		next;
+		select("...??");
+		mes "[BK]";
+		mes ".....????";
+		close;
+	}
+	mes "[BK]";
+	mes "อ่า, เจ้าอยากออฟอาวุธสิน่ะ.";
+	mes "Okay, เริ่มเลยไหม ?";
+	next;
+	mes "[BK]";
+		if (countitem(.@wplist[.@s]) > 1) {
+		mes "เจ้าไม่สามารถออฟอาวุธได้.";
+		mes "เจ้าพกมามากเกินไป ข้าออฟได้ครั้งละอันเท่านั้น.";
+		close;
+	}
+	if (en_01 == 0) {
+			mes "Okay, เจ้าต้องการออฟอาวุธอะไร ?";
+			next;
+			.@s = select(.@menu$) -1;
+			mes "[BK]";
+			if (countitem(.@wplist[.@s]) == 1) {
+				mes "Ok ในการออฟครั้งแรกเจ้าจะได้.";
+				mes "ATK + 3% หรือ MATK + 3%";
+				mes "ข้าจะให้เจ้าเลือกออฟเอง.";
+				next;
+				mes "[BK]";
+				mes "เจ้าไม่สามารถเปลี่ยนใจได้หลังจากเลือกออฟไปแล้ว.";
+				next;
+				if (select( "ATK +3%","MATK +3%" ) == 1) {
+					.@string$ = "Ok, เจ้าเลือก physical attack.";
+					.@card = 4767;
+				}
+				else {
+					.@string$ = "Ok, เจ้าเลือก magical attack.";
+					.@card = 4806;
+					.@add = 1;
+				}
+				mes "[BK]";
+				mes .@string$;
+				mes "ดูเหมือนอาวุธเจ้าจะแกร่งขึ้นน่ะ.";
+				en_02 = 1 + .@add;
+				next;
+				specialeffect EF_REPAIRWEAPON;
+				progressbar "ffff00",3;
+				en_01 = 1;
+				delitem .@wplist[.@s],1;
+				getitem2 .@wplist[.@s],1,1,0,0,0,0,0,.@card;
+				mes "[BK]";
+				mes "มันเปล่งประกาย ?";
+				mes "ข้ารู้, ข้ารู้, มันน่ามหัศจรรย์!";
+				}
+			else {
+				mes "เจ้าจะหลอกข้ารึ ?";
+				mes "เจ้าไม่ได้เอาอาวุธมาด้วย.";
+			}
+		}	
+		if (en_01 == 1) {
+			mes "เยี่ยม. เมื่อเจ้าได้เลือกออฟ Atk หรือ Matk ไปแล้ว.";
+			mes "ต่อไปจะเป็นการเลือก Brute, Plant, Fish, Dragon, Increased Heal.";
+			next;
+			mes "[BK]";
+			mes "เจ้าไม่สามารถเปลี่ยนใจได้หลังจากเลือกออฟไปแล้ว.";
+			mes "แต่อาวุธของเจ้าจะแรงขึ้นต่อประเภทที่เจ้าเลือก.";
+			next;
+			mes "[BK]";
+			mes "ง่ายๆข้าจะสุ่ม card ตามประเภทที่เจ้าเลือก.";
+			mes "ขอให้โชคดี!";
+			next;
+			switch( select( "Brute Type", "Plant Type", "Insect Type", "Fish Type", "Dragon Type", "Increased Heal" ) ) {
+			case 1:
+				setarray .@arg[0],4060,4472,111;// Goblin_Card, Bradium_Goram_Card
+				.@type$ = "Brute";
+				break;
+			case 2:
+				setarray .@arg[0],4068,4470,121;// Scorpion_Card, Nepenthes_Card
+				.@type$ = "Plant";
+				break;
+			case 3:
+				setarray .@arg[0],4063,4476,131;// Caramel_Card, Pinguicula_Card
+				.@type$ = "Insect";
+				break;
+			case 4:
+				setarray .@arg[0],4080,4469,141;// Flora_Card, Naga_Card
+				.@type$ = "Fish";
+				break;
+			case 5:
+				setarray .@arg[0],4118,4471,151;// Petit_Card, Egg_Of_Draco_Card
+				.@type$ = "Dragon";
+				break;
+			case 6:
+				setarray .@arg[0],4805,4805,161;// Heal_Amount2
+			}
+			mes "[BK]";
+				if (countitem(.@wplist[.@s]) == 1) {
+					if (.@arg[0] == 4805)
+						mes "เยี่ยม. อาวุธเจ้าได้เพิ่ม Heal effectiveness แล้ว.";
+					else
+						mes "เยี่ยม. อาวุธเจ้าได้เพิ่มพลังโจมตีต่อมอนสเตอร์ประเภท "+ .@type$ +" แล้ว.";
+					next;
+					specialeffect EF_REPAIRWEAPON;
+					progressbar "ffff00",3;
+					delitem .@wplist[.@s],1;
+					en_01 = 2;
+					if (en_02 == 1) {
+						en_02 = .@arg[2];
+						getitem2 .@wplist[.@s],1,1,0,0,0,0,.@arg[0],4767;
+					}
+					else {
+						en_02 = .@arg[2] + 100;
+						getitem2 .@wplist[.@s],1,1,0,0,0,0,.@arg[1],4806;
+					}
+					mes "[BK]";
+					mes "มันเปล่งประกาย ?";
+					mes "ข้ารู้, ข้ารู้, มันน่ามหัศจรรย์!";
+				}
+			else {
+			mes "เจ้าจะหลอกข้ารึ ?";
+			mes "เจ้าไม่ได้เอาอาวุธมาด้วย.";
+			}
+		}
+		if (en_01 == 2) {
+			mes "Okay, นี้เป็นขั้นตอนสุดท้าย.";
+			mes "ข้าจะทำให้อาวุธเจ้าแกร่งขึ้นไปอีก.";
+			next;
+			mes "[BK]";
+			mes "โดยการใส่การ์ดเพิ่มเข้าไปแบบที่เจ้าเลือกก่อนหน้านั้น.";
+			mes "และถ้าเจ้าเลือก healing ข้าจะเพิ่ม healing efficiency ให้.";
+			mes "เจ้าเข้าใจไหม ?";
+			next;
+			//mes "[BK]";
+			//mes "Ok เลือกอาวุธมาเลย ?";
+			//next;
+			//.@s = select(.@menu$) -1;
+			//mes "[BK]";
+			if (countitem(.@wplist[.@s]) == 1) {
+				mes "เพิ่มความสามารถสองเท่า.";
+				next;
+				specialeffect EF_REPAIRWEAPON;
+				progressbar "ffff00",3;
+				delitem .@wplist[.@s],1;
+				en_01 = 3;
+				if (en_02 == 111)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4060,4060,4767;// Goblin_Card, Goblin_Card, Atk3
+				else if (en_02 == 121)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4068,4068,4767;// Scorpion_Card, Scorpion_Card, Atk3
+				else if (en_02 == 131)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4063,4063,4767;// Caramel_Card, Caramel_Card, Atk3
+				else if (en_02 == 141)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4080,4080,4767;// Flora_Card, Flora_Card, Atk3
+				else if (en_02 == 151)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4118,4118,4767;// Petit_Card, Petit_Card, Atk3
+				else if (en_02 == 161)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4805,4805,4767;// Heal_Amount2, Heal_Amount2, Atk3
+				else if (en_02 == 211)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4472,4472,4806;// Bradium_Goram_Card, Bradium_Goram_Card, Matk3
+				else if (en_02 == 221)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4470,4470,4806;// Nepenthes_Card, Nepenthes_Card, Matk3
+				else if (en_02 == 231)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4476,4476,4806;// Pinguicula_Card, Pinguicula_Card, Matk3
+				else if (en_02 == 241)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4469,4469,4806;// Naga_Card, Naga_Card, Matk3
+				else if (en_02 == 251)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4471,4471,4806;// Egg_Of_Draco_Card, Egg_Of_Draco_Card, Matk3
+				else if (en_02 == 261)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4805,4805,4806;// Heal_Amount2, Heal_Amount2, Matk3
+				mes "[BK]";
+				mes "มันเปล่งประกาย ?";
+				mes "ข้ารู้, ข้ารู้, มันน่ามหัศจรรย์!";
+			}
+			else {
+				mes "เจ้าจะหลอกข้ารึ ?";
+				mes "เจ้าไม่ได้เอาอาวุธมาด้วย.";
+			}
+		}
+	else if (en_01 > 2) {
+		mes "ข้าออฟอาวุธเจ้าเต็มช่องหมดแล้ว.";
+		mes "อาวุธเจ้าไม่สามารถออฟเพิ่มได้อีก, เข้าใจไหม ?";
+		next;
+		mes "[BK]";
+		mes "อย่ามาอีก.";
+		mes "ถ้าเจ้ามีอาวุธที่แข็งแกร่งอยู่แล้ว.";
+		mes "555555!";
+		//next;
+		//if (select( "รีออฟอาวุธ.", "ออก." ) == 1) {
+		//mes "รีออฟให้แล้ว!";
+		//en_01 = 0;//เทส ไว้รีออฟ
+		//close;}
+	}
+	close;
+	}

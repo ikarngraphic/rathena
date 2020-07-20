@@ -1,0 +1,83 @@
+maintown,41,88,4	script	Fadhgridh::itgw01	888,{
+set @GID1,getcastledata("prtg_cas03",1);
+if(getguildmaster(@GID1) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID1)) end;
+getitem 40526,1;
+getitem 39002,rand(10,15);
+getitem 39003,rand(10,15);
+getitem 7227,rand(5,15);
+getitem 40000,rand(30,100);
+getitem 40002,rand(200,500);
+set zeny,zeny + 30000000;
+dispbottom "[รางวัลกิลวอ]: คุณได้รับได้รับ 30 M Zeny";
+disablenpc "itgw01";
+end;
+}
+
+maintown,44,88,4	script	Kriemhild::itgw02	888,{
+set @GID2,getcastledata("prtg_cas01",1);
+if(getguildmaster(@GID2) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID2)) end;
+getitem 40527,1;
+getitem 7227,rand(5,15);
+getitem 39002,rand(10,15);
+getitem 39003,rand(10,15);
+getitem 40000,rand(30,100);
+getitem 40002,rand(200,500);
+set zeny,zeny + 30000000;
+dispbottom "[รางวัลกิลวอ]: คุณได้รับได้รับ 30 M Zeny";
+disablenpc "itgw02";
+end;
+}
+
+maintown,47,88,4	script	Hohenschwangau::itgw03	888,{
+set @GID3,getcastledata("aldeg_cas02",1);
+if(getguildmaster(@GID3) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID3)) end;
+getitem 40528,1;
+getitem 7227,rand(5,15);
+getitem 39002,rand(10,15);
+getitem 39003,rand(10,15);
+getitem 40000,rand(30,100);
+getitem 40002,rand(200,500);
+set zeny,zeny + 30000000;
+dispbottom "[รางวัลกิลวอ]: คุณได้รับได้รับ 30 M Zeny";
+disablenpc "itgw03";
+end;
+}
+
+maintown,50,88,4	script	Sacred Altar::itgw04	888,{
+set @GID4,getcastledata("payg_cas04",1);
+if(getguildmaster(@GID4) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID4)) end;
+getitem 40529,1;
+getitem 7227,rand(5,15);
+getitem 39002,rand(10,15);
+getitem 39003,rand(10,15);
+getitem 40000,rand(30,100);
+getitem 40002,rand(200,500);
+set zeny,zeny + 30000000;
+dispbottom "[รางวัลกิลวอ]: คุณได้รับได้รับ 30 M Zeny";
+disablenpc "itgw04";
+end;
+}
+
+-	script	System_GuildWainner	-1,{	end;
+
+OnInit:
+disablenpc "itgw01";	disablenpc "itgw02";	disablenpc "itgw03";	disablenpc "itgw04";
+end;
+
+OnAgitStart:
+disablenpc "itgw01";	disablenpc "itgw02";	disablenpc "itgw03";	disablenpc "itgw04";
+end;
+
+OnAgitEnd:
+enablenpc "itgw01";	enablenpc "itgw02";	enablenpc "itgw03";	enablenpc "itgw04";
+if($st200 ==1){ disablenpc "itgw01"; }
+if($st400 ==1){ disablenpc "itgw02"; }
+if($st600 ==1){ disablenpc "itgw03"; }
+if($st800 ==1){ disablenpc "itgw04"; }
+end;
+
+}

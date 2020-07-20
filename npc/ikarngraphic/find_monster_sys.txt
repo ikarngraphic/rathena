@@ -1,0 +1,145 @@
+//==============================================
+// - Script By : TheLordofdirTB teerawutdir@hotmail.com
+// - Script City : Thailand 
+// - Script Support Server : rAthena & eAthena
+//==============================================
+maintown,65,60,4	script	ค้นหามอนเตอร์#NPC	997,{
+	set .@npc$,"[ บริการค้นหามอนเตอร์ ]";
+	
+	mes .@npc$;
+	mes "บริการค้นหามอนเตอร์";
+	next;
+	menu "- ค้นหาด้วยชื่อ",L_FindByName,
+		"- ค้นหาจาก A - Z",L_FindByAZ;
+		
+L_FindByName:
+	mes .@npc$;
+	mes "ใส่ชื่อมอนเตอร์ที่ต้องการ";
+	input .@monster_name$;
+	
+	query_sql "SELECT `ID`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@monster_name$)+"%'", .@mob_id_1, .@mob_name_1$;
+	query_sql "SELECT `ID`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@monster_name$)+"%'", .@mob_id_2, .@mob_name_2$;
+	set .@type,1;
+	goto L_ShowMob;
+	end;
+	
+L_FindItemDrop:
+	mes .@npc$;
+	mes "ใส่ชื่อ Item ที่ต้องการ";
+	input .@item_name$;	
+	
+	query_sql "SELECT `id`, `name_japanese` FROM `item_db_re` WHERE `item_db_re` like '%"+escape_sql(.@item_name$)+"%'", .@item_id_1, .@item_name_1$;	
+
+	query_sql "SELECT `Drop1id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_1, .@mob_name_1_1$;
+	query_sql "SELECT `Drop2id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_2, .@mob_name_1_2$;
+	query_sql "SELECT `Drop3id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_3, .@mob_name_1_3$;
+	query_sql "SELECT `Drop4id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_4, .@mob_name_1_4$;
+	query_sql "SELECT `Drop5id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_5, .@mob_name_1_5$;
+	query_sql "SELECT `Drop6id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_6, .@mob_name_1_6$;
+	query_sql "SELECT `Drop7id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_7, .@mob_name_1_7$;
+	query_sql "SELECT `Drop8id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_8, .@mob_name_1_8$;
+	query_sql "SELECT `Drop9id`, `iName` FROM `mob_db_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_1_9, .@mob_name_1_9$;
+	query_sql "SELECT `Drop1id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_1, .@mob_name_2_1$;
+	query_sql "SELECT `Drop2id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_2, .@mob_name_2_2$;
+	query_sql "SELECT `Drop3id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_3, .@mob_name_2_3$;
+	query_sql "SELECT `Drop4id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_4, .@mob_name_2_4$;
+	query_sql "SELECT `Drop5id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_5, .@mob_name_2_5$;
+	query_sql "SELECT `Drop6id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_6, .@mob_name_2_6$;
+	query_sql "SELECT `Drop7id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_7, .@mob_name_2_7$;
+	query_sql "SELECT `Drop8id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_8, .@mob_name_2_8$;
+	query_sql "SELECT `Drop9id`, `iName` FROM `mob_db2_re` WHERE `iName` like '%"+escape_sql(.@item_id_1)+"%'", .@mob_id_2_9, .@mob_name_2_9$;
+
+end;	
+	
+L_FindByAZ:
+	mes .@npc$;
+	mes "เลือกรายการ A - Z";
+	set .@i,select($@FINMB_az_menu$)-1;
+	set .@monster_name$,$@FINMB_az_db$[.@i];
+	
+	query_sql "SELECT `ID`, `iName` FROM `mob_db_re` WHERE `iName` like '"+escape_sql(.@monster_name$)+"%'", .@mob_id_1, .@mob_name_1$;
+	query_sql "SELECT `ID`, `iName` FROM `mob_db2_re` WHERE `iName` like '"+escape_sql(.@monster_name$)+"%'", .@mob_id_2, .@mob_name_2$;
+	set .@type,2;
+	goto L_ShowMob;
+	end;
+	
+L_ShowMob:
+	set .@size,getarraysize(.@mob_id_1);
+	for (set .@i,0; .@i < .@size; set .@i,.@i+1)
+	{
+		if (.@num >= 80)
+			break;
+			
+		set .@mob_menu$,.@mob_menu$+"- "+.@mob_name_1$[.@i]+" ["+.@mob_id_1[.@i]+"]:";
+		set .@mob_name$[.@num],.@mob_name_1$[.@i];
+		set .@mob_id[.@num],.@mob_id_1[.@i];
+		set .@num,.@num+1;
+	}
+	
+	set .@size,getarraysize(.@mob_id_2);
+	for (set .@i,0; .@i < .@size; set .@i,.@i+1)
+	{
+		if (.@num >= 80)
+			break;
+			
+		set .@mob_menu$,.@mob_menu$+"- "+.@mob_name_2$[.@i]+" ["+.@mob_id_2[.@i]+"]:";
+		set .@mob_name$[.@num],.@mob_name_2$[.@i];
+		set .@mob_id[.@num],.@mob_id_2[.@i];
+		set .@num,.@num+1;
+	}
+	
+	mes "===================";
+
+	if (.@type == 1)
+	{
+		mes "ค้นหาด้วยชื่อ "+.@monster_name$+"";
+	}
+	else if (.@type == 2)
+	{
+		mes "ชื่อที่นำหน้าด้วยอักษร "+.@monster_name$+"";
+	}
+	
+	if (.@num == 0)
+	{
+		mes "ไม่มีรายชื่อมอนเตอร์";
+		close;
+	}
+
+	mes "พบชื่อใกล้เคียง "+.@num+" รายการ";
+	next;
+	set .@mob,select(.@mob_menu$)-1;
+	
+//	query_sql "SELECT `map_name`, `x`, `y` FROM `"+$@FINMB_db$+"`.`map_monster` WHERE `mob_id` = "+.@mob_id[.@mob]+"", .@map_name$, .@x, .@y;
+	query_sql "SELECT `iName`,`LV` FROM `mob_db_re` WHERE `ID` = "+.@mob_id[.@mob]+"", .@namemons$, .@lv_mons$;
+	query_sql "SELECT `map_name`,`x`,`y` FROM `map_monster` WHERE `mob_id`  = "+.@mob_id[.@mob]+"", .@map_name$,.@x,.@y;
+	
+	set .@size,getarraysize(.@map_name$);
+	
+	if (.@size == 0)
+	{
+		mes .@npc$;
+		mes "ไม่มีข้อมูลแมพของ";
+		mes "มอนเตอร์  "+.@namemons$+"";
+		close;
+	}
+	
+	mes .@npc$;
+	mes "ชื่อ: [ "+.@namemons$+" ]";
+	mes "เลเวล: [ "+.@lv_mons$+" ]";
+	mes " ";
+	mes "จำนวนแมพที่พบ: [ "+.@size+" ]";
+	next;
+	
+	for (set .@i,0; .@i < .@size; set .@i,.@i+1)
+	{
+		set .@map_menu$,.@map_menu$+"- "+.@map_name$[.@i]+":";
+	}
+	
+	set .@map,select(.@map_menu$)-1;
+	warp .@map_name$[.@map], .@x[.@map], .@y[.@map];
+	end;
+
+OnInit:
+waitingroom "   ค้นหามอนเตอร์",0;
+end;
+}

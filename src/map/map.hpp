@@ -51,7 +51,7 @@ void map_msg_reload(void);
 #define NATURAL_HEAL_INTERVAL 500
 #define MIN_FLOORITEM 2
 #define MAX_FLOORITEM START_ACCOUNT_NUM
-#define MAX_LEVEL 175
+#define MAX_LEVEL 500
 #define MAX_DROP_PER_MAP 48
 #define MAX_IGNORE_LIST 20 	// official is 14
 #define MAX_VENDING 12
@@ -284,8 +284,7 @@ enum e_race : int8{
 	RC_DEMIHUMAN,
 	RC_ANGEL,
 	RC_DRAGON,
-	RC_PLAYER_HUMAN,
-	RC_PLAYER_DORAM,
+	RC_PLAYER,
 	RC_ALL,
 	RC_MAX //auto upd enum for array size
 };
@@ -599,6 +598,8 @@ enum e_mapflag : int16 {
 	MF_PRIVATEAIRSHIP_SOURCE,
 	MF_PRIVATEAIRSHIP_DESTINATION,
 	MF_SKILL_DURATION,
+	MF_ATK_RATE,
+	MF_DROPRATE,
 	MF_MAX
 };
 
@@ -639,12 +640,29 @@ struct s_drop_list {
 	enum e_nightmare_drop_type drop_type;
 };
 
+/// Enum of global damage types [Cydh]
+enum e_global_damage_rate_type : uint8 {
+	DMGRATE_BL,
+	DMGRATE_SHORT,
+	DMGRATE_LONG,
+	DMGRATE_WEAPON,
+	DMGRATE_MAGIC,
+	DMGRATE_MISC,
+	DMGRATE_MAX,
+};
+
+// Map-based damage rate [Cydh]
+struct s_global_damage_rate {
+	int rate[DMGRATE_MAX];
+};
+
 /// Union for mapflag values
 union u_mapflag_args {
 	struct point nosave;
 	struct s_drop_list nightmaredrop;
 	struct s_skill_damage skill_damage;
 	struct s_skill_duration skill_duration;
+	struct s_global_damage_rate atk_rate;
 	int flag_val;
 };
 
@@ -749,6 +767,7 @@ struct map_data {
 	struct s_skill_damage damage_adjust; // Used for overall skill damage adjustment
 	std::unordered_map<uint16, s_skill_damage> skill_damage; // Used for single skill damage adjustment
 	std::unordered_map<uint16, int> skill_duration;
+	struct s_global_damage_rate atk_rate; // Global Damage [Cydh]
 
 	struct npc_data *npc[MAX_NPC_PER_MAP];
 	struct spawn_data *moblist[MAX_MOB_LIST_PER_MAP]; // [Wizputer]

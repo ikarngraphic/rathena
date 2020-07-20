@@ -51,7 +51,7 @@ enum e_buyingstore_failure
 
 
 static unsigned int buyingstore_nextid = 0;
-static const uint32 buyingstore_blankslots[MAX_SLOTS] = { 0 };  // used when checking whether or not an item's card slots are blank
+static const unsigned short buyingstore_blankslots[MAX_SLOTS] = { 0 };  // used when checking whether or not an item's card slots are blank
 
 
 /// Returns unique buying store id
@@ -108,7 +108,7 @@ int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots){
 * @param zenylimit
 * @param result
 * @param storename
-* @param *itemlist { <nameid>.N, <amount>.W, <price>.L }*
+* @param *itemlist { <nameid>.W, <amount>.W, <price>.L }*
 * @param count Number of item on the itemlist
 * @param at Autotrader info, or NULL if requetsed not from autotrade persistance
 * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction, 5 - Invalid count/result, 6 - Cannot give item, 7 - Will be overweight
@@ -198,7 +198,7 @@ int8 buyingstore_create( struct map_session_data* sd, int zenylimit, unsigned ch
 
 			// duplicate
 			if( listidx != i ){
-				ShowWarning( "buyingstore_create: Found duplicate item on buying list (nameid=%u, amount=%hu, account_id=%d, char_id=%d).\n", item->itemId, item->amount, sd->status.account_id, sd->status.char_id );
+				ShowWarning( "buyingstore_create: Found duplicate item on buying list (nameid=%hu, amount=%hu, account_id=%d, char_id=%d).\n", item->itemId, item->amount, sd->status.account_id, sd->status.char_id );
 				break;
 			}
 		}
@@ -241,7 +241,7 @@ int8 buyingstore_create( struct map_session_data* sd, int zenylimit, unsigned ch
 	StringBuf_Init(&buf);
 	StringBuf_Printf(&buf, "INSERT INTO `%s`(`buyingstore_id`,`index`,`item_id`,`amount`,`price`) VALUES", buyingstore_items_table);
 	for (i = 0; i < sd->buyingstore.slots; i++){
-		StringBuf_Printf(&buf, "(%d,%d,%u,%d,%d)", sd->buyer_id, i, sd->buyingstore.items[i].nameid, sd->buyingstore.items[i].amount, sd->buyingstore.items[i].price);
+		StringBuf_Printf(&buf, "(%d,%d,%hu,%d,%d)", sd->buyer_id, i, sd->buyingstore.items[i].nameid, sd->buyingstore.items[i].amount, sd->buyingstore.items[i].price);
 		if (i < sd->buyingstore.slots-1)
 			StringBuf_AppendStr(&buf, ",");
 	}
@@ -321,7 +321,7 @@ void buyingstore_open(struct map_session_data* sd, uint32 account_id)
 * Start transaction
 * @param sd Player/Seller
 * @param account_id Buyer account ID
-* @param *itemlist List of sold items { <index>.W, <nameid>.N, <amount>.W }*
+* @param *itemlist List of sold items { <index>.W, <nameid>.W, <amount>.W }*
 * @param count Number of item on the itemlist
 */
 void buyingstore_trade( struct map_session_data* sd, uint32 account_id, unsigned int buyer_id, const struct PACKET_CZ_REQ_TRADE_BUYING_STORE_sub* itemlist, unsigned int count ){
@@ -377,7 +377,7 @@ void buyingstore_trade( struct map_session_data* sd, uint32 account_id, unsigned
 		for( int k = 0; k < i; k++ ){
 			// duplicate
 			if( itemlist[k].index == item->index && k != i ){
-				ShowWarning( "buyingstore_trade: Found duplicate item on selling list (prevnameid=%d, prevamount=%hu, nameid=%u, amount=%hu, account_id=%d, char_id=%d).\n", itemlist[k].itemId, itemlist[k].amount, item->itemId, item->amount, sd->status.account_id, sd->status.char_id );
+				ShowWarning( "buyingstore_trade: Found duplicate item on selling list (prevnameid=%hu, prevamount=%hu, nameid=%hu, amount=%hu, account_id=%d, char_id=%d).\n", itemlist[k].itemId, itemlist[k].amount, item->itemId, item->amount, sd->status.account_id, sd->status.char_id );
 				clif_buyingstore_trade_failed_seller( sd, BUYINGSTORE_TRADE_SELLER_FAILED, item->itemId );
 				return;
 			}
@@ -509,7 +509,7 @@ void buyingstore_trade( struct map_session_data* sd, uint32 account_id, unsigned
 
 
 /// Checks if an item is being bought in given player's buying store.
-bool buyingstore_search(struct map_session_data* sd, uint32 nameid)
+bool buyingstore_search(struct map_session_data* sd, unsigned short nameid)
 {
 	unsigned int i;
 
@@ -542,7 +542,6 @@ bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_st
 	if( !sd->state.buyingstore )
 	{// not buying
 		return true;
-
 	}
 
 	for( idx = 0; idx < s->item_count; idx++ )
@@ -730,7 +729,7 @@ void do_init_buyingstore_autotrade( void ) {
 				while (SQL_SUCCESS == Sql_NextRow(mmysql_handle) && j < at->count) {
 					char *data;
 					CREATE(at->entries[j], struct s_autotrade_entry, 1);
-					Sql_GetData(mmysql_handle, 0, &data, NULL); at->entries[j]->item_id = strtoul(data, NULL, 10);
+					Sql_GetData(mmysql_handle, 0, &data, NULL); at->entries[j]->item_id = atoi(data);
 					Sql_GetData(mmysql_handle, 1, &data, NULL); at->entries[j]->amount = atoi(data);
 					Sql_GetData(mmysql_handle, 2, &data, NULL); at->entries[j]->price = atoi(data);
 					j++;

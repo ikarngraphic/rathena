@@ -1,0 +1,128 @@
+//===== rAthena Script =======================================
+//= Coupon Code NPC
+//===== By: ================================================== 
+//= taurusz
+//===== Current Version: ===================================== 
+//= 1.1.2
+//===== Compatible With: ===================================== 
+//= rAthena Project
+//============================================================
+//--- Main Script ------------------------------------------------//
+//prontera,165,84,4	script	Coupon Service::coupon	10209,{
+maintown,65,68,6	script	ไอเท็มโคท::coupon	755,{
+//cutin "prm_1",2;
+	
+	// ตั้งค่าประเภทโค้ด (0 = ปกติ | 1 = MD5-Hash)
+	set .code_type, 0;
+	
+	// ตั้งค่า จำนวนโค้ดสูงสุด อักษร ( ปกติ 16 ตัวอักษร )
+	set .code_length, 6;
+	
+	// ตั้งค่า ระดับ GM ที่สามารถเพิ่มโค้ดได้ ( ปกติ 99 )
+	set .code_gmlvl, 99;
+	
+	setarray .coupon_code$[0],"a","b","c","d","e","f","g","h","i","j","k","l",
+							  "m","n","o","p","q","r","s","t","u","v","w","x",
+							  "y","z","0","1","2","3","4","5","6","7","8","9";
+
+	if(getgmlevel() >= .code_gmlvl)
+	{
+		mes "[^FF7700Coupon Service^000000]";
+		mes "สวัสดี " + strcharinfo(0) + ".";
+		mes "ท่านสามารถนำโค้ดไอเทมมาเติมได้ที่นี่เลย";
+		next;
+		switch(select("เพิ่มโค้ดไอเท็ม:ดูโค้ดไอเท็ม:ออก"))
+		{
+			case 1:
+				mes "[^FF7700Coupon Service^000000]";
+				mes "กรอกรหัสไอเท็ม:";
+				input @coupon_item;
+				next;
+				if(@coupon_item <= 0) goto L_error;
+				mes "[^FF7700Coupon Service^000000]";
+				mes "กรอกจำนวนไอเท็ม:";
+				input @coupon_amount;
+				next;
+				if(@coupon_amount <= 0) goto L_error;
+				for(set @i, 0; @i < .code_length; set @i, @i+1)
+				{
+					set @random_char, rand(0,(getarraysize(.coupon_code$)-1));
+					set @new_coupon$, @new_coupon$ + .coupon_code$[@random_char];
+				}
+				if(.code_type==1) { set @new_coupon$, md5(@new_coupon$); }
+				mes "[^FF7700Coupon Service^000000]";
+				mes "เพิ่มโค้ดไอเท็มแล้ว";
+				query_sql "INSERT INTO `coupons` (`code`, `item_id`, `item_amount`) VALUES ('"+@new_coupon$+"', "+@coupon_item+", "+@coupon_amount+")";
+				set @new_coupon$, "";
+				cutin "prm_1",255;
+				close;
+				
+			case 2:
+				mes "[^FF7700Coupon Service^000000]";
+				mes "--------------------------------";
+				query_sql "SELECT `code`, `item_id`, `item_amount` FROM `coupons`", .@available_code$, .@available_item, .@available_amount;
+				for(set @i, 0; @i < getarraysize(.@available_code$); set @i, @i+1)
+				{
+					mes "ไอเทม: " + getitemname(.@available_item[@i]);
+					mes "จำนวน: " + .@available_amount[@i];
+					mes "โค้ด: " + .@available_code$[@i];
+					mes "--------------------------------";
+				}
+				cutin "prm_1",255;
+				close;
+				
+			case 3:
+				mes "[^FF7700Coupon Service^000000]";
+				mes "ขอให้โชคดี.";
+				cutin "prm_1",255;
+				close;
+		}
+	}
+	mes "[^FF7700Coupon Service^000000]";
+	mes "ยินดีต้อนรับสู่ระบบเติมโค้ดไอเท็ม. มีอะไรให้ฉันช่วยไหม?";
+	next;
+	switch(Select("เติมโค้ดไอเท็ม:ออก"))
+	{
+		case 1:
+			mes "[^FF7700Coupon Service^000000]";
+			mes "กรุณากรอกโค้ดไอเท็มของคุณ:";
+			input @my_code$;
+			next;
+			query_sql "SELECT `code`, `item_id`, `item_amount` FROM `coupons`", .@available_code$, .@available_item, .@available_amount;
+			for (set @i, 0; @i < getarraysize(.@available_code$); set @i, @i+1)
+			{
+				if(@my_code$==.@available_code$[@i])
+				{
+					mes "[^FF7700Coupon Service^000000]";
+					mes "คุณได้รับ ^0000FF" + getitemname(.@available_item[@i]) + " - " + .@available_amount[@i] + " ea.^000000";
+					query_sql "DELETE FROM `coupons` WHERE `code`='"+@my_code$+"'";
+					getitem .@available_item[@i],.@available_amount[@i];
+					//announce "Coupon Service: " + strcharinfo(0) + " ได้รับ " + .@available_amount[@i] + getitemname(.@available_item[@i]) + "(s).",0;
+					cutin "prm_1",255;
+					close;
+				}
+			}
+			mes "[^FF7700Coupon Service^000000]";
+			mes "โค้ดไอเท็มไม่ถูกต้อง.";
+			cutin "prm_1",255;
+			close;
+		
+		case 2:
+			mes "[^FF7700Coupon Service^000000]";
+			mes "ขอให้โชคดี.";
+			cutin "prm_1",255;
+			close;
+	}
+	
+L_error:
+	mes "[^FF7700Coupon Service^000000]";
+	mes "โค้ดไอเท็มไม่ถูกต้อง";
+	cutin "prm_1",255;
+	close;
+	
+OnInit:
+	waitingroom "   ไอเท็มโค้ท",0;
+	query_sql "CREATE TABLE IF NOT EXISTS `coupons` (`code` TINYTEXT NOT NULL, `item_id` INT NOT NULL, `item_amount` INT NOT NULL, INDEX `code` (`code`(32)) ) ENGINE=MyISAM";
+		end;
+//--- End Script ------------------------------------------------//		
+}

@@ -1,0 +1,1647 @@
+//===== rAthena Script =======================================
+//= World Boss Event
+//===== By: ==================================================
+//= Musika6988, Sehrentos
+//===== Current Version: =====================================
+//= 2.9.3
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Description: =========================================
+//= Summon random World Boss and when defeated get treasure.
+//= Leader will have option to distribute or dispose loots.
+//= GM panel: info/start/stop/skip/lootMode/modify.
+//= Boss HP will increase or decrease by 1.500.000 per each 
+//= player nearby and is updated every 10 seconds.
+//= When boss is defeated it will trigger increased exp and
+//= drop rates to whole server for 1 hour(IF enabled).
+//===== Additional Comments: =================================
+//= 1.x Initial script by Musika6988.
+//= 2.0 Sehrentos added reward arrays. Randomly select a reward.
+//= 2.1 Sehrentos changed single random reward into random all rewards.
+//= 2.2 Sehrentos minor optimizations.
+//= 2.3 Sehrentos added more loot options.
+//= 2.4 Sehrentos added GM panel, Default mob attributes(.MOB_),
+//=  Same party check(reward stealing)
+//= 2.5 Sehrentos added NPC WorldBossRadar to monitor players nearby,
+//=  Removed Flee and Perfect Dodge from Treasure Chest,
+//=  Added timeout to stop the event. Minor text changes.
+//= 2.6 Sehrentos added loot mode 1 give one reward to one random party member.
+//=  Added loot modes 4-5 give all/one rewards to all nearby players and their party members.
+//=  Added loot modes 6-7 give all/one rewards to all nearby players.
+//= 2.7 Sehrentos removed Treasure Chest monster.
+//=  Added Treasure Chest NPCs.
+//=  Added multiple events at once, but not in same map.
+//=  Added loot modes 8-9 give all/one rewards to all players in same map.
+//=  Added double server rates for 1 hour after boss is killed event.
+//= 2.8 Sehrentos added jump_zero optimizations.
+//=  Fixed WorldBossRates::OnInit first run on the server.
+//=  Added $@WB_ACCESS_EXPIRE timer. Clean the access array when it expires.
+//= 2.9 Sehrentos WorldBossRadar enable/disable option.
+//=  Added loot modes 10 give all rewards to selected party member.
+//=  Added loot modes 11 give one random reward to selected party member.
+//= 2.9.1 Sehrentos Fixes and additions.
+//=  Added option to turn off mapflags.
+//=  Added more default .MOB_ status points.
+//=  Fix random reward will be selected only once, to avoid abuse ($@WB_REWARD_INDEX).
+//=  Renamed some values. easier to understand.
+//= 2.9.2 Sehrentos Disabled FOG effect.
+//=  Added more announcements when event fail to start.
+//=  Added unit checks on OnMobDie event.
+//=  Added inarray optimizations.
+//= 2.9.3 Sehrentos changed the way event starts and announces.
+//=  Fixed WorldBossRates when .use_floating_rates is enabled(report @Quesooo).
+//= !TODO: Loot mode 12 give each reward to selected party member one by one.
+//============================================================
+-	script	WorldBoss	-1,{
+OnInit:
+	// Settings
+	.npc_name$ = strnpcinfo(0); // Name of this NPC
+	.event_sleep = 60000;       // Event sleep time in milliseconds(60000 = 1 minute)
+	.event_timeout = 7200000;   // Event timeout time in milliseconds before Boss is disabled(60000 = 1 minute)
+	.event_access_expire = 900000; // Event access expire time in milliseconds(60000 = 1 minute)
+
+	// Reward distribution
+	.loot_mode = 7;             // Event loot distribution mode. Look npc_loot_mode_desc for descriptions
+	.loop_max = 200;            // Maximum number of loops (When selecting a random party member)
+	.duplicate_npc_count = 9;   // Number of duplicate Treasure Chest NPC's (Important! 0 counts as well)
+
+	// Experience increases during event(In current event map)
+	.base_exp_multiplier = 3;   // Event base exp rating multiplier(In current event map)
+	.job_exp_multiplier = 3;    // Event job exp rating multiplier(In current event map)
+	.use_floating_rates = 0;    // Increase servers exp and drop rates for 1 hour after boss kill(0=Disable, 1=Enable)
+
+	// Monsters default attributes
+	.MOB_MAXHP = 390000000;     // How much HP can monster have at maximum
+	.MOB_HP = 390000000;          // How much HP monster has on spawn
+	.MOB_SPEED = 100;           // Speed
+	.MOB_CRIT = 1000;            // Crit rate (1000=100%)
+	.MOB_HIT = 780;             // Hit rate
+	.MOB_ATKMIN = 2555;         // Base Attack Minimum
+	.MOB_ATKMAX = 6535;         // Base Attack Maximum
+	.MOB_MATKMIN = 2555;        // Magic Attack Minimum
+	.MOB_MATKMAX = 6535;        // Magic Attack Maximum
+	.MOB_DEF = 366;             // Defence
+	.MOB_MDEF = 185;            // Magic Defence
+	.MOB_FLEE = 255;            // Flee rate
+	.MOB_PDODGE = 10;           // Perfect Dodge
+	.MOB_STR = 295;             // Stat strength
+	.MOB_AGI = 290;             // Stat agility
+	.MOB_VIT = 80;             // Stat vitality
+	.MOB_INT = 250;             // Stat intellect
+	.MOB_DEX = 285;             // Stat dexterity
+	.MOB_LUK = 160;             // Stat luck
+
+	// Floating monster HP
+	// When player is detected near the mob, update it's HP.
+	.use_radar = 0;             // 0=Disable, 1=Enable
+
+	// Mapflags effects, monster status, party lock, etc.
+	.use_mapflags = 0;          // 0=Disable, 1=Enable
+
+	// Event monster ID's
+	setarray .event_mobs[0],
+		31041, // HAUNTEDENT
+		31042, // HAUNTEDENT AUT
+		31043, // HAUNTEDENT SPR
+		31044, // HAUNTEDENT SUM
+		31045; // HAUNTEDENT WIN
+
+	// Event reward ID's (One random array is selected)
+	setarray .loots_0[0], 49571, 49571, 49571, 49571, 49571, 49571;
+	setarray .loots_1[0], 49571, 49571, 49571, 49571, 49571, 49571;
+	setarray .loots_2[0], 49571, 49571, 49571, 49571, 49571, 49571;
+	setarray .loots_3[0], 49511, 49523, 49523, 49523, 49524, 49525;
+	setarray .loots_4[0], 49511, 49523, 49523, 49523, 49524, 49525;
+
+	// Event reward ID's array size (Important!)
+	// If you add new .loots_<Number> arrays. You must change this accordingly.
+	.loots_count = 4;  // 0 count aswell
+
+	// Event map names
+	setarray .event_maps$[0],
+		"prontera", "morocc", "geffen", "payon",
+		"alberta", "aldebaran", "xmas", "comodo",
+		"amatsu", "gonryun", "umbala",
+		"louyang", "ayothaya", "einbroch", "hugel",
+		"rachel", "veins", "moscovia";
+
+	// Event loot distribution mode description
+	setarray .loot_mode_desc$[0],
+		"Give all rewards to all party members",                          // .loot_mode = 0
+		"Give one reward to one random party member",                     // .loot_mode = 1
+		"Give all rewards to one random party member",                    // .loot_mode = 2
+		"Give rewards randomly between all party members",                // .loot_mode = 3
+		"Give all rewards to all nearby players and their party members", // .loot_mode = 4 (Skip UI)
+		"Give one reward to all nearby players and their party members",  // .loot_mode = 5 (Skip UI)
+		"Give all rewards to all nearby players",                         // .loot_mode = 6 (Skip UI)
+		"Give one reward to all nearby players",                          // .loot_mode = 7 (Skip UI)
+		"Give all rewards to all players in the same map",                // .loot_mode = 8 (Skip UI)
+		"Give one reward to all players in the same map",                 // .loot_mode = 9 (Skip UI)
+		"Give all rewards to selected party member",                      // .loot_mode = 10
+		"Give one random reward to selected party member";                // .loot_mode = 11
+
+	// TESTS
+	// Log console information
+	// This will report incorrect monster ID's on script load
+	/*for( .@i = 0; .@i < getarraysize(.event_mobs); .@i++ ) {
+		if( getmonsterinfo(.event_mobs[.@i], 0) == "null" ) {
+			debugmes .npc_name$ + ":OnInit Monster ID:" + .event_mobs[.@i] + " DOES NOT EXIST!";
+		}
+	}*/
+	// Start event on script load (For testing purposes)
+	//donpcevent .npc_name$ + "::OnEnable";
+	end;
+
+OnEnable:
+OnClock1830:
+OnClock2230:
+	// Check free event maps
+	if ( getarraysize($@WB_MAP$) >= getarraysize(.event_maps$) ) {
+		debugmes .npc_name$+"::OnEnable all event maps are active!";
+		//announce "[World Boss] Event has been cancelled! All event maps are active!", BC_ALL, 0xFF0000;
+		end;
+	}
+
+	// Select random monster
+	.@rand_mob = rand( getarraysize( .event_mobs ) );
+	.@monster_id = .event_mobs[ .@rand_mob ];
+
+	// Select random map
+	.@i = 0;
+	.@rand_map = rand( getarraysize( .event_maps$ ) ); // Random map index number
+	while(inarray($@WB_MAP$[0], .event_maps$[.@rand_map]) != -1) {
+		if(.@i > .loop_max) {
+			debugmes .npc_name$+"::OnEnable event map max loop count!";
+			//announce "[World Boss] Event has been cancelled! Could not find free event map!", BC_ALL, 0xFF0000;
+			end;
+		}
+		.@rand_map = rand( getarraysize( .event_maps$ ) );
+		.@i++;
+	}
+	.@map_name$ = .event_maps$[ .@rand_map ];
+
+	// Announce event will start soon
+	announce "[World Boss] บอสโลกจะปรากฏขึ้นมา ในอีก "+(.event_sleep / 60000)+" นาที! รีบเตรียมทีมของคุณซะ!",BC_ALL,0xAAEC37,FW_BOLD,18;
+
+	// Sleep until X time have passed and then continue script
+	sleep .event_sleep;
+
+	// Get last event index
+	.@index = getarraysize($@WB_MOB_GID);
+
+	// Set mapflags if enabled
+	if ( .use_mapflags ) {
+		// Save event maps original mapflags
+		setarray $@WB_MF_PARTYLOCK[.@index], getmapflag(.@map_name$, MF_PARTYLOCK);
+		setarray $@WB_MF_NOMOBLOOT[.@index], getmapflag(.@map_name$, MF_NOMOBLOOT);
+		setarray $@WB_MF_NOMVPLOOT[.@index], getmapflag(.@map_name$, MF_NOMVPLOOT);
+		setarray $@WB_MF_NOPENALTY[.@index], getmapflag(.@map_name$, MF_NOPENALTY);
+		setarray $@WB_MF_NOMOBTELE[.@index], getmapflag(.@map_name$, MF_MONSTER_NOTELEPORT);
+		setarray $@WB_MF_BASEEXP[.@index], getmapflag(.@map_name$, MF_BEXP);
+		setarray $@WB_MF_JOBEXP[.@index], getmapflag(.@map_name$, MF_JEXP);
+		//setarray $@WB_MF_FOG[.@index], getmapflag(.@map_name$, MF_FOG);
+
+		// Set new mapflags
+		setmapflag .@map_name$, MF_PARTYLOCK; // Disable changing party(Inviting new players in event map)
+		setmapflag .@map_name$, MF_NOMOBLOOT; // Disable Normal monster loot drops
+		setmapflag .@map_name$, MF_NOMVPLOOT; // Disable Boss monster loot drops
+		setmapflag .@map_name$, MF_NOPENALTY; // Disable Exp and Zeny penalty
+		setmapflag .@map_name$, MF_MONSTER_NOTELEPORT; // Disable monster teleport
+		setmapflag .@map_name$, MF_BEXP, ($@WB_MF_BASEEXP[.@index] * .base_exp_multiplier); // Set Base Exp rating
+		setmapflag .@map_name$, MF_JEXP, ($@WB_MF_JOBEXP[.@index] * .job_exp_multiplier); // Set Job Exp rating
+		//setmapflag .@map_name$, MF_FOG; // Enable FOG effect
+	}
+
+	// Summon event monster unit
+	monster .@map_name$, 0, 0, "World Boss", .@monster_id, 1, .npc_name$+"::OnMobDie", Size_Large, AI_NONE;
+	.@gid = $@mobid[0]; // Get monster's Game ID
+
+	// Change unit data to defaults
+	setunitdata .@gid, UMOB_MAXHP, .MOB_MAXHP;
+	setunitdata .@gid, UMOB_HP, .MOB_HP;
+	setunitdata .@gid, UMOB_SPEED, .MOB_SPEED;
+	setunitdata .@gid, UMOB_CRIT, .MOB_CRIT;
+	setunitdata .@gid, UMOB_HIT, .MOB_HIT;
+	setunitdata .@gid, UMOB_ATKMIN, .MOB_ATKMIN;
+	setunitdata .@gid, UMOB_ATKMAX, .MOB_ATKMAX;
+	setunitdata .@gid, UMOB_MATKMIN, .MOB_MATKMIN;
+	setunitdata .@gid, UMOB_MATKMAX, .MOB_MATKMAX;
+	setunitdata .@gid, UMOB_DEF, .MOB_DEF;
+	setunitdata .@gid, UMOB_MDEF, .MOB_MDEF;
+	setunitdata .@gid, UMOB_FLEE, .MOB_FLEE;
+	setunitdata .@gid, UMOB_PDODGE, .MOB_PDODGE;
+	setunitdata .@gid, UMOB_STR, .MOB_STR;
+	setunitdata .@gid, UMOB_AGI, .MOB_AGI;
+	setunitdata .@gid, UMOB_VIT, .MOB_VIT;
+	setunitdata .@gid, UMOB_INT, .MOB_INT;
+	setunitdata .@gid, UMOB_DEX, .MOB_DEX;
+	setunitdata .@gid, UMOB_LUK, .MOB_LUK;
+
+	// Get units updated data
+	getunitdata(.@gid, .@unit);
+
+	// Save event arrays
+	setarray $@WB_MOB_ID[.@index], .@monster_id;
+	setarray $@WB_MOB_GID[.@index], .@gid;
+	setarray $@WB_TIMEOUT[.@index], gettimetick(0);
+	setarray $@WB_RADAR_NEAR[.@index], 0;
+	setarray $@WB_MAP$[.@index], .@map_name$;
+	setarray $@WB_X[.@index], .@unit[UMOB_X];
+	setarray $@WB_Y[.@index], .@unit[UMOB_Y];
+
+	// Unit talk
+	unittalk .@gid, "Tremble before me mortals!", BC_AREA;
+
+	// Announce event started
+	announce "[World Boss] "+ getunitname(.@gid) +" เกิดในแมพ "+ .@map_name$ +" เพื่อทำลายบ้านเมือง !!! รวม Party เพื่อหยุดยั้งมัน!!",BC_ALL,0xFF0000,FW_BOLD,18;
+
+	// Start unit radar
+	if ( .use_radar && getarraysize($@WB_MOB_GID) ) {
+		donpcevent "WorldBossRadar::OnEnable";
+	}
+
+	// Start timeout timer
+	if ( !getnpctimer(1, "WorldBossTimeout") ) {
+		donpcevent "WorldBossTimeout::OnEnable";
+	}
+	end;
+
+// Disable event
+OnDisable:
+	//debugmes .npc_name$+"::OnDisable stop event!";
+	// Stop timeout timer
+	donpcevent "WorldBossTimeout::OnDisable";
+
+	// Stop unit radar
+	if ( .use_radar ) {
+		donpcevent "WorldBossRadar::OnDisable";
+	}
+
+	// Reset server exp and drop rates
+	if ( .use_floating_rates ) {
+		donpcevent "WorldBossRates::OnDisable";
+	}
+
+	// Loop all events
+	for ( .@i = 0; .@i < getarraysize($@WB_MOB_GID); .@i++ ) {
+		// Kill all units
+		if ( unitexists($@WB_MOB_GID[.@i]) ) {
+			unitkill($@WB_MOB_GID[.@i]);
+		}
+
+		// Reset all mapflags to original values
+		if ( .use_mapflags ) {
+			callfunc("WB_ResetMapflags", $@WB_MAP$[.@i], .@i);
+		}
+	}
+	// Kill all script or gm summoned monsters
+	//killmonster .event_map$, "All";
+
+	// Reset all event arrays
+	callfunc("WB_ResetAllGlobals");
+	end;
+
+OnMobDie:
+	// Event when monster has been killed
+	// Stop unit radar and timeout if no unit is alive
+	if ( !getarraysize($@WB_MOB_GID) ) {
+		if ( .use_radar ) donpcevent "WorldBossRadar::OnDisable";
+		donpcevent "WorldBossTimeout::OnDisable";
+	}
+
+	// Check attached unit
+	.@unit_gid = getattachedrid();
+	if ( !.@unit_gid ) {
+		// No unit attached. Propably killed by unitkill or other script command
+		//donpcevent .npc_name$+"::OnDisable";
+		end;
+	}
+
+	// Get unit type
+	.@unit_type = getunittype(.@unit_gid);
+	if ( .@unit_type == -1 ) {
+		debugmes .npc_name$+"::OnMobDie FATAL no unit type found!";
+		donpcevent .npc_name$+"::OnDisable";
+		end;
+	}
+
+	// Get map coordinates (Treasure Chest NPC will need these coordinates)
+	getmapxy(.event_map$, .event_x, .event_y, .@unit_type);
+
+	// Announce
+	announce "[World Boss] The World Boss ถูกฆ่าลงแล้ว! ยินดีด้วย!", bc_all, 0xFF0000;
+
+	// Increase server exp and drop rates for limited time
+	if ( .use_floating_rates ) {
+		donpcevent "WorldBossRates::OnEnable";
+	}
+
+	// Get index if map name are the same
+	.@event_index = inarray($@WB_MAP$[0], .event_map$);
+
+	// Check if index was found and stop if not
+	if ( .@event_index == -1 ) {
+		debugmes .npc_name$+"::OnMobDie event index was not found!";
+		end;
+	}
+
+	// Reset mapflags to original values
+	if ( .use_mapflags ) {
+		callfunc("WB_ResetMapflags", $@WB_MAP$[.@event_index], .@event_index);
+	}
+
+	// If unit is not PC, try to attach unit master to the script
+	if ( .@unit_type !=  UNITTYPE_PC ) {
+		getunitdata(.@unit_gid, .@data);
+		if (.@unit_type == UNITTYPE_NPC) {
+			// NPC does not have master
+			debugmes .npc_name$+"::OnMobDie NPC no player attached!";
+			end;
+		}
+		if (.@unit_type == UNITTYPE_PET) {
+			if (!attachrid(.@data[UPET_MASTERAID])) {
+				debugmes .npc_name$+"::OnMobDie PET no player attached!";
+				end;
+			}
+		}
+		if (.@unit_type == UNITTYPE_MOB) {
+			if (!attachrid(.@data[UMOB_MASTERAID])) {
+				debugmes .npc_name$+"::OnMobDie MOB no player attached!";
+				end;
+			}
+		}
+		if (.@unit_type == UNITTYPE_HOM) {
+			.@name$ = strcharinfo(0,.@data[UHOM_MASTERCID]);
+			if (!attachrid(getcharid(3,.@name$))) {
+				debugmes .npc_name$+"::OnMobDie HOM no player attached!";
+				end;
+			}
+		}
+		if (.@unit_type == UNITTYPE_MER) {
+			.@name$ = strcharinfo(0,.@data[UMER_MASTERCID]);
+			if (!attachrid(getcharid(3,.@name$))) {
+				debugmes .npc_name$+"::OnMobDie MER no player attached!";
+				end;
+			}
+		}
+		if (.@unit_type == UNITTYPE_ELEM) {
+			.@name$ = strcharinfo(0,.@data[UELE_MASTERCID]);
+			if (!attachrid(getcharid(3,.@name$))) {
+				debugmes .npc_name$+"::OnMobDie ELE no player attached!";
+				end;
+			}
+		}
+	}
+
+	// Get party ID
+	.@party_id = getcharid(1);
+	// Save event arrays
+	setarray $@WB_MAP$[.@event_index], .event_map$;
+	setarray $@WB_X[.@event_index], .event_x;
+	setarray $@WB_Y[.@event_index], .event_y;
+	setarray $@WB_PARTY_ID[.@event_index], .@party_id;
+	// Select random reward/loots array
+	setarray $@WB_REWARD_INDEX[.@event_index], rand(0, .loots_count);
+
+	// Enable first available Treasure Chest NPC
+	// Set .event_map$, .event_x, .event_y before enabling ( Important! )
+	for ( .@i = 0; .@i <= .duplicate_npc_count; .@i++ ) {
+		.@npc$ = "Treasure Chest#wb_"+ .@i; // Name of the NPC
+		if ( getnpcid(0, .@npc$) ) { // If NPC exists
+			if ( !getnpctimer( 1, .@npc$ ) ) { // If has active timer=1
+				setarray $@WB_NPC_NAME$[.@event_index], .@npc$;
+				donpcevent .@npc$ +"::OnEnable";
+				break;
+			}
+		} else {
+			debugmes .npc_name$+"::OnMobDie no Treasure Chest#wb_"+.@i+" NPC found!";
+		}
+	}
+
+	// Switch by loot mode and save character IDs for access
+	switch( .loot_mode ) {
+		case 0:
+		case 1:
+		case 2:
+		case 3: // In same party or single player
+		case 10: // All to selected party member
+		case 11: // One random to selected party member
+			// Attach all available party members
+			if ( getcharid(1) ) {
+				addrid(2, 0, getcharid(1));
+			}
+			break;
+
+		case 4:
+		case 5: // In range and party
+			// Attach all available players in 20 cells from the killer RID
+			addrid(4, 0, (.event_x - 20),(.event_y - 20), (.event_x + 20),(.event_y + 20));
+
+			// Attach all available party members
+			if ( getcharid(1) ) {
+				addrid(2, 0, getcharid(1));
+			}
+			break;
+
+		case 6:
+		case 7: // In range
+			// Attach all available players in 20 cells from the killer RID
+			addrid(4, 0, (.event_x - 20),(.event_y - 20), (.event_x + 20),(.event_y + 20));
+			break;
+
+		case 8:
+		case 9: // In the same map
+			addrid(1, 0, getcharid(1));
+			break;
+	}
+
+	// Find matching character IDs from the access array
+	.@access_index = inarray($@WB_ACCESS[0], getcharid(0));
+
+	// Exit if character already has access
+	if ( .@access_index != -1 ) {
+		end;
+	}
+
+	// Save character ID into access array
+	setarray $@WB_ACCESS[getarraysize($@WB_ACCESS)], getcharid(0);
+	setarray $@WB_ACCESS_EXPIRE[getarraysize($@WB_ACCESS_EXPIRE)], gettimetick(0);
+	
+	// Start access expire timer if not already running
+	if ( !getnpctimer(1, "WorldBossAccessExpire") ) {
+		donpcevent "WorldBossAccessExpire::OnEnable";
+	}
+	end;
+
+// Event when player opens Treasure Chest NPC
+OnTreasureOpen:
+	// Get map coordinates of the player
+	getmapxy(.@event_map$, .@x, .@y, UNITTYPE_PC);
+
+	// Search for character ID from the access array
+	.@access_index = inarray($@WB_ACCESS[0], getcharid(0));
+
+	// User has no access!
+	if ( .@access_index == -1 ) {
+		message strcharinfo(0), "Treasure Chest is empty.";
+		end;
+	}
+
+	// Get event index from the map name array
+	.@event_index = inarray($@WB_MAP$[0], .@event_map$);
+
+	// Check if event index was found
+	if ( .@event_index == -1 ) {
+		debugmes .@name$+"::OnTreasureOpen event map name ( "+ .@event_map$ +" ) not found!";
+		message strcharinfo(0), "Treasure Chest is empty.";
+		end;
+	}
+
+	// Select reward array
+	.@rand_reward = $@WB_REWARD_INDEX[.@event_index];
+	.@reward_size = getarraysize( getd(".loots_" + .@rand_reward) );
+	copyarray .@rewards[0], getd(".loots_" + .@rand_reward + "[0]"), .@reward_size;
+
+	switch( .loot_mode ) {
+		case 0: // All to all members
+		case 2: // All to random member
+		case 3: // Randomly to all members
+		case 10: // All to selected party member
+		case 11: // One random to selected party member
+			if ( getcharid(1) ) {
+				goto OnPartyLeader;
+			} else {
+				// Has no party
+				for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+					getitem .@rewards[.@i], 1;
+				}
+			}
+			break;
+
+		case 1: // One to random member
+			if ( getcharid(1) ) {
+				// Party Leader will distribute loots
+				goto OnPartyLeader;
+			} else {
+				// Has no party
+				getitem .@rewards[rand(.@reward_size)], 1;
+			}
+			break;
+
+		case 4: // All in range and party
+		case 6: // All in range
+		case 8: // All in same map
+		default:
+			// No UI
+			for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+				getitem .@rewards[.@i], 1;
+			}
+			break;
+
+		case 5: // One in range and party
+		case 7: // One in range
+		case 9: // One in same map
+			// No UI
+			getitem .@rewards[rand(.@reward_size)], 1;
+			break;
+	}
+
+	// Remove character ID from the access array (Access is now used)
+	deletearray $@WB_ACCESS[.@access_index], 1;
+	deletearray $@WB_ACCESS_EXPIRE[.@access_index], 1;
+
+	// Announce player
+	message strcharinfo(0), "Congratulations! คุณคือผู้ฆ่า Boss World!";
+
+	// Disable current NPC Treasure Chest
+	if ( !getarraysize($@WB_ACCESS) ) {
+		// Disable current NPC Treasure Chest
+		callfunc("WB_ResetBox", .@event_index);
+		// Stop access expire timer
+		donpcevent "WorldBossAccessExpire::OnDisable";
+	}
+	end;
+
+OnPartyLeader:
+	// Get party ID
+	.@party_id = getcharid(1);
+
+	// Check if player is party leader
+	if ( getcharid(0) != getpartyleader( .@party_id, 2 ) ) {
+		message strcharinfo(0), "You're not Party Leader.";
+		end;
+	}
+
+	// Get event index from the party ID array
+	.@event_index = inarray($@WB_PARTY_ID[0], .@party_id );
+
+	// Check if party id has access!
+	if ( .@event_index == -1 ) {
+		message strcharinfo(0), "Treasure Chest is empty.";
+		end;
+	}
+
+	// Select random reward array
+	.@rand_reward = $@WB_REWARD_INDEX[.@event_index];
+	.@reward_size = getarraysize(getd(".loots_" + .@rand_reward));
+	copyarray .@rewards[0], getd(".loots_" + .@rand_reward + "[0]"), .@reward_size;
+
+	// Show loot distribution window
+	mes "[ Loot Distributor ]";
+	mes "Please ensure you distribute the Rewards. If you cancelled this, your party might not able to receive any rewards.";
+	mes "^777777Loot mode : ^000000" + .loot_mode_desc$[.loot_mode]; // Loot mode description
+	next;
+	mes "[ Loot Distributor ]";
+	for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+		mes "^777777 ~ " + getitemname( .@rewards[.@i] ) + "^000000";
+	}
+	next;
+	if( select( "Distribute Loots", "Dispose Loots" ) == 1 ) {
+		// Get party data
+		getpartymember .@party_id, 0; // Name
+		getpartymember .@party_id, 1; // Character IDs
+		getpartymember .@party_id, 2; // Account IDs
+
+		// Copy the temporary party data
+		.@party_size = $@partymembercount;
+		copyarray .@party_cid[0], $@partymembercid[0], .@party_size;
+		copyarray .@party_aid[0], $@partymemberaid[0], .@party_size;
+		copyarray .@party_name$[0], $@partymembername$[0], .@party_size;
+
+		// LOOT MODE 0: Give all rewards to all party members
+		if( .loot_mode == 0 ) {
+			mes "[ Loot Distributor ]";
+			// Loop through each party member
+			for( .@idx = 0; .@idx < .@party_size; .@idx++ ) {
+				// Online check
+				if( isloggedin(.@party_aid[.@idx], .@party_cid[.@idx]) ) {
+					mes " ~ " + strcharinfo(0, .@party_cid[.@idx]) + " was rewarded!";
+					// Loop through each reward
+					for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+						getitem .@rewards[.@i], 1, .@party_aid[.@idx];
+					}
+				}
+			}
+		}
+
+		// LOOT MODE 1: Give one reward to one random party member
+		else if( .loot_mode == 1 ) {
+			// Select random party member X times.
+			SelectRandom1:
+			.@attempts = 0; // Counter for random player select
+			.@rand_party = rand(.@party_size);
+			while( !isloggedin(.@party_aid[.@rand_party], .@party_cid[.@rand_party]) ) {
+				if( .@attempts >= .loop_max ) break;
+				.@rand_party = rand(.@party_size);
+				.@attempts++;
+			}
+			// Max attempts reached					
+			if( .@attempts >= .loop_max ) {
+				mes "[ Player not found ]";
+				mes "Tried to select random player " + .@attempts + " times!";
+				mes "Do you want to try again?";
+				next;
+				if( select("Yes:No") == 1 ) {
+					goto SelectRandom1;
+				} else {
+					goto OnClose;
+				}
+			}
+			// Backup online check (next; will pause script and players can disconnect)
+			if( !isloggedin(.@party_aid[.@rand_party], .@party_cid[.@rand_party]) ) {
+				mes "[ Player not online ]";
+				mes "Member is ^777777offline^000000";
+				mes "Do you want to try again?";
+				next;
+				if( select("Yes:No") == 1 ) {
+					goto SelectRandom1;
+				} else {
+					goto OnClose;
+				}
+			}
+			// Give random reward
+			.@rand_item = rand(.@reward_size);
+			.@name$ = strcharinfo(0, .@party_cid[.@rand_party]);
+			mes "[ Loot Distributor ]";
+			mes .@name$ + "^777777 ~ " + getitemname( .@rewards[.@rand_item] ) + "^000000";
+			message .@name$, "Gained " + getitemname( .@rewards[.@rand_item] ) + " ( Distributed Randomly )";
+			getitem .@rewards[.@rand_item], 1, .@party_aid[.@rand_party];
+		}
+
+		// LOOT MODE 2: Give all rewards to one random party member
+		else if( .loot_mode == 2 ) {
+			// Select random party member X times.
+			SelectRandom2:
+			.@attempts = 0; // Counter for random player select
+			.@rand_party = rand(.@party_size);
+			while( !isloggedin(.@party_aid[.@rand_party], .@party_cid[.@rand_party]) ) {
+				if( .@attempts >= .loop_max ) break;
+				.@rand_party = rand(.@party_size);
+				.@attempts++;
+			}
+			// Max attempts reached					
+			if( .@attempts >= .loop_max ) {
+				mes "[ Player not found ]";
+				mes "Tried to select random player " + .@attempts + " times!";
+				mes "Do you want to try again?";
+				next;
+				if( select("Yes:No") == 1 ) {
+					goto SelectRandom2;
+				} else {
+					goto OnClose;
+				}
+			}
+			// Backup online check (next; will pause script and players can disconnect)
+			if( !isloggedin(.@party_aid[.@rand_party], .@party_cid[.@rand_party]) ) {
+				mes "[ Player not online ]";
+				mes "Member is ^777777offline^000000";
+				mes "Do you want to try again?";
+				next;
+				if( select("Yes:No") == 1 ) {
+					goto SelectRandom2;
+				} else {
+					goto OnClose;
+				}
+			}
+			// Give rewards
+			.@name$ = strcharinfo(0, .@party_cid[.@rand_party]);
+			mes "[ Loot Distributor ]";
+			// Loop through each reward
+			for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+				mes .@name$ + "^777777 ~ " + getitemname( .@rewards[.@i] ) + "^000000";
+				message .@name$, "Gained " + getitemname( .@rewards[.@i] ) + " ( Distributed Randomly )";
+				getitem .@rewards[.@i], 1, .@party_aid[.@rand_party];
+			}
+		}
+
+		// LOOT MODE 3: Give rewards randomly between all party members
+		else if( .loot_mode == 3 ) {
+			mes "[ Loot Distributor ]";
+			// Loop through each reward
+			for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+				// Select random party member X times.
+				SelectRandom3:
+				.@attempts = 0; // Counter for random player select
+				.@rand_party = rand(.@party_size);
+				while( !isloggedin(.@party_aid[.@rand_party], .@party_cid[.@rand_party]) ) {
+					if( .@attempts >= .loop_max ) break;
+					.@rand_party = rand(.@party_size);
+					.@attempts++;
+				}
+				// Max attempts reached					
+				if( .@attempts >= .loop_max ) {
+					mes "[ Player not found ]";
+					mes "Tried to select random player " + .@attempts + " times!";
+					mes "Do you want to try again?";
+					next;
+					if( select("Yes:No") == 1 ) {
+						goto SelectRandom3;
+					} else {
+						goto OnClose;
+					}
+				}
+				// Backup online check (next; will pause script and players can disconnect)
+				if( !isloggedin(.@party_aid[.@rand_party], .@party_cid[.@rand_party]) ) {
+					mes "[ Player not online ]";
+					mes "Member is ^777777offline^000000";
+					mes "Do you want to try again?";
+					next;
+					if( select("Yes:No") == 1 ) {
+						goto SelectRandom3;
+					} else {
+						goto OnClose;
+					}
+				}
+				// Give single reward
+				.@name$ = strcharinfo(0, .@party_cid[.@rand_party]);
+				mes .@name$ + "^777777 ~ " + getitemname( .@rewards[.@i] ) + "^000000";
+				message .@name$, "Gained " + getitemname( .@rewards[.@i] ) + " ( Distributed Randomly )";
+				getitem .@rewards[.@i], 1, .@party_aid[.@rand_party];
+			}
+		}
+
+		// LOOT MODE 10: Give all rewards to selected party member
+		// LOOT MODE 11: Give one reward to selected party member
+		else if( .loot_mode >= 10 && .loot_mode <= 11 ) {
+			SelectMember:
+			// Open Party Select Menu
+			.@select = callfunc("WB_PartySelect", 1, 1);
+
+			// Refresh selected
+			while ( .@select == -1 ) {
+				message strcharinfo(0), "Refresh menu!";
+				.@select = callfunc("WB_PartySelect", 1, 1);
+			}
+
+			// Not in a party (Leaved before select or removed)
+			if ( .@select == -2 ) {
+				message strcharinfo(0), "You don't have a party.";
+				end;
+			}
+
+			// Is selected member online
+			if ( !isloggedin(.@party_aid[.@select], .@party_cid[.@select]) ) {
+				mes "[ Loot Distributor ]";
+				mes "Selected party member is not online.";
+				mes "Please select again.";
+				next;
+				goto SelectMember;
+			}
+
+			// Get more party data
+			.@party_name$ = getpartyname(.@party_id); // Party Name
+			.@party_leader_cid = getpartyleader(.@party_id, 2); // Party Leader Character ID
+			// Party Leader Name
+			.@party_leader_name$ = "[Offline]";
+			if ( .@party_leader_cid != -1 ) {
+				// strcharinfo(0,.@party_leader_cid); will fail if leader is offline!
+				for (.@i = 0; .@i < .@party_size; .@i++ ) {
+					// Match leader cid with party member cid
+					if ( .@party_leader_cid == .@party_member_cid[.@i] ) {
+						.@party_leader_name$ = .@party_member_name$[.@i];
+					}
+				}
+			}
+
+			// Double check
+			// Check for party changes, because players can leave anytime.
+			.@party_id2 = getcharid(1);
+			.@check_failed = false;
+
+			// Not in a party anymore (Leaved after select or removed)
+			if ( !.@party_id2 ) {
+				message strcharinfo(0), "You don't have a party.";
+				mes "[ Loot Distributor ]";
+				mes "Your party has made changes during selection.";
+				mes "Please select again.";
+				close;
+			}
+			
+			// Check if party ID has changed
+			if (.@party_id != .@party_id2) {
+				message strcharinfo(0), "Failed: Party ID has changed!";
+				mes "[ Loot Distributor ]";
+				mes "Your party has made changes during selection.";
+				mes "Please select again.";
+				close;
+			}
+
+			// Get new party data
+			getpartymember .@party_id2, 0; // names
+			.@new_party_size = $@partymembercount;
+			copyarray .@partymembername$[0], $@partymembername$[0], .@new_party_size;
+
+			// Check if party size has changed during select.
+			if (.@new_party_size != .@party_size) {
+				message strcharinfo(0), "Failed: Party size has changed!";
+				mes "[ Loot Distributor ]";
+				mes "Your party has made changes during selection.";
+				mes "Please select again.";
+				close;
+			}
+
+			// Check if party member names has changed during select.
+			for (.@i = 0; .@i < .@party_size; .@i++ ) {
+				// Match new and old name
+				if ( .@partymembername$[.@i] != .@party_member_name$[.@i] ) {
+					.@check_failed = true;
+					message strcharinfo(0), "Failed: Party member name has changed!";
+					break;
+				}
+			}
+
+			// Has any checks failed
+			if ( .@i >= .@party_size && .@check_failed ) {
+				mes "[ Loot Distributor ]";
+				mes "Your party has made changes during selection.";
+				mes "Please select again.";
+				close;
+			}
+
+			// Success; Give rewards
+			if (.loot_mode == 10) {
+				// All rewards to selected member
+				.@name$ = strcharinfo(0, .@party_cid[.@select]);
+				mes "[ Loot Distributor ]";
+				// Loop through each reward
+				for( .@i = 0; .@i < .@reward_size; .@i++ ) {
+					mes .@name$ + "^777777 ~ " + getitemname( .@rewards[.@i] ) + "^000000";
+					message .@name$, "Gained " + getitemname( .@rewards[.@i] ) + " ( Distributed Randomly )";
+					getitem .@rewards[.@i], 1, .@party_aid[.@select];
+				}
+			}
+			else if (.loot_mode == 11) {
+				// Give one random reward to selected member
+				.@rand_item = rand(.@reward_size);
+				.@name$ = strcharinfo(0, .@party_cid[.@select]);
+				mes "[ Loot Distributor ]";
+				mes .@name$ + "^777777 ~ " + getitemname( .@rewards[.@rand_item] ) + "^000000";
+				message .@name$, "Gained " + getitemname( .@rewards[.@rand_item] ) + " ( Distributed Randomly )";
+				getitem .@rewards[.@rand_item], 1, .@party_aid[.@select];
+			}
+		}
+	} else {
+		// Disposed loots
+		mes "[ Loot Distributor ]";
+	}
+	mes "Congratulations!";
+	// Remove all party members access
+	callfunc("WB_ResetPartyAccess", .@party_id);
+	close2;
+	// Disable current NPC Treasure Chest
+	callfunc("WB_ResetBox", .@event_index);
+	end;
+
+OnClose:
+	// Close reward window
+	mes "[ Loot Distributor ]";
+	mes "Good bye.";
+	close;
+}
+
+// Function: Reset all party members access IDs
+// callfunc("WB_ResetPartyAccess", <party id>)
+function	script	WB_ResetPartyAccess	{
+	.@party_id = getarg(0);
+	getpartymember .@party_id, 1; // Character IDs
+	.@party_size = $@partymembercount;
+	copyarray .@party_cid[0], $@partymembercid[0], .@party_size;
+	for ( .@i = 0; .@i < .@party_size; .@i++ ) {
+		for ( .@j = 0; .@j < getarraysize($@WB_ACCESS); .@j++ ) {
+			if ( $@WB_ACCESS[.@j] == .@party_cid[.@i] ) {
+				deletearray $@WB_ACCESS[.@j], 1;
+				deletearray $@WB_ACCESS_EXPIRE[.@j], 1;
+			}
+		}
+	}
+	// Remove party id
+	/*for ( .@i = 0; .@i < getarraysize($@WB_PARTY_ID); .@i++ ) {
+		if ( $@WB_PARTY_ID[.@i] == .@party_id ) {
+			deletearray $@WB_PARTY_ID[.@i], 1;
+		}
+	}*/
+	return;
+}
+
+// Function: Reset specific WorldBoss event global arrays
+// callfunc("WB_ResetEventGlobals", <index>)
+function	script	WB_ResetEventGlobals	{
+	.@index = getarg(0, 0); // Event index Default=0
+	deletearray $@WB_MOB_ID[.@index], 1;   // Rename from $@WB_ID
+	deletearray $@WB_MOB_GID[.@index], 1;  // Rename from $@WB_GID
+	deletearray $@WB_TIMEOUT[.@index], 1;
+	deletearray $@WB_RADAR_NEAR[.@index], 1; // Rename from $@WB_NEAR
+	deletearray $@WB_MAP$[.@index], 1;
+	deletearray $@WB_X[.@index], 1;
+	deletearray $@WB_Y[.@index], 1;
+	deletearray $@WB_REWARD_INDEX[.@index], 1; // Rename from $@WB_REWARD
+	deletearray $@WB_PARTY_ID[.@index], 1; // Rename from $@WB_PARTY
+	deletearray $@WB_NPC_NAME$[.@index], 1; // Rename from $@WB_BOX
+	//deletearray $@WB_ACCESS[.@index], 1;
+	//deletearray $@WB_ACCESS_EXPIRE[.@index], 1;
+	deletearray $@WB_MF_PARTYLOCK[.@index], 1;
+	deletearray $@WB_MF_NOMOBLOOT[.@index], 1;
+	deletearray $@WB_MF_NOMVPLOOT[.@index], 1;
+	deletearray $@WB_MF_NOPENALTY[.@index], 1;
+	deletearray $@WB_MF_NOMOBTELE[.@index], 1;
+	deletearray $@WB_MF_BASEEXP[.@index], 1;
+	deletearray $@WB_MF_JOBEXP[.@index], 1;
+	//deletearray $@WB_MF_FOG[.@index], 1;
+	return;
+}
+
+// Function: Reset all WorldBoss event global arrays
+// callfunc("WB_ResetAllGlobals")
+function	script	WB_ResetAllGlobals	{
+	deletearray $@WB_MOB_ID[0], getarraysize($@WB_MOB_ID);
+	deletearray $@WB_MOB_GID[0], getarraysize($@WB_MOB_GID);
+	deletearray $@WB_TIMEOUT[0], getarraysize($@WB_TIMEOUT);
+	deletearray $@WB_RADAR_NEAR[0], getarraysize($@WB_RADAR_NEAR);
+	deletearray $@WB_MAP$[0], getarraysize($@WB_MAP$);
+	deletearray $@WB_X[0], getarraysize($@WB_X);
+	deletearray $@WB_Y[0], getarraysize($@WB_Y);
+	deletearray $@WB_REWARD_INDEX[0], getarraysize($@WB_REWARD_INDEX);
+	deletearray $@WB_PARTY_ID[0], getarraysize($@WB_PARTY_ID);
+	deletearray $@WB_NPC_NAME$[0], getarraysize($@WB_NPC_NAME$);
+	deletearray $@WB_ACCESS[0], getarraysize($@WB_ACCESS);
+	deletearray $@WB_ACCESS_EXPIRE[0], getarraysize($@WB_ACCESS_EXPIRE);
+	deletearray $@WB_MF_PARTYLOCK[0], getarraysize($@WB_MF_PARTYLOCK);
+	deletearray $@WB_MF_NOMOBLOOT[0], getarraysize($@WB_MF_NOMOBLOOT);
+	deletearray $@WB_MF_NOMVPLOOT[0], getarraysize($@WB_MF_NOMVPLOOT);
+	deletearray $@WB_MF_NOPENALTY[0], getarraysize($@WB_MF_NOPENALTY);
+	deletearray $@WB_MF_NOMOBTELE[0], getarraysize($@WB_MF_NOMOBTELE);
+	deletearray $@WB_MF_BASEEXP[0], getarraysize($@WB_MF_BASEEXP);
+	deletearray $@WB_MF_JOBEXP[0], getarraysize($@WB_MF_JOBEXP);
+	//deletearray $@WB_MF_FOG[0], getarraysize($@WB_MF_FOG);
+	return;
+}
+
+// Function: Reset all mapflags to original values
+// callfunc("WB_ResetMapflags", <map name>, <index>)
+function	script	WB_ResetMapflags	{
+	.@map$ = getarg(0, "null"); // Map name Default="null"
+	.@index = getarg(1, 0); // Event index Default=0
+	// Map name exists
+	if (.@map$ == "" || .@map$ == "null") {
+		debugmes "WB_ResetMapflags was given:"+ .@map$;
+		return;
+	}
+	// Party Lock
+	if ( $@WB_MF_PARTYLOCK[.@index] )
+		setmapflag .@map$, MF_PARTYLOCK;
+	else
+		removemapflag .@map$, MF_PARTYLOCK;
+	// No mob loot
+	if ( $@WB_MF_NOMOBLOOT[.@index] )
+		setmapflag .@map$, MF_NOMOBLOOT;
+	else
+		removemapflag .@map$, MF_NOMOBLOOT;
+	// No MVP loot
+	if ( $@WB_MF_NOMVPLOOT[.@index] )
+		setmapflag .@map$, MF_NOMVPLOOT;
+	else
+		removemapflag .@map$, MF_NOMVPLOOT;
+	// No penalty
+	if ( $@WB_MF_NOPENALTY[.@index] )
+		setmapflag .@map$, MF_NOPENALTY;
+	else
+		removemapflag .@map$, MF_NOPENALTY;
+	// No mob teleport
+	if ( $@WB_MF_NOMOBTELE[.@index] )
+		setmapflag .@map$, MF_MONSTER_NOTELEPORT;
+	else
+		removemapflag .@map$, MF_MONSTER_NOTELEPORT;
+	// Base Exp
+	setmapflag .@map$, MF_BEXP, $@WB_MF_BASEEXP[.@index];
+	// Job Exp
+	setmapflag .@map$, MF_JEXP, $@WB_MF_JOBEXP[.@index];
+	// Effect FOG
+	//if ( $@WB_MF_FOG[.@index] )
+	//	setmapflag .@map$, MF_FOG;
+	//else
+	//	removemapflag .@map$, MF_FOG;
+	return;
+}
+
+// Function: Reset specific Treasure Chest NPC
+// callfunc("WB_ResetBox", <index>)
+function	script	WB_ResetBox	{
+	.@index = getarg(0, 0); // Event index Default=0
+	if ( $@WB_NPC_NAME$[.@index] != "" ) {
+		if ( getnpcid(0, $@WB_NPC_NAME$[.@index]) ) {
+			// Do these checks or this will select all NPCs on the server when fail
+			donpcevent $@WB_NPC_NAME$[.@index]+"::OnDisable";
+		}
+	}
+}
+
+// Function: Reset all Treasure Chest NPC's
+// callfunc("WB_ResetAllBoxes")
+function	script	WB_ResetAllBoxes	{
+	for ( .@i = 0; .@i < getarraysize($@WB_NPC_NAME$); .@i++ ) {
+		if ( $@WB_NPC_NAME$[.@i] != "" ) {
+			if ( getnpcid(0, $@WB_NPC_NAME$[.@i]) ) {
+				// Do these checks or this will select all NPCs on the server when fail
+				donpcevent $@WB_NPC_NAME$[.@i]+"::OnDisable";
+			}
+		}
+	}
+}
+
+// Function Party Select
+// callfunc("WB_PartySelect", <INT_show_offline>, <INT_show_refresh>)
+// Return INT=Party index number, -1=Refresh selected, -2=Not in party
+function	script	WB_PartySelect	{
+	.@s_offline = getarg(0, 1); // Show offline players in menu? 1=Yes 0=No
+	.@s_refresh = getarg(1, 1); // Show refresh menu item? 1=Yes 0=No
+	.@party_id = getcharid(1);  // Party ID
+ 
+	// Not in a party
+	if ( !.@party_id )
+		return -2;
+ 
+	getpartymember .@party_id, 0; // Names
+	getpartymember .@party_id, 1; // Character IDs
+	getpartymember .@party_id, 2; // Account IDs
+ 
+	// Copy the temporary party data
+	.@party_size = $@partymembercount;
+	copyarray .@party_member_name$[0], $@partymembername$[0], .@party_size;
+	copyarray .@party_member_cid[0], $@partymembercid[0], .@party_size;
+	copyarray .@party_member_aid[0], $@partymemberaid[0], .@party_size;
+ 
+	// Create menu
+	if ( .@s_refresh )
+		.@menu_party$ = "^777777[Refresh]^000000";
+	.@menu_party$ = .@menu_party$ + ":";
+ 
+	// Loop through each party member and add to menu
+	for ( .@i = 0; .@i < .@party_size; .@i++ ) {
+		if ( isloggedin(.@party_member_aid[.@i], .@party_member_cid[.@i]) ) {
+			if (.@s_offline)
+				.@menu_party$ = .@menu_party$ + .@party_member_name$[.@i] + " ^00cc36[ON]^000000";
+			else
+				.@menu_party$ = .@menu_party$ + .@party_member_name$[.@i];
+		} else if (.@s_offline)
+			.@menu_party$ = .@menu_party$ + .@party_member_name$[.@i] + " ^777777[OFF]^000000";
+		.@menu_party$ = .@menu_party$ + ":";
+	}
+ 
+	// Open select menu (-2 select start from 1 and we have [Refresh] at first)
+	.@select = select(.@menu_party$) - 2;
+	return .@select;
+}
+
+// Treasure chest NPC
+alberta,0,0,5	script	Treasure Chest#wb_0	1324,{
+	emotion ET_SURPRISE, getcharid(3); // Emotion on the player
+	// Disable current NPC Treasure Chest if empty
+	if ( !getarraysize($@WB_ACCESS) ) {
+		message strcharinfo(0), "Treasure Chest is empty.";
+		donpcevent strnpcinfo(0)+"::OnDisable";
+		// Stop access expire timer
+		donpcevent "WorldBossAccessExpire::OnDisable";
+		end;
+	}
+	doevent "WorldBoss::OnTreasureOpen";
+	end;
+
+OnInit:
+	.@name$ = strnpcinfo(0); //rid2name( .@id );
+	.@timer = getnpctimer(1, .@name$);
+	getmapxy(.map$, .x, .y, UNITTYPE_NPC);
+	disablenpc .@name$;
+	//debugmes .@name$+"::OnInit target=" + .map$ + " NPC="+ .@name$ + " timer="+ .@timer;
+	end;
+
+OnEnable:
+	// if enabled getnpctimer(1, strnpcinfo(0)) will return 1
+	.@id = getnpcid(0);
+	.@name$ = strnpcinfo(0); //rid2name( .@id );
+	.@timer = getnpctimer(1, .@name$);
+
+	.@npc$ = "WorldBoss";
+	.@map$ = getvariableofnpc(.event_map$, .@npc$);
+	.@x = getvariableofnpc(.event_x, .@npc$);
+	.@y = getvariableofnpc(.event_y, .@npc$);
+
+	enablenpc( .@name$ );
+	unitwarp( .@id, .@map$, .@x, .@y ); // Move to new position
+	initnpctimer( .@name$ ); // Start timeout timer
+
+	//debugmes .@name$+"::OnEnable target="+ .@map$ +", "+ .@x +", "+ .@y +" NPC="+ .@name$ +" timer="+ .@timer;
+	end;
+
+// Disable Treasure NPC and clean event array
+OnDisable:
+	.@id = getnpcid(0);
+	.@name$ = strnpcinfo(0); //rid2name( .@id );
+	.@timer = getnpctimer(1, .@name$);
+	getmapxy(.@event_map$, .@x, .@y, UNITTYPE_NPC);
+
+	stopnpctimer( .@name$ ); // Stop timeout timer
+	unitwarp( .@id, .map$, .x, .y ); // Return to default position
+	disablenpc( .@name$ );
+
+	// Clean event data
+	// Get event index from the map name array
+	.@index = inarray($@WB_MAP$[0], .@event_map$);
+
+	// Check if index was found
+	if ( .@index == -1 ) {
+		debugmes .@name$+"::OnDisable event map name ( "+ .@event_map$ +" ) not found!";
+		end;
+	}
+
+	// Remove current event from the arrays
+	callfunc("WB_ResetEventGlobals", .@index);
+
+	//debugmes .@name$+"::OnDisable target="+ .@event_map$ +", "+ .@x +", "+ .@y +" NPC="+ .@name$ +" timer="+ .@timer;
+	end;
+
+//OnTimer30000:  // 30 seconds
+//OnTimer120000:  // 2 minutes
+//OnTimer300000:  // 5 minutes
+OnTimer600000: // 10 minutes
+//OnTimer900000: // 15 minutes
+	.@name$ = strnpcinfo(0);
+	getmapxy(.@map$, .@x, .@y, UNITTYPE_NPC);
+	//debugmes .@name$+"::OnTimeout target="+ .@map$ +", "+ .@x +", "+ .@y +" NPC="+ .@name$;
+	donpcevent .@name$+"::OnDisable";
+	end;
+}
+
+// Treasure Chest duplicates (Add more if you run out)
+// NPC Name = Treasure Chest#wb_<indexNumber> (Important!)
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_1	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_2	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_3	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_4	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_5	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_6	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_7	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_8	1324
+alberta,0,0,5	duplicate(Treasure Chest#wb_0)	Treasure Chest#wb_9	1324
+
+// World Boss timeout timer
+-	script	WorldBossTimeout	-1,{
+	end;
+OnEnable:
+	initnpctimer;
+	end;
+OnDisable:
+	stopnpctimer;
+	end;
+// Update every 1 minutes
+OnTimer60000:
+	.@time = gettimetick(0);
+	.@timeout = getvariableofnpc(.event_timeout, "WorldBoss");
+	.@mapflags = getvariableofnpc(.use_mapflags, "WorldBoss");
+	for ( .@i = 0; .@i < getarraysize($@WB_MOB_GID); .@i++ ) {
+		// Unit must be alive
+		if ( unitexists($@WB_MOB_GID[.@i]) && .@time > ($@WB_TIMEOUT[.@i] + .@timeout) ) {
+			announce "[World Boss] World Boss in "+ $@WB_MAP$[.@i] +" has expired!", bc_all, 0xFF0000;
+			unitkill( $@WB_MOB_GID[.@i] );
+
+			// Reset event mapflags
+			if ( .@mapflags ) {
+				callfunc("WB_ResetMapflags", $@WB_MAP$[.@i], .@i);
+			}
+
+			// Remove event global arrays
+			callfunc("WB_ResetEventGlobals", .@i);
+		}
+	}
+	initnpctimer;
+	end;
+}
+
+// World Boss Unit's Radar
+// Count users around the world boss and increase it's HP by each Player nearby
+-	script	WorldBossRadar	-1,{
+	end;
+OnInit:
+	.npc_name$ = strnpcinfo(0);
+	.radius = 15; // Cell radius
+	.HPLevel = 1500000; // HP increase per player
+	.MinHP = .HPLevel * 2; // Minimum HP when to stop decreasing HP
+	end;
+OnEnable:
+	initnpctimer;
+	end;
+OnDisable:
+	stopnpctimer;
+	end;
+// Every 10 secods update all World Boss unit data
+OnTimer10000:
+	for ( .@i = 0; .@i < getarraysize($@WB_MOB_GID); .@i++ ) {
+		.@unit_gid = $@WB_MOB_GID[.@i];
+		if ( unitexists(.@unit_gid) ) {
+			getunitdata(.@unit_gid, .@udata);
+			.@hp = .@udata[UMOB_HP];
+			.@maxhp = .@udata[UMOB_MAXHP];
+			.@x = .@udata[UMOB_X];
+			.@y = .@udata[UMOB_Y];
+			.@users = getareausers(mapid2name(.@udata[UMOB_MAPID]), (.@x - .radius), (.@y - .radius), (.@x + .radius), (.@y + .radius));
+			if ( .@users > $@WB_RADAR_NEAR[.@i] ) {
+				// Increase HP per each player nearby
+				.@new_hp = .@hp + ( .HPLevel * .@users );
+				// Stop increasing HP after maximum has been reached
+				if ( .@new_hp < .@maxhp ) {
+					setunitdata .@unit_gid, UMOB_HP, .@new_hp;
+					unittalk .@unit_gid, rid2name(.@unit_gid) + " : Mortals has entered my sight!", bc_area;
+				}
+			} else if ( .@users < $@WB_RADAR_NEAR[.@i] ) {
+				// Decrease HP per each player nearby
+				.@new_hp = .@hp - .HPLevel;
+				// Stop decreasing HP after minimum has been reached
+				if ( .@new_hp > .MinHP ) {
+					setunitdata .@unit_gid, UMOB_HP, .@new_hp;
+					unittalk .@unit_gid, rid2name(.@unit_gid) + " : Mortals has left my sight!", bc_area;
+				}
+			}
+			// Update users count
+			setarray $@WB_RADAR_NEAR[.@i], .@users;
+		}
+	}
+	initnpctimer;
+	end;
+}
+
+// World Boss access expire timer
+// This will clean event access array from getting too big in time.
+-	script	WorldBossAccessExpire	-1,{
+	end;
+OnEnable:
+	//debugmes strnpcinfo(0)+"::OnEnable";
+	initnpctimer;
+	end;
+OnDisable:
+	//debugmes strnpcinfo(0)+"::OnDisable";
+	stopnpctimer;
+	end;
+// Update every 5 minutes
+OnTimer300000:
+	//debugmes strnpcinfo(0)+"::OnTimer";
+	.@time = gettimetick(0);
+	.@expires = getvariableofnpc(.event_access_expire, "WorldBoss");
+	for ( .@i = 0; .@i < getarraysize($@WB_ACCESS); .@i++ ) {
+		// Check if access has expired
+		if ( .@time > ($@WB_ACCESS_EXPIRE[.@i] + .@expires) ) {
+			// Current access has expired! Remove access and expire time.
+			deletearray $@WB_ACCESS[.@i], 1;
+			deletearray $@WB_ACCESS_EXPIRE[.@i], 1;
+		}
+	}
+	// Continue timer if access is not empty
+	if ( getarraysize($@WB_ACCESS) ) {
+		initnpctimer;
+	}
+	end;
+}
+
+// World Boss Floating Rates
+-	script	WorldBossRates	-1,{
+OnInit: // Will fire before OnInterIfInitOnce on server start
+	// Floating rates are enabled
+	if(!getvariableofnpc(.use_floating_rates, "WorldBoss")) end;
+
+	// Reset rates on script load
+	if ( $wb_base_exp_rate && getBattleFlag("base_exp_rate") != $wb_base_exp_rate )
+		donpcevent strnpcinfo(0)+"::OnDisable";
+	end;
+
+OnInterIfInitOnce: // Will fire after OnInit on server start
+	// Floating rates are enabled
+	if(!getvariableofnpc(.use_floating_rates, "WorldBoss")) end;
+	// Set once on server start
+	$wb_battle_flags = 0;
+	// Set servers default battle flags
+	$wb_base_exp_rate = getBattleFlag("base_exp_rate");
+	$wb_job_exp_rate = getBattleFlag("job_exp_rate");
+	$wb_item_rate_common = getBattleFlag("item_rate_common");
+	$wb_item_rate_common_boss = getBattleFlag("item_rate_common_boss");
+	$wb_item_rate_common_mvp = getBattleFlag("item_rate_common_mvp");
+	$wb_item_rate_heal = getBattleFlag("item_rate_heal");
+	$wb_item_rate_heal_boss = getBattleFlag("item_rate_heal_boss");
+	$wb_item_rate_heal_mvp = getBattleFlag("item_rate_heal_mvp");
+	$wb_item_rate_use = getBattleFlag("item_rate_use");
+	$wb_item_rate_use_boss = getBattleFlag("item_rate_use_boss");
+	$wb_item_rate_use_mvp = getBattleFlag("item_rate_use_mvp");
+	$wb_item_rate_equip = getBattleFlag("item_rate_equip");
+	$wb_item_rate_equip_boss = getBattleFlag("item_rate_equip_boss");
+	$wb_item_rate_equip_mvp = getBattleFlag("item_rate_equip_mvp");
+	$wb_item_rate_card = getBattleFlag("item_rate_card");
+	$wb_item_rate_card_boss = getBattleFlag("item_rate_card_boss");
+	$wb_item_rate_card_mvp = getBattleFlag("item_rate_card_mvp");
+	$wb_item_rate_mvp = getBattleFlag("item_rate_mvp");
+	$wb_item_rate_adddrop = getBattleFlag("item_rate_adddrop");
+	$wb_item_rate_treasure = getBattleFlag("item_rate_treasure");
+	end;
+
+OnDisable:
+	// Reset normal rates
+	if ( $wb_battle_flags ) {
+		//setBattleFlag("base_exp_rate", $wb_base_exp_rate);
+		//setBattleFlag("job_exp_rate", $wb_job_exp_rate);
+		//setBattleFlag("item_rate_common", $wb_item_rate_common);
+		//setBattleFlag("item_rate_common_boss", $wb_item_rate_common_boss);
+		//setBattleFlag("item_rate_common_mvp", $wb_item_rate_common_mvp);
+		//setBattleFlag("item_rate_heal", $wb_item_rate_heal);
+		//setBattleFlag("item_rate_heal_boss", $wb_item_rate_heal_boss);
+		//setBattleFlag("item_rate_heal_mvp", $wb_item_rate_heal_mvp);
+		//setBattleFlag("item_rate_use", $wb_item_rate_use);
+		//setBattleFlag("item_rate_use_boss", $wb_item_rate_use_boss);
+		//setBattleFlag("item_rate_use_mvp", $wb_item_rate_use_mvp);
+		//setBattleFlag("item_rate_equip", $wb_item_rate_equip);
+		//setBattleFlag("item_rate_equip_boss", $wb_item_rate_equip_boss);
+		//setBattleFlag("item_rate_equip_mvp", $wb_item_rate_equip_mvp);
+		//setBattleFlag("item_rate_card", $wb_item_rate_card);
+		//setBattleFlag("item_rate_card_boss", $wb_item_rate_card_boss);
+		//setBattleFlag("item_rate_card_mvp", $wb_item_rate_card_mvp);
+		//setBattleFlag("item_rate_mvp", $wb_item_rate_mvp);
+		//setBattleFlag("item_rate_adddrop", $wb_item_rate_adddrop);
+		//setBattleFlag("item_rate_treasure", $wb_item_rate_treasure);
+	}
+	//$wb_battle_flags = 0;
+	stopnpctimer;
+	end;
+
+OnEnable:
+	// Check already enabled
+	if ( !$wb_battle_flags ) {
+		// Double server ratings
+		//setBattleFlag("base_exp_rate", $wb_base_exp_rate * 2);
+		//setBattleFlag("job_exp_rate", $wb_job_exp_rate * 2);
+		//setBattleFlag("item_rate_common", $wb_item_rate_common * 2);
+		//setBattleFlag("item_rate_common_boss", $wb_item_rate_common_boss * 2);
+		//setBattleFlag("item_rate_common_mvp", $wb_item_rate_common_mvp * 2);
+		//setBattleFlag("item_rate_heal", $wb_item_rate_heal * 2);
+		//setBattleFlag("item_rate_heal_boss", $wb_item_rate_heal_boss * 2);
+		//setBattleFlag("item_rate_heal_mvp", $wb_item_rate_heal_mvp * 2);
+		//setBattleFlag("item_rate_use", $wb_item_rate_use * 2);
+		//setBattleFlag("item_rate_use_boss", $wb_item_rate_use_boss * 2);
+		//setBattleFlag("item_rate_use_mvp", $wb_item_rate_use_mvp * 2);
+		//setBattleFlag("item_rate_equip", $wb_item_rate_equip * 2);
+		//setBattleFlag("item_rate_equip_boss", $wb_item_rate_equip_boss * 2);
+		//setBattleFlag("item_rate_equip_mvp", $wb_item_rate_equip_mvp * 2);
+		//setBattleFlag("item_rate_card", $wb_item_rate_card * 2);
+		//setBattleFlag("item_rate_card_boss", $wb_item_rate_card_boss * 2);
+		//setBattleFlag("item_rate_card_mvp", $wb_item_rate_card_mvp * 2);
+		//setBattleFlag("item_rate_mvp", $wb_item_rate_mvp * 2);
+		//setBattleFlag("item_rate_adddrop", $wb_item_rate_adddrop * 2);
+		//setBattleFlag("item_rate_treasure", $wb_item_rate_treasure * 2);
+	}
+	//announce "[World Boss] Experience and Drop rates has been doubled for one hour! Enjoy!", bc_all, 0x00FF00;
+	$wb_battle_flags = 1;
+	initnpctimer;
+	end;
+
+OnTimer3600000: // 1 hour
+	donpcevent strnpcinfo(0)+"::OnDisable";
+	end;
+}
+
+// NPC World Boss Information
+maintown,79,50,6	script	World Boss#info	495,5,5,{
+	mes "[ " + strnpcinfo(1) + " ]";
+	mes "ข้อมูลเกี่ยวกับ the world bosses.";
+	if ( getarraysize($@WB_MOB_GID) ) {
+		.@time = gettimetick(0);
+		.@timeout = getvariableofnpc(.event_timeout, "WorldBoss");
+		mes "สถานะ: ^00CC36Active^000000";
+		for ( .@i = 0; .@i < getarraysize($@WB_MOB_GID); .@i++ ) {
+			.@timeleft = ($@WB_TIMEOUT[.@i] + .@timeout) - .@time;
+			mes (.@i + 1) + ". Location : " + $@WB_MAP$[.@i];
+			mes " ^777777เหลือเวลาอีก :^000000 " + (.@timeleft / 60000) + " นาที";
+		}
+		mes "โชคดี!";
+	} else {
+		mes "สถานะ: ^CC3300Not Active^000000";
+		mes "เวลาเกิดของบอส:";
+		mes "^777777 ~ 18:30 ^000000";
+		mes "^777777 ~ 22:30 ^000000";
+		mes "Wait until the event starts.";
+	}
+	// GM level 60+ has access to menu
+	if( getgmlevel() >= 60 ) {
+		next;
+		switch( select("Information:Start Event:Skip Start Timer:Stop Event:Change Loot Mode:Change Unit Data:Map Flags:Leave") ) {
+			case 1: callsub S_Info; break;
+			case 2: callsub S_Start; break;
+			case 3: callsub S_Skip; break;
+			case 4: callsub S_Stop; break;
+			case 5: callsub S_Loot; break;
+			case 6: callsub S_Unit; break;
+			case 7: callsub S_Mapflags; break;
+			default: break;
+		}
+	}
+	close;
+
+S_Info:
+	// Set variables
+	.@enabled = getarraysize($@WB_MOB_GID);
+	.@loot_mode = getvariableofnpc(.loot_mode, .event_npc$);
+	.@time = gettimetick(0);
+	.@timeout = getvariableofnpc(.event_timeout, "WorldBoss");
+	mes "[ " + strnpcinfo(1) + " ]";
+	mes "^777777Status: ^000000" + (.@enabled ? "^00CC36Active^000000" : "^CC3300Inactive^000000");
+	mes "^777777Loot mode: ^000000" + .event_loot_modes$[.@loot_mode];
+	.@menu$ = "Leave:";
+	for ( .@i = 0; .@i < getarraysize($@WB_MOB_GID); .@i++ ) {
+		if ( $@WB_MOB_GID[.@i] || $@WB_NPC_NAME$[.@i] != "" ) {
+			// Monster Unit
+			.@timeleft = ($@WB_TIMEOUT[.@i] + .@timeout) - .@time; // ms
+			// Get unit data
+			if ( unitexists($@WB_MOB_GID[.@i]) ) {
+				// Monster unit
+				getunitdata($@WB_MOB_GID[.@i], .@udata);
+				mes (.@i + 1) +". Monster: " + $@WB_MOB_ID[.@i] +" / "+ getmonsterinfo($@WB_MOB_ID[.@i], 0);
+				mes " ^777777 GID: ^000000" + $@WB_MOB_GID[.@i];
+				mes " ^777777 Name: ^000000" + rid2name($@WB_MOB_GID[.@i]);
+				mes " ^777777 HP: ^000000" + .@udata[UMOB_HP] + " / " + .@udata[UMOB_MAXHP];
+				mes " ^777777 Location: ^000000" + mapid2name(.@udata[UMOB_MAPID]) +
+					" ^777777 x ^000000" + .@udata[UMOB_X] +
+					" ^777777 y ^000000" + .@udata[UMOB_Y];
+				mes " ^777777 Time Left :^000000 " + (.@timeleft / 60000) + " min.";
+			} else if (unitexists(getnpcid(0, $@WB_NPC_NAME$[.@i]))) {
+				// NPC unit
+				getunitdata(getnpcid(0, $@WB_NPC_NAME$[.@i]), .@udata);
+				mes (.@i + 1) +". Treasure Chest";
+				mes " ^777777 GID: ^000000" + getnpcid(0, $@WB_NPC_NAME$[.@i]);
+				mes " ^777777 Name: ^000000" + $@WB_NPC_NAME$[.@i];
+				mes " ^777777 Location: ^000000" + mapid2name(.@udata[UNPC_MAPID]) +
+					" ^777777 x ^000000" + .@udata[UNPC_X] +
+					" ^777777 y ^000000" + .@udata[UNPC_Y];
+			}
+			mes "^777777-------^000000";
+			.@menu$ += "Go to "+$@WB_MAP$[.@i];
+		}
+		.@menu$ += ":";
+	}
+	.@selected = select(.@menu$) - 2;
+	if ( .@selected >= 0 ) {
+		if ( unitexists($@WB_MOB_GID[.@selected]) ) {
+			// Warp to the monster location
+			getunitdata($@WB_MOB_GID[.@selected], .@data);
+			warp mapid2name(.@data[UMOB_MAPID]), .@data[UMOB_X], .@data[UMOB_Y];
+		} else if ( $@WB_NPC_NAME$[.@selected] != "" ) {
+			// Warp to the NPC location
+			if (unitexists(getnpcid(0, $@WB_NPC_NAME$[.@selected]))) {
+				getunitdata(getnpcid(0, $@WB_NPC_NAME$[.@selected]), .@data);
+				warp mapid2name(.@data[UNPC_MAPID]), .@data[UNPC_X], .@data[UNPC_Y];
+			}
+		}
+		end;
+	}
+	return;
+
+S_Mapflags:
+	mes "[ " + strnpcinfo(1) + " ] Mapflags";
+	.@size = getarraysize($@WB_MOB_GID);
+	.@mapflags = getvariableofnpc(.use_mapflags, "WorldBoss");
+	if ( .@mapflags && .@size ) {
+		for ( .@i = 0; .@i < .@size; .@i++ ) {
+			.@map$ = $@WB_MAP$[.@i];
+			mes .@map$ + " : Original Flags";
+			mes " ^777777 PartyLock : " + $@WB_MF_PARTYLOCK[.@i] + "^000000";
+			mes " ^777777 NoMobLoot : " + $@WB_MF_NOMOBLOOT[.@i] + "^000000";
+			mes " ^777777 NoMVPLoot : " + $@WB_MF_NOMVPLOOT[.@i] + "^000000";
+			mes " ^777777 NoPenalty : " + $@WB_MF_NOPENALTY[.@i] + "^000000";
+			mes " ^777777 NoMobTele : " + $@WB_MF_NOMOBTELE[.@i] + "^000000";
+			mes " ^777777 BaseExp : " + $@WB_MF_BASEEXP[.@i] + "^000000";
+			mes " ^777777 JobExp : " + $@WB_MF_JOBEXP[.@i] + "^000000";
+			//mes " ^777777 Fog : " + $@WB_MF_FOG[.@i] + "^000000";
+			mes .@map$ + " : New Flags";
+			mes " ^777777 PartyLock : " + getmapflag(.@map$, MF_PARTYLOCK) + "^000000";
+			mes " ^777777 NoMobLoot : " + getmapflag(.@map$, MF_NOMOBLOOT) + "^000000";
+			mes " ^777777 NoMVPLoot : " + getmapflag(.@map$, MF_NOMVPLOOT) + "^000000";
+			mes " ^777777 NoPenalty : " + getmapflag(.@map$, MF_NOPENALTY) + "^000000";
+			mes " ^777777 NoMobTele : " + getmapflag(.@map$, MF_MONSTER_NOTELEPORT) + "^000000";
+			mes " ^777777 BaseExp : " + getmapflag(.@map$, MF_BEXP) + "^000000";
+			mes " ^777777 JobExp : " + getmapflag(.@map$, MF_JEXP) + "^000000";
+			//mes " ^777777 Fog : " + getmapflag(.@map$, MF_FOG) + "^000000";
+			mes "^777777-------^000000";
+		}
+	} else {
+		mes "No mapflags has been set.";
+	}
+	return;
+
+S_Start:
+	donpcevent .event_npc$ + "::OnEnable";
+	message strcharinfo(0), "Event has been started!";
+	return;
+
+S_Skip:
+	awake .event_npc$; // Cancels any running sleep timers on the NPC
+	message strcharinfo(0), "Event timer has been skipped!";
+	return;
+
+S_Stop:
+	awake .event_npc$; // Cancels any running sleep timers on the NPC
+	donpcevent .event_npc$ + "::OnDisable";
+	// Announce event stopped
+	announce "[World Boss] The event has been stopped!", bc_all, 0xFF0000;
+	message strcharinfo(0), "Event has been stopped!";
+	return;
+
+S_Loot:
+	.@size = getarraysize(.event_loot_modes$);
+	for( .@i = 0; .@i < .@size; .@i++ ) {
+		message strcharinfo(0), "Loot mode "+ .@i +" : " + .event_loot_modes$[.@i];
+	}
+	// Change event loot mode option
+	input .@input, 0, .@size;
+	set getvariableofnpc(.loot_mode, .event_npc$), .@input;
+	message strcharinfo(0), "Event loot mode changed: " + .event_loot_modes$[.@input];
+	return;
+
+S_Unit:
+	// Create menu
+	.@menu$ = "Leave:";
+	for ( .@i = 0; .@i < getarraysize($@WB_MOB_GID); .@i++ ) {
+		if ( unitexists($@WB_MOB_GID[.@i]) ) {
+			.@menu$ += $@WB_MAP$[.@i] +" - "+ getmonsterinfo($@WB_MOB_ID[.@i], 0);
+		}
+		.@menu$ += ":";
+	}
+	.@selected = select(.@menu$) - 2;
+
+	// Change unit data (HP,Level,Atk,Etc.)
+	if ( .@selected >= 0 ) {
+		mes "[ " + strnpcinfo(1) + " ]";
+		getunitdata($@WB_MOB_GID[.@selected], .@udata);
+		for (.@i = 0; .@i < getarraysize(.@udata); .@i++ ) {
+			mes .UMOB$[.@i] + " = " + .@udata[.@i];
+		}
+		.@select = select(.UMOB_menu$) - 1;
+		message strcharinfo(0), "Write a new unit ( " + .UMOB$[.@select] + " ) value.";
+		input .@val, 0, 1000000000;
+		setunitdata($@WB_MOB_GID[.@selected], .@select, .@val);
+		// Confim data has changed
+		getunitdata($@WB_MOB_GID[.@selected], .@confirm_udata);
+		message strcharinfo(0), "New unit data is: " + .@confirm_udata[.@select];
+	}
+	return;
+
+OnInit:
+	// Event NPC name
+	.event_npc$ = "WorldBoss";
+
+	// Event loot mode descriptions
+	// Copy array from other NPC
+	copyarray .event_loot_modes$[0], getelementofarray(getvariableofnpc(.loot_mode_desc$, .event_npc$),0), getarraysize(getvariableofnpc(.loot_mode_desc$, .event_npc$));
+
+	// Unit data attibute names
+	setarray .UMOB$[0],
+		"Size","Level","Hp","Max Hp",
+		"Master AID","Map ID","Map X","Map Y",
+		"Speed","Mode","Ai","Scoption",
+		"Sex","Class","Hair style","Hair color",
+		"Head bottom","Head middle","Head top","Cloth color",
+		"Shield","Weapon","Look dir","Can move tick",
+		"Str","Agi","Vit","Int",
+		"Dex","Luk","Slave cpymstrmd","Dmg immune",
+		"Atk range","Atk min","Atk max","Matk min",
+		"Matk max","Def","Mdef","Hit",
+		"Flee","Pdodge","Crit","Race",
+		"Ele type","Ele level","A-motion","A-delay",
+		"D-motion";
+
+	// Unit data menu string
+	.UMOB_menu$ = implode(.UMOB$, ":");
+
+	// Set NPC size if class_id supports
+	//.@npc_class = rand(495, 498);
+	//.@npc_size = rand(0, 2); // 0=normal, 1=small, 2=big
+	//setnpcdisplay(strnpcinfo(0), strnpcinfo(1), .@npc_class, .@npc_size);
+	end;
+
+OnTouch:
+	// Player attached
+	end;
+
+OnTouchNPC:
+	// Monster attached
+	.@UNIT_GID = getattachedrid();
+	//.@UNIT_NAME$ = rid2name(.@UNIT_GID);
+	//debugmes "Target unit name:" + .@UNIT_NAME$;
+	// Get unit data as Array
+	getunitdata(.@UNIT_GID, .@data);
+	.@MASTER_AID = .@data[UMOB_MASTERAID]; // UMOB_MASTERAID=4
+	// Unit has a master
+	if ( .@MASTER_AID ) {
+		.@MASTER_NAME$ = rid2name(.@MASTER_AID);
+		.@online = isloggedin(.@MASTER_AID);
+		if ( .@online ) {
+			end; // Do not target players unit
+		}
+	}
+	// NPC emotion
+	emotion ET_KEK;
+	// Warp monsters away from the NPC
+	unitwarp 0, "this", -1, -1;
+	end;
+}

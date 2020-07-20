@@ -1,0 +1,60 @@
+maintown,65,116,4	script	VIP Central	10130,{
+OnTalk:
+	mes .npc$;
+	mes (gettime(3)>= 6&&gettime(3)<= 12?"สวัสดีตอนเช้า":(gettime(3)>=13&&gettime(3)<=18?"สวัสดีตอนกลางวัน":"สวัสดีตอนเย็น"))+", ^008aff"+strcharinfo(0)+"^000000 !";
+	mes "สถานะของคุณคือ :";
+	if (vip_status(1)) {
+		mes "^008affVIP ของคุณจะหมดอายุ " + callfunc("Time2Str",vip_status(2)) + "^000000";
+	} else {
+		mes "คุณไม่ได้อยู่ในสถานะ ^008affVIP^000000";
+	}
+			end;
+
+OnInit:
+	.npc$ = "^FF7F00[ VIP ]^000000";						// Name of NPC;
+	.bcor$ = "^008aff•^000000 ";									// Option Button Symbol;
+	.rcor$ = "^ff0000•^000000 ";									// Cancel button symbol;
+	setarray .vip_day,1,7,15,30,365;										// Number of days that can be purchased;
+	setarray .vip_cashpoint,1000,4000,7000,10000,100000;						// Price in #CASHPOINTS;
+	.map$ = "mooc";													// VIP Room Map;
+	setarray .cord,210,96;											// X and Y Coordinate;
+	end;
+}
+
+/*1@herbs,85,61,4	script	VIP ฉุกเฉิน	625,{
+
+mes "[ NPC VIP ]";
+mes "สามารถรับ VIP ได้";
+mes "สูงสุด 3 ครั้ง (ครั้งละ 1 ชั่วโมง)";
+mes "^FF0000ใช้เวลาฉุกเฉินเท่านั้น^000000";
+mes "คุณใช้ไปแล้ว : "+#VIPFREE+"";
+next;
+mes "[ NPC VIP ]";
+mes "ใช้เวลา ของในคลังเหลือ 300";
+mes "แต่เก็บของเกิน ให้นำของออกมา";
+mes "ถ้าหากไม่คิดต่อเวลา";
+next;
+menu "รับ VIP ฉุกเฉิน",-,"ไว้คราวหลัง",ENO;
+
+	if(#VIPFREE > 3){ 
+	
+	mes "[ NPC VIP ]";
+	mes "เกินครั้งที่กำหนดแล้ว";
+	end;
+	}
+
+	if(getgmlevel() > 80){ end; }
+
+	set #VIPFREE,#VIPFREE + 1;
+	vip_time (60);
+	mes "[ NPC VIP ]";
+	mes "เสร็จเรียบร้อย";
+	end;
+	
+ENO:
+
+	mes "[ NPC VIP ]";
+	mes "ไว้เจอกันใหม่";
+	end;
+
+}*/

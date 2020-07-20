@@ -1,0 +1,281 @@
+maintown,40,19,6	script	Brother Captive#S	849,{
+set .@npc$,"[ Brother Captive ]";
+	set .@party_id,getcharid(1);
+	
+set .@gettimetick, gettimetick(2);
+		set .@instance_delay, ( instance_delay_dunctwitch - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			mes .@npc$;
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;	}	
+	
+	if(.@party_id == 0){ end; }		
+	
+	if($@MVPTW4party_name == .@party_id){
+	
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunctwitch, ( .@gettimetick + ( .instance_delay ));
+	warp "Witch",150,50;
+	end;
+	}
+
+	if(getmapusers("Witch") == 0) { set $@MVPTW4,0;	}
+	
+mes .@npc$;
+mes "น้องข้าโดนแม่มดจับตัวไว้";
+mes "ได้โปรดช่วยน้องข้าทีเถอะ";
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "และลูกทีมที่เก่ง";
+next;
+	menu 
+	"^009933•^000000 ต้องการเข้าร่วม",Plays,
+	"^FF0000•^000000 ยกเลิก",Cancel;
+
+Cancel:
+	mes "ยินดีให้บริการครับ";
+	end;
+
+
+Plays:
+cutin "3rd_wl_queen02",255;
+
+
+	set .@party_id,getcharid(1);
+	set $@partyWITCH,getcharid(1);
+	//ถ้าหากตายแล้วกลับมาใหม่ได้ไม่ต้องเอาออก
+	if ($@MVPTW4party_name == .@party_id){
+
+	if(getmapusers("Witch") == 0) { 
+	set $@MVPTW4,0;
+	set $@MVPTW4party_name,0;
+	mes .@npc$;
+	mes "รีเซทเรียบร้อยแล้ว";
+	end;
+	}
+
+	mes .@npc$;
+	mes "หากคุณตายไม่สามารถกลับเข้าไปได้";
+	end;
+		}
+	
+	if (.@party_id == 0) {
+mes .@npc$;
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "จึงจะสามารถเข้าหอคอยได้";
+	close;
+	} else if (getpartyleader(.@party_id,2) != getcharid(0)) {
+mes .@npc$;
+mes "ท่านไม่ใช่หัวหน้าปาร์ตี้";
+	close;
+	} else if ($@MVPTW4) {
+mes .@npc$;
+mes "ขณะนี้มี Party อื่น";
+mes "กำลังอยู่ในหอคอย";
+	end;
+	} else {
+	set $@MVPTW4,1;
+	set $@MVPTW4party_name,.@party_id;
+	announce "[ Brother Captive ] : Party "+getpartyname(.@party_id)+" ได้เข้าร่วม Captive of Witch แล้ว !!",0,0xAAEC37;
+	enablenpc "WITE1";
+	killmonster "Witch","All";
+	disablenpc "warpwitch";
+	donpcevent "WITE1::OnFirst";
+	//warpparty "Witch",150,50,.@party_id;
+		mes .@npc$;
+	mes "สามารถเข้าร่วมดันเจี้ยนได้แล้ว";
+	close2;
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunctwitch, ( .@gettimetick + ( .instance_delay ));
+	warp "Witch",150,50;
+	end;
+	
+}
+end;
+	OnInit:
+	disablenpc "WITE1";
+	disablenpc "WITE2";
+	disablenpc "WITE3";
+	disablenpc "WITE4";
+	disablenpc "WITE5";
+	disablenpc "warpwitch";
+	//waitingroom "Captive of Witch",0;
+	end;
+}
+
+
+Witch,158,50,4	script	Captive::WITE1	10018,{
+end;
+OnFirst:
+sleep 6000;
+mapannounce "Witch","Captive : ใคร ใครก็ได้ ช่วยผมด้วยยยย !!",bc_map,0xAAEC37;
+npctalk "Captive : ใครกัน!!";
+sleep 2000;
+npctalk "Captive : พวกคุณเข้ามาที่นี่ได้อย่างไร";
+sleep 2000;
+npctalk "Captive : ช่วย ผมออกไปที";
+sleep 2000;
+npctalk "Captive : ก่อนอื่นท่านต้องหากุญแจมาให้ผม";
+enablenpc "WITE2";
+sleep 1000;
+donpcevent "WITE2::OnFirst";
+sleep 2000;
+npctalk "Captive : ไม่นะพวกมันรู้ตัวแล้ว !!";
+end;	}
+
+
+Witch,156,54,6	script	Secret Witch::WITE2	10021,{
+end;
+OnFirst:
+npctalk "Secret Witch : Well Well Well!";
+specialeffect 778;
+sleep 2000;
+npctalk "Secret Witch : (#%_)@($_%#&*&)#(@_)%!";
+specialeffect 779;
+sleep 2000;
+npctalk "Secret Witch : เเยบฟหกบดบนยำดนบ";
+enablenpc "WITE3";
+sleep 500;
+donpcevent "WITE3::OnFirst";
+sleep 2000;
+npctalk "Secret Witch : @F_)SD+I)+_#$T#+";
+specialeffect 800;
+sleep 2000;
+npctalk "Secret Witch : ระวังตัวให้ดี !!";
+specialeffect 799;
+sleep 2000;
+npctalk "Secret Witch : ท่านผู้นั้นจะกลับมา !!";
+specialeffect 775;
+sleep 500;
+specialeffect 929;
+end;
+}
+
+
+Witch,148,55,4	script	Secret Witch::WITE3	10022,{
+end;
+OnFirst:
+npctalk "Secret Witch : ธ๘๒๗ณธ๘โ๘ก";
+specialeffect 799;
+sleep 2000;
+npctalk "Secret Witch : F=-!@ a%$is %fOSJA";
+sleep 2000;
+enablenpc "WITE4";
+specialeffect 799;
+sleep 500;
+donpcevent "WITE4::OnFirst";
+npctalk "Secret Witch : asdo mro as d adaaa prao";
+sleep 2000;
+npctalk "Secret Witch : mai spo asa as sa mado !!";
+sleep 2000;
+npctalk "Secret Witch : Ha hahahahaha !!";
+specialeffect 775;
+sleep 500;
+specialeffect 929;
+end;
+}
+
+Witch,147,45,8	script	Secret Witch::WITE4	10023,{
+end;
+OnFirst:
+npctalk "Secret Witch : Well Well Well!";
+sleep 2000;
+npctalk "Secret Witch : EG)(EF";
+sleep 2000;
+npctalk "Secret Witch : @$+$^*$)%+$_@+^ @+%_+";
+specialeffect 799;
+sleep 2000;
+npctalk "Secret Witch : ad pw mds a !!";
+specialeffect 799;
+specialeffect 695;
+sleep 2000;
+npctalk "Secret Witch : go idl ,xm wsd !!";
+specialeffect 799;
+sleep 2000;
+npctalk "Secret Witch : Ha hahahahaha !!";
+enablenpc "WITE5";
+specialeffect 775;
+sleep 500;
+specialeffect 929;
+sleep 1000;
+	disablenpc "WITE1";
+	disablenpc "WITE2";
+	disablenpc "WITE3";
+	disablenpc "WITE4";
+	donpcevent "WITE5::OnFirst";
+end;
+}
+
+//#@##################################################################################################
+
+Witch,99,110,4	script	Witch Zilant::WITE5	3732,{
+end;
+OnFirst:
+areawarp "Witch",0,0,999,999,"Witch",106,103;
+npctalk "Witch Zilant : กราบงามๆ เจ้าพวกมนุษย์!";
+sleep 2000;
+npctalk "Witch Zilant : กล้ามากนะ !! ที่เข้ามาถึงที่นี่";
+sleep 2000;
+npctalk "Witch Zilant : เอาหละ ไหนๆก็เข้ามาแล้ว";
+sleep 2000;
+npctalk "Witch Zilant : เรามาสนุกกันดีกว่า !!";
+sleep 500; specialeffect 8;
+sleep 500; specialeffect 9;
+sleep 500; specialeffect 260;
+sleep 500; specialeffect 90;
+sleep 500; specialeffect 269;
+sleep 500; specialeffect 270;
+sleep 500; specialeffect 271;
+sleep 500; specialeffect 272;
+sleep 500; specialeffect 277;
+sleep 100; specialeffect 277;
+sleep 100; specialeffect 277;
+sleep 100; specialeffect 277;
+sleep 100; specialeffect 277;
+sleep 100; specialeffect 277;
+sleep 500; specialeffect 8;
+sleep 500; specialeffect 9;
+sleep 500; specialeffect 260;
+sleep 500; specialeffect 90;
+sleep 500; specialeffect 269;
+sleep 500; specialeffect 270;
+sleep 500; specialeffect 271;
+sleep 500; specialeffect 272;
+sleep 500; specialeffect 8;
+sleep 500; specialeffect 9;
+sleep 500; specialeffect 260;
+sleep 500; specialeffect 90;
+sleep 500; specialeffect 269;
+sleep 500; specialeffect 270;
+sleep 500; specialeffect 271;
+sleep 500; specialeffect 272;
+npctalk "Witch Zilant : นี่อ่ะ !! แค่น้ำจิ้ม !!";
+specialeffect 775;
+sleep 1500;
+specialeffect 929;
+npctalk "Witch Zilant : ฮ่าๆ ๆ ๆ ๆ ๆ ๆ !! หา ฮ่าๆ ๆ ๆ ๆ ๆ ๆ";
+sleep 500;
+disablenpc "WITE5";
+areamonster "Witch",99,110,99,110,"Witch Zilant",3732,1,"WITE6::OnBOSS";
+end;
+}
+
+-	script	theend::WITE6	-1,{
+end;
+OnBOSS:
+announce "[ Brother Captive ] : Party "+getpartyname($@partyWITCH)+" กำจัด Witch Zilant สำเร็จแล้ว !!!",0;
+sleep 3500;
+areawarp "Witch",0,0,999,999,"Witch",102,113;
+mapannounce "Witch","Leader Party : ในที่สุดเราก็ทำสำเร็จ !!",bc_map,0xAAEC37;
+sleep 2000;
+mapannounce "Witch","Leader Party : งั้นเรากลับกันเถอะ !!",bc_map,0xAAEC37;
+enablenpc "warpwitch";
+end;
+}
+
+Witch,99,115,4	script	Warp Port::warpwitch	10007,{
+if(rand(1,100) < 80){ getitem 49529,rand(1,2);	} else { getitem 49529,rand(2,5); }
+if(rand(1,100) > 90){ getitem 49530,1;	} else {  }
+	warp "maintown",86,57;
+end;
+}

@@ -1,0 +1,22 @@
+###########################################################################
+# 
+# Item Synthesis Database
+#
+# This feature need a sync client file: LapineDdukDDakBox.lub
+#
+###########################################################################
+# - Id:                 # (int) Item ID of synthesis box
+#   NeedRefineMin:      # (int) Minimum refine level needed for source item (default: 0)
+#   NeedRefineMax:      # (int) Maximum refine level needed for source item (default: MAX_REFINE)
+#   SourceNeeded:       # (int) Number of item sets (in SourceItem) must be selected (default: 1)
+#   SourceItem:         # List of item required
+#     - Item:           # (int) Item ID for source
+#       Amount:         # (int) Item amount will be consumed (Default: 1)
+#       Remove:         # (optional, any) Remove this item from the list while importing
+#   Reward:             # (string) Script on synthesis success
+#   ClearSourceItem:    # (optional, any) Can be used to clear SourceItem list while importing
+###########################################################################
+
+Header:
+  Type: ITEM_SYNTHESIS_DB
+  Version: 1

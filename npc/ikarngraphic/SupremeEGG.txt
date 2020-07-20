@@ -1,0 +1,45 @@
+/*maintown,68,88,4	script	รับ SUPREME Egg	639,{
+
+	if(#SUPREMEEGG < 0){
+		atcommand "@jail " + strcharinfo(0);
+		atcommand "@mute 9999999 " + strcharinfo(0);
+		end;
+		}
+
+	mes "[ รับ SUPREME ]";
+	mes "คุณมีแต้มจากการเติมเงิน";
+	mes "Egg : "+#SUPREMEEGG+" Points";
+	mes "?";
+	mes "^FF00001 Supreme Egg ใช้ 25 แต้มในการแลก^000000";
+
+next;
+menu "- แลกไข่ Supreme",-,"- ไว้ก่อน",NTRE;
+
+	mes "[ รับ SUPREME ]";
+	mes "ต้องการแลกกี่อัน";
+		input .@supreme;
+	next;
+	mes "ต้องการ : ^FA8258"+.@supreme+"^000000 SUPREME EGG.";
+		set .supremepoint,(.@supreme * 25);
+	mes "ใช้ : ^000088"+.supremepoint+"^000000 Points";
+next;
+
+	if(#SUPREMEEGG < .supremepoint){
+	mes "[ รับ SUPREME ]";
+	mes "คุณมีแต้มไม่พอ";
+	end;
+	}
+
+menu "- ยืนยันการแลก",-,"- ไว้ก่อน",NTRE;	
+	set #SUPREMEEGG,#SUPREMEEGG - .supremepoint;
+	getitem 59002,@supreme$;
+	
+	mes "[ รับ SUPREME ]";
+	mes "ขอบคุณที่ใช้บริการ";
+	end;
+
+NTRE:
+	mes "[ รับ SUPREME ]";
+	mes "ไว้เจอกันใหม่";
+	end;
+}*/

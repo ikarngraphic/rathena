@@ -1,0 +1,435 @@
+//===== eAthena Script =======================================
+//= Rainbow Road Race Track Warps
+//===== By: ==================================================
+r_road,209,359,0	warp	road00	1,1,r_road,67,374
+r_road,83,336,0	warp	road01	1,1,r_road,41,323
+//r_road,75,88,0	warp	road02	1,1,r_road,185,73
+
+r_road	mapflag	nowarpto
+r_road	mapflag	nowarp
+r_road	mapflag	noskill
+r_road	mapflag	nosave
+r_road	mapflag	nomemo
+r_road	mapflag	noteleport
+r_road	mapflag	nocommand	80
+
+-	script	SetRun	-1,{
+
+
+OnInit:
+
+	bindatcmd "startrun",strnpcinfo(3)+"::OnAdminOP",99,99;
+	
+	// ส่วนของการตั้งค่า
+	set $@RUNzeny,1;		//กำหนดเงินค่าลงทะเบียน
+	set $@RUNitem,41003;		// กำหนดเลข item ที่จะได้เป็นรางวัล
+	set $@RUNwin,50;			// กำหนดจำนวน item ของผู้ที่ได้ที่ 1
+	set $@RUNlose,10;		// กำหนดจำนวน item ของผู้ที่ไม่ได้ที่ 1
+	setarray $@RUNSmap$[0],"maintown","86","57";	// กำหนดจุดกลับของตัวละครเวลาหมดการแข่งขัน   "ชื่อ Map","แกน X","แกน Y"
+
+	// กำหนดวันเวลาการแข่งขัน 1= เปิด | 0 = ปิด
+	setarray $@RUNday[0],0;	//  วันอาทิตย์
+	setarray $@RUNday[1],0;	//  วันจันทร์
+	setarray $@RUNday[2],1;	//  วันอังคาร
+	setarray $@RUNday[3],0;	//  วันพุธ
+	setarray $@RUNday[4],1;	//  วันพฤหัสบดี
+	setarray $@RUNday[5],0;	//  วันศุกร์
+	setarray $@RUNday[6],0;	//  วันเสาร์
+
+	// กำหนด Item ห้ามนำเข้าการแข่งขันสามารถเพิ่มต่อได้เรื่อยๆ
+	setarray $@RUNCheck[0],
+		12016,22545,13995,13994;
+		
+	// System ส่วนของระบบห้ามปรับถ้าไม่มีความรู้
+	set $@RUNmap$,"r_road";
+	setmapflag $@RUNmap$,mf_noskill;
+	set $@RUNsys,0;
+	//setarray $@RUNWroom[0],383,153;
+
+	// Set Warp Start
+	setarray $@RUNWS1[0],186,72;
+	//setarray $@RUNWS2[0],210,369;
+	setarray $@RUNWS3[0],317,365;
+	//setarray $@RUNWS4[0],96,276;
+	//setarray $@RUNWS5[0],184,226;
+	//setarray $@RUNWS6[0],268,275;
+	//setarray $@RUNWS7[0],4,92;
+	//setarray $@RUNWS8[0],167,55;
+	//setarray $@RUNWS9[0],306,47;
+
+	// Set Warp End
+	//setarray $@RUNWN1[0],55,363;
+	//setarray $@RUNWN2[0],233,367;
+	//setarray $@RUNWN3[0],384,367;
+	//setarray $@RUNWN4[0],85,185;
+	//setarray $@RUNWN5[0],251,200;
+	//setarray $@RUNWN6[0],389,275;
+	//setarray $@RUNWN7[0],95,19;
+	//setarray $@RUNWN8[0],231,15;
+	//setarray $@RUNWN9[0],374,47;
+
+	// Set NPC
+	//disablenpc "Run";
+	end;
+
+OnClock1803:	
+// กำหนดเวลาเริ่มลงทะเบียนการแข่งขันเวลา 18.03 น.
+	if ($@RUNday[gettime(4)] == 0) end;
+	
+OnAdminOP:	
+	//enablenpc "Run";
+	announce "ขณะนี้ได้เวลาของการแข่งขันวิ่งแข่ง  ผู้ใดสนใจจะเข้าร่วมสามารถมาลงทะเบียนได้ที่ NPC Run คุณมีเวลาลงทะเบียน 3 นาทีเท่านั้น",0;
+	enablenpc "RUNWT_START";
+	set $@RUNsys,1;
+	set $@RUNCwin,1;
+	sleep 180000;
+	
+	announce "หมดเวลาลงทะเบียนแล้วจะเริ่มการแข่งขัน ณ บัดนี้",0;
+	sleep 3000;
+	announce "มีเวลา 10 นาทีในการวิ่งเท่านั้น",0;
+	set $@RUNsys,2;
+	initnpctimer "RunStart";
+	sleep 600000;
+
+	//disablenpc "Run";
+	announce "หมดเวลาการแข่งขันวิ่งแข่งแล้ว",0;
+	set $@RUNsys,0;
+	mapwarp $@RUNmap$,$@RUNSmap$[0],$@RUNSmap$[1],$@RUNSmap$[2];
+	end;
+}
+
+r_road,0,0,0	script	RunStart	-1,{
+	end;
+
+OnStart:
+OnTimer1000: 
+	mapannounce $@RUNmap$,"10",8;
+	end;	
+OnTimer2000: 
+	mapannounce $@RUNmap$,"9",8;
+	end;
+OnTimer3000: 
+	mapannounce $@RUNmap$,"8",8;
+	end;
+OnTimer4000: 
+	mapannounce $@RUNmap$,"7",8;
+	end;
+OnTimer5000: 
+	mapannounce $@RUNmap$,"6",8;
+	end;
+OnTimer6000: 
+	mapannounce $@RUNmap$,"5",8;
+	end;
+OnTimer7000: 
+	mapannounce $@RUNmap$,"4",8;
+	end;
+OnTimer8000: 
+	mapannounce $@RUNmap$,"3",8;
+	end;
+OnTimer9000:
+	mapannounce $@RUNmap$,"2",8;
+	end;
+OnTimer10000: 
+	mapannounce $@RUNmap$,"1",8;
+	end;
+OnTimer11000: 
+	mapannounce $@RUNmap$,"Start Go Go Go",8;
+	disablenpc "RUNWT_START";
+	end;
+}
+
+
+
+// ==============================================================================
+//         RUNNER Start
+// ==============================================================================
+
+maintown,65,48,6	script	Run	440,{
+
+	if (checkriding() || checkdragon() || checkwug()) {
+		mes "ห้ามนำสัตว์ขี่ทั้งหมดเข้าไป";
+		mes "Peco, Dragon, Wug";
+		end;
+	}
+
+	mes "[Run]";
+	if ($@RUNsys == 0) {
+		mes "ยังไม่ถึงเวลาแข่งขัน";
+		mes "  ";
+		mes "ห้ามใช้";
+		mes "ไอเท็มช่วยวิ่งใดๆทั้งสิ้น";
+		close;
+	} else if ($@RUNsys == 2) {
+		mes "หมดเวลาลงทะเบียนแล้วผู้เล่นกำลังแข่งขัน";
+		close;
+	}
+	mes "คุณสนใจจะเข้าร่วมการแข่งขันวิ่งแข่งหรือไม่ ?";
+	next;
+	if (select("สนใจ:ไม่สนใจ") == 2) {
+		goto R_Cancel;
+	} else {
+		mes "[Run]";
+		mes "::: รายละเอียด  :::";
+		mes "ค่าลงทะเบียน : "+$@RUNzeny+"";
+		mes "ของรางวัลที่จะได้รับ";
+		mes "Item : "+getitemname($@RUNitem);
+		mes "ที่ 1 จะได้รับ Item";
+		mes "จำนวน : "+$@RUNwin+" ชิ้น";
+		mes "ผู้แพ้จะได้รับ Item";
+		mes "จำนวน : "+$@RUNlose+" ชิ้น";
+		next;
+		mes "[Run]";
+		mes "::: ข้อตกลงในการแข่งขัน :::";
+		mes "ห้ามนำ Item ดังต่อไปนี้เข้าสนามแข่ง";
+		set @number,0;
+		for (set @i,0; @i < getarraysize($@RUNCheck); set @i,@i+1) {
+			set @number,@number+1;
+			mes @number+". "+getitemname($@RUNCheck[@i]);
+		}
+		next;
+		menu "ตกลง",R_Check,"ไม่ตกลง",R_Cancel;
+	}
+
+
+R_Check:
+	mes "[Run]";
+	set @kong,0;
+	for (set @i,0; @i < getarraysize($@RUNCheck); set @i,@i+1) {
+		if (@kong == 0) {
+			if (countitem($@RUNCheck[@i]) > 0) {
+				set @kong,1;
+				set @key,$@RUNCheck[@i];
+				break;
+			}
+		}
+	}
+	if (@kong == 1) {
+		mes "::: ห้ามเหตุ :::";
+		mes "ห้ามนำ";
+		mes "item : "+getitemname(@key);
+		mes "เข้าสนามแข่ง";
+		end;
+	}
+	
+	if (checkfalcon() || checkcart() || checkriding() || ismounting()) {
+		mes "Please remove your " +
+			((checkfalcon()) ? "falcon" : "") +
+			((checkcart()) ? "cart" : "") +
+			((checkriding()) ? "Peco" : "") +
+			((ismounting()) ? "mount" : "") +
+			" before proceeding.";
+		end;
+	}
+	
+	mes "ค่าสมัคร : "+$@RUNzeny+"";
+	if (Zeny < $@RUNzeny) {
+		mes "คุณมีเงินไม่พอในการลงทะเบียน";
+		end;
+	} else {
+		//set Zeny,Zeny - $@RUNzeny;
+		mes "ลงทะเบียนเรียบร้อยแล้ว";
+		mes "เราจะพาคุณไปยังสนามแข่ง";
+		next;
+		sc_end -1;
+		warp $@RUNmap$,$@RUNWS1[0],$@RUNWS1[1];
+	}
+
+R_Cancel:
+	mes "[Run]";
+	mes "ลาก่อน...";
+	close;
+
+	OnInit:
+	waitingroom "กิจกรรมวิ่งแข่ง",0;
+	end;
+
+}
+
+r_road,185,83,0	script	RUNWT_START	858,10,1,{
+	end;
+
+OnTouch:
+	warp $@RUNmap$,$@RUNWS1[0],$@RUNWS1[1];
+	end;
+}
+
+
+r_road,75,93,0	script	RUNWT_END	-1,10,1,{
+	end;
+
+OnTouch:
+	if ($@RUNCwin == 1) {
+		set $@RUNTheWin,getcharid(0);
+		announce ""+strcharinfo(0)+" ได้เข้าเส้นชัยเป็นคนแรก ได้รับรางวัลเป็น "+getitemname($@RUNitem)+" จำนวน "+$@RUNwin+" ชิ้น",0;
+		getitem $@RUNitem,$@RUNwin;
+		set $@RUNCwin,0;
+	} else {
+		announce ""+strcharinfo(0)+" ได้เข้าเส้นชัยแล้ว ได้รับรางวัลเป็น "+getitemname($@RUNitem)+" จำนวน "+$@RUNlose+" ชิ้น",0;
+		getitem $@RUNitem,$@RUNlose;
+	}
+	warp "prontera",155,179;
+	end;
+}
+
+// Set กับดัก
+r_road,185,380,0	script	RUNSC	-1,5,5,{
+	end;
+
+	// กำหนดกำดักเป็นสถานะต่างๆ สามารถหา SC ได้จากไฟล์ const.txt  อยู่ในโฟล์เดอร์ db ซึ่งใช้ได้แต่   SC_ชื่อสกิล   เท่านั้นนะครับ
+	setarray $@RUNsc$,
+		SC_STONE,
+		SC_FREEZE,
+		SC_SLEEP,
+		SC_STUN,
+		SC_CURSE;
+
+OnTouch:
+	//disguise 1120;
+	//sc_start SC_SLEEP,rand(3000,5000),1;
+	sc_start SC_CLOAKING,500000,10;
+	end;
+}
+
+r_road,241,380,0	script	RUNSC2	-1,5,5,{
+	end;
+
+	OnTouch:
+	sc_start SC_STUN,rand(3000,5000),1;
+	end;
+}
+
+r_road,242,340,0	script	RUNSC3	-1,5,5,{
+	end;
+
+	OnTouch:
+	sc_start SC_CURSE,7000,1;
+	end;
+}
+
+r_road,266,340,0	script	RUNSC4	-1,5,5,{
+	end;
+
+	OnTouch:
+	sc_start SC_INCREASEAGI,15000,1;
+	end;
+}
+
+r_road,242,307,0	script	RUNSC5	-1,5,5,{
+	end;
+
+	OnTouch:
+	undisguise;
+	sc_start SC_INCREASEAGI,15000,1;
+	end;
+}
+
+r_road,153,190,0	script	RUNSC6	-1,5,5,{
+	end;
+
+	OnTouch:
+	disguise 2609;
+	sc_start SC_INCREASEAGI,20000,1;
+	end;
+}
+
+r_road,178,260,0	script	RUNSC7	-1,5,5,{
+	end;
+
+	OnTouch:
+	disguise 1514;
+	sc_start SC_SPEEDUP1,20000,50;
+	sc_start SC_INCREASEAGI,20000,1;
+	end;
+}
+
+r_road,185,347,0	script	RUNSC8	-1,5,5,{
+	end;
+
+	OnTouch:
+	undisguise;
+	sc_end SC_CLOAKING;
+	sc_start SC_STUN,3000,1;
+	end;
+}
+
+r_road,177,141,0	script	RUNSC9	-1,5,5,{
+	end;
+
+	OnTouch:
+	undisguise;
+	sc_start SC_CURSE,7000,1;
+	end;
+}
+
+r_road,67,283,0	script	RUNSC10	-1,5,5,{
+	end;
+
+	OnTouch:
+	undisguise;
+	sc_start SC_CURSE,45000,1;
+	end;
+}
+
+r_road,68,251,0	script	RUNSC11	-1,5,5,{
+	end;
+
+	OnTouch:
+	undisguise;
+	sc_end SC_CURSE;
+	end;
+}
+
+r_road,91,128,0	script	RUNSC12	-1,1,1,{
+	end;
+
+	OnTouch:
+	sc_start SC_FREEZE,1000,1;
+	end;
+}
+
+
+r_road,66,142,0	duplicate(RUNSC12)	RUNFROCE#1	-1,1,1
+r_road,70,137,0	duplicate(RUNSC12)	RUNFROCE#2	-1,1,1
+r_road,79,137,0	duplicate(RUNSC12)	RUNFROCE#3	-1,1,1
+r_road,88,132,0	duplicate(RUNSC12)	RUNFROCE#4	-1,1,1
+r_road,89,124,0	duplicate(RUNSC12)	RUNFROCE#5	-1,1,1
+r_road,83,118,0	duplicate(RUNSC12)	RUNFROCE#6	-1,1,1
+r_road,71,116,0	duplicate(RUNSC12)	RUNFROCE#7	-1,1,1
+r_road,73,102,0	duplicate(RUNSC12)	RUNFROCE#8	-1,1,1
+r_road,72,95,0	duplicate(RUNSC12)	RUNFROCE#9	-1,1,1
+r_road,73,95,0	duplicate(RUNSC12)	RUNFROCE#10	-1,1,1
+r_road,74,95,0	duplicate(RUNSC12)	RUNFROCE#11	-1,1,1
+r_road,75,95,0	duplicate(RUNSC12)	RUNFROCE#12	-1,1,1
+r_road,76,95,0	duplicate(RUNSC12)	RUNFROCE#13	-1,1,1
+r_road,77,95,0	duplicate(RUNSC12)	RUNFROCE#14	-1,1,1
+r_road,78,95,0	duplicate(RUNSC12)	RUNFROCE#15	-1,1,1
+r_road,79,95,0	duplicate(RUNSC12)	RUNFROCE#16	-1,1,1
+
+
+r_road,92,146,0	script	RUNSC13	-1,1,1,{
+	end;
+
+	OnTouch:
+	sc_start SC_STUN,1000,1;
+	end;
+}
+
+
+r_road,187,146,0	duplicate(RUNSC13)	RUNFROCE#17	-1,0,0
+r_road,186,149,0	duplicate(RUNSC13)	RUNFROCE#18	-1,0,0
+r_road,182,147,0	duplicate(RUNSC13)	RUNFROCE#19	-1,0,0
+r_road,179,151,0	duplicate(RUNSC13)	RUNFROCE#20	-1,0,0
+r_road,178,154,0	duplicate(RUNSC13)	RUNFROCE#21	-1,0,0
+r_road,176,149,0	duplicate(RUNSC13)	RUNFROCE#22	-1,0,0
+r_road,172,154,0	duplicate(RUNSC13)	RUNFROCE#23	-1,0,0
+r_road,171,157,0	duplicate(RUNSC13)	RUNFROCE#24	-1,0,0
+r_road,168,153,0	duplicate(RUNSC13)	RUNFROCE#25	-1,0,0
+r_road,167,158,0	duplicate(RUNSC13)	RUNFROCE#26	-1,0,0
+r_road,162,157,0	duplicate(RUNSC13)	RUNFROCE#27	-1,0,0
+r_road,162,160,0	duplicate(RUNSC13)	RUNFROCE#28	-1,0,0
+r_road,159,158,0	duplicate(RUNSC13)	RUNFROCE#29	-1,0,0
+
+
+
+
+

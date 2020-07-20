@@ -1,0 +1,10 @@
+// Mobs that are killed in Prontera have their drop rate halved
+
+
+
+// ie. Poring normally drops Empty Bottle at 100% (@mi). If spawned in Prontera, the drop would become 50%
+prontera	mapflag	droprate	50
+
+// Mobs that are killed in Geffen have a 2x (+200%) the drop rate
+// ie. Fabre normally drops Clover at 10% (@mi). If spawned in Geffen, the drop of Fluff would become 20%
+geffen	mapflag	droprate	200

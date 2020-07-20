@@ -1,0 +1,108 @@
+-	shop	GC_EnS	-1,6360:1,6363:1,6361:1,6362:1;
+
+1@herbs,106,78,4	script	Mineral explorer	549,{
+		set .name$,"[ Mineral explorer ]";
+		
+		set .@itemuse,7227;
+		set .@itemea,1;
+		
+mes .name$;
+mes "สวัสดีครับ ยินดีให้บริการครับ";
+mes "ใช้ ^2CDEB8"+getitemname(.@itemuse)+"^000000 : "+.@itemea+" ea.";
+mes "คุณมี : ^DE2C52"+countitem(.@itemuse)+"^000000";
+//mes "โอกาศได้มีแค่ 1% เท่านั้น";
+mes "กรุณาเลือกเมนูที่ท่านต้องการครับ";
+//mes "   ^FF0000เปิดจริงไม่มีตู้นี้^000000";
+//cutin "jpn_anni2_04",2;
+next;
+menu " - แลกแร่(สุ่ม)",L_YES," - สุ่มตามกำหนด",L_YES2," - ดูแร่ที่ได้รับ",L_SEE," - ยกเลิก",L_EX;
+
+L_YES:
+
+	set .@loop,1;
+	set .@number,1;
+	close2;
+	//cutin "jpn_anni2_04",255;
+	if (countitem(.@itemuse) < .@itemea){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	delitem .@itemuse,.@itemea*.@number;
+	
+	goto AmaLOOP;
+	
+L_YES2:
+
+	mes .name$;
+	mes "กรอกจำนวนครั้งที่ต้องการ";
+	close2;
+		input .@number;
+		
+	next;
+	
+	set .@loop,.@number;
+	
+	if (countitem(.@itemuse) < .@itemea*.@number){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+
+	delitem .@itemuse,.@itemea*.@number;
+	
+		goto AmaLOOP;
+
+//	specialeffect2 408;
+//	progressbar "0x007000", 1;
+	
+AmaLOOP:
+
+	freeloop(0);
+	if(.@loop == 0){ end; }
+
+set .@rand, rand(200);
+	if (.@rand >= 0 && .@rand < 150){
+		set .@eff,610;
+		set .@acc,0;
+		setarray .@item[0],6360,6363,6361,6362;
+				}
+
+	if (.@rand >= 150 && .@rand < 200){
+		set .@eff,610;
+		set .@acc,0;
+		setarray .@item[0],6360,6363,6361,6362;
+	}
+
+
+set .@get, .@item[rand(getarraysize(.@item))];
+getitem .@get,1;
+specialeffect2 .@eff;
+//if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+
+	if(.@loop != 0){ goto AmaLOOP; }
+
+end;
+
+
+L_SEE:
+	//cutin "jpn_anni2_04",255;
+	callfunc "Shop_HQPC","GC_EnS",1;
+
+L_EX:
+	//cutin "jpn_anni2_04",255;
+end;
+
+OnBuyItem:
+
+	if(getgmlevel() > 90){ getitem @bought_nameid[0],@bought_quantity[0]; }
+
+end;
+
+OnInit: 
+//waitingroom "กาชาปองสุ่มการ์ดบอส",0;
+end;
+}
+
+

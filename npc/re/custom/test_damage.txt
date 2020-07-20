@@ -1,0 +1,1 @@
+//prontera,131,193	monster	Dummy	2411,1,5000

@@ -1,0 +1,8 @@
+morocc,100,100,4	script	MonsterPass	444,{
+
+	set .@npc$,"[ Monster Pass ]";
+
+mes .@npc$;
+end;
+
+}

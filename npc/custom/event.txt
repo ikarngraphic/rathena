@@ -1,0 +1,69 @@
+
+//==============================================================================================
+
+-	script	#Secret_joinevent	-1,{
+
+OnInit:
+	bindatcmd "joinevent",strnpcinfo(3)+"::OnWa",0,99;
+	end;
+	
+OnWa:
+
+
+	if($@refineevent == 1 ){	
+			
+	if(countitem(5213) > 1) {	dispbottom "[Event] : คุณมีไอเท็มใช้ในการตีบวกอีเว้นท์มากเกินไป!!";  end;	}
+	
+		if(#roundrefine != $roundrefine){
+				set #roundrefine,$roundrefine;
+				if(countitem(5213) == 0) {	getitem 5213,1;	}
+					}
+					
+		query_sql("SELECT last_ip FROM `login` WHERE account_id = "+getcharid(3)+"", .@lastip$);
+		query_sql("SELECT count FROM `mapeventip` WHERE last_ip = '"+.@lastip$+"'", .@conmap$);
+				
+		query_sql( "INSERT INTO `mapeventip` SET `mapname`='1@pdb',`last_ip`='"+.@lastip$+"',`Count`='1' ON DUPLICATE KEY UPDATE `Count`=`Count`+1" );
+				
+		query_sql("SELECT count FROM `mapeventip` WHERE last_ip = '"+.@lastip$+"'", .@conmapallow$);
+	
+			if(.@conmapallow$ == "1"){ warp "1@pdb",208,172;	end; }
+			if(.@conmapallow$ == "2"){ warp "1@pdb",208,172;	end; }
+			if(getgmlevel()==99){ warp "1@pdb",208,172;	end; }	
+
+			mes	"^0000FF[ Event ]^000000";
+				mes "คุณไม่สามารถเข้าเกิน ^FF00002 ID^000000 ต่อ ^7777771 IP^000000 ได้";			
+				end;
+				
+	end;	}
+
+
+
+
+
+	dispbottom "[Event] : ไม่มีอีเว้นท์ในขณะนี้!!";
+
+end;
+}
+
+
+//==============================================================================================
+
+-	script	#Secret_resetevent	-1,{
+
+OnInit:
+	bindatcmd "resetevent",strnpcinfo(3)+"::OnWa",99,99;
+	end;
+	
+OnWa:
+
+	query_sql( "TRUNCATE TABLE `mapeventip` " );
+	
+	set $@refineevent,0;
+
+	dispbottom "[Event] : รีเซทอีเว้นท์ทั้งหมดแล้ว";
+
+end;
+}
+
+//==============================================================================================
+

@@ -1,0 +1,418 @@
+
+maintown,121,132,4	script	เสริมพลัง Sin-Weapon	10123,{
+
+	set .n$,"[ Sin Enchant ]";
+
+mes .n$;
+mes "สวัสดีท่าน, "+strcharinfo(0)+"!";
+mes "มีอะไรให้ข้าช่วยมั้ย ?";
+mes "ใช้ : ^000099Automatic Improvement Device^000000";
+mes "  (ในการเสริมพลัง)";
+mes "และใช้ ^FF000010^000000 Cash";
+mes "  (ในการลบพลัง)";
+next;
+menu "- เสริมพลังอุปกรณ์ Sin",MN1,"- ลบออฟไอเท็ม",MN2,"- ยกเลิกการทำงาน",EX1;
+
+//====================================
+	MN1:
+//====================================
+mes .n$;
+mes "ก่อนที่เราจะเริ่มการเสริมพลัง ข้าขอแนะนำให้ท่านควรจะสวมอุปกรณ์ที่ต้องการเสียก่อน";
+mes "นอกจากนั้น คุณสมบัติที่จะเพิ่มเข้ามา ข้าไม่รับประกันนะว่าท่านจะได้รูปแบบไหน!";
+next;
+mes .n$;
+mes "มาเริ่มกันเลย ขอข้าดูอุปกรณ์ของท่านหน่อยนะ";
+next;
+set .@part,EQI_HAND_R; // Save equip location
+mes .n$;
+
+if(!getequipid(.@part)) {
+	mes "ท่านไม่ได้สวมใส่อุปกรณ์อยู่นี่!";
+	end;
+}
+
+if(countitem(getequipid(.@part)) > 1) {
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+
+switch(getequipid(.@part)) {
+	case 63001:
+	case 63002:
+	case 63003:
+	case 63004:
+	case 63005:
+	case 63006:
+	case 63007:
+	case 63008:
+	case 63009:
+	case 63010:
+	case 63011:
+	case 63012:
+	case 63013:
+	case 63014:
+	case 63015:
+	case 63016:
+	case 63017:
+	case 63018:
+	case 63019:
+	case 63020:
+	case 63021:
+	case 63022:
+	case 63023:
+	case 63024:
+	case 63025:
+	case 63026:
+	break;
+	
+	default:
+	mes "เอ่อ. ขอโทษด้วย ข้าสามารถเสริมพลังได้เฉพาะอุปกรณ์ OS-Weapon เท่านั้น";
+	end;
+}
+
+
+mes "อุปกรณ์ที่สวมใส่: "+getitemname(getequipid(.@part));
+set .@ropt1,getequiprandomoption(.@part,0,ROA_ID);
+set .@ropt2,getequiprandomoption(.@part,1,ROA_ID);
+set .@ropt3,getequiprandomoption(.@part,3,ROA_ID);
+if(.@ropt1 || .@ropt2 || .@ropt3) {
+	mes " ";
+	mes "ขอภัย อุปกรณ์นี้ผ่านการเสริมพลังมาแล้ว";
+	mes "กรุณาเลือกอุปกรณ์ชิ้นอื่น";
+	end;
+}
+
+next;
+menu " - Physical Normal",PS1,
+	" - Physical Advanced",PS2,
+	" - Physical Premium",PS3,
+	" - Magical Normal",MG1,
+	" - Magical Advanced",MG2,
+	" - Magical Premium",MG3,
+	" - Exit",EX1;
+
+	PS1:
+		set .@Type$,"P";
+		set .@slotenc,1;
+		set .itemdel,65164;
+		goto encpass;
+		
+	PS2:
+		set .@Type$,"P";
+		set .@slotenc,rand(1,2);
+		set .itemdel,65165;
+		goto encpass;
+
+	PS3:
+		set .@Type$,"P";
+		set .@slotenc,3;
+		set .itemdel,65166;
+		goto encpass;		
+
+	MG1:
+		set .@Type$,"M";
+		set .@slotenc,1;
+		set .itemdel,65167;
+		goto encpass;
+		
+	MG2:
+		set .@Type$,"M";
+		set .@slotenc,rand(1,2);
+		set .itemdel,65168;
+		goto encpass;
+		
+	MG3:
+		set .@Type$,"M";
+		set .@slotenc,3;
+		set .itemdel,65169;
+		goto encpass;
+
+	EX1:
+		mes .n$;
+		mes "ไว้เจอกันใหม่";
+		end;
+
+
+	encpass:
+
+	if(countitem(.itemdel) < 1){
+					mes .n$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					mes "ใช้ : ^000099" + getitemname(.itemdel) + "^000000";
+					end;
+				}
+	
+	//delitem
+	delitem .itemdel,1;	//จำนวนชิ้น
+
+	if(.@slotenc == 1){
+				// Randomize each Option Slot:
+				// Random Option 1
+				set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+				if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+					set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+				else 
+					set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+					}
+					
+					
+	if(.@slotenc == 2){
+				// Randomize each Option Slot:
+			// Random Option 1
+				set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+				if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+					set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+				else 
+					set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+					
+			// Random Option 2
+				set .@Opt2,rand(getarraysize(getd(".RandOpt2_"+.@Type$)));
+				if(getd(".RandOpt2_"+.@Type$+"_MinV["+.@Opt2+"]") != getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]"))
+					set .@Opt2_V,rand(getd(".RandOpt2_"+.@Type$+"_MinV["+.@Opt2+"]"),getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]"));
+				else 
+					set .@Opt2_V,getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]");
+					}				
+					
+	if(.@slotenc == 3){
+				// Randomize each Option Slot:
+				// Random Option 1
+				set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+				if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+					set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+				else 
+					set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+					
+			// Random Option 2
+				set .@Opt2,rand(getarraysize(getd(".RandOpt2_"+.@Type$)));
+				if(getd(".RandOpt2_"+.@Type$+"_MinV["+.@Opt2+"]") != getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]"))
+					set .@Opt2_V,rand(getd(".RandOpt2_"+.@Type$+"_MinV["+.@Opt2+"]"),getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]"));
+				else 
+					set .@Opt2_V,getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]");
+					
+			// Random Option 3
+				set .@Opt3,rand(getarraysize(getd(".RandOpt3_"+.@Type$)));
+				if(getd(".RandOpt3_"+.@Type$+"_MinV["+.@Opt3+"]") != getd(".RandOpt3_"+.@Type$+"_MaxV["+.@Opt3+"]"))
+					set .@Opt3_V,rand(getd(".RandOpt3_"+.@Type$+"_MinV["+.@Opt3+"]"),getd(".RandOpt3_"+.@Type$+"_MaxV["+.@Opt3+"]"));
+				else 
+					set .@Opt3_V,getd(".RandOpt3_"+.@Type$+"_MaxV["+.@Opt3+"]");	
+					}					
+				
+					
+				
+// Apply options to equipped weapon
+
+		progressbar "0x007000", 1;
+
+if(.@slotenc == 1){
+		setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+	}
+if(.@slotenc == 2){
+		setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+		setrandomoption(.@part,1,getd(".RandOpt2_"+.@Type$+"["+.@Opt2+"]"),.@Opt2_V,0);
+	}
+if(.@slotenc == 3){
+		setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+		setrandomoption(.@part,1,getd(".RandOpt2_"+.@Type$+"["+.@Opt2+"]"),.@Opt2_V,0);
+		setrandomoption(.@part,2,getd(".RandOpt3_"+.@Type$+"["+.@Opt3+"]"),.@Opt3_V,0);
+	}
+
+mes .n$;
+mes "การเสริมพลังให้แก่ \""+getitemname(getequipid(.@part))+"\" เสร็จสมบูรณ์";
+end;
+
+OnInit:
+// ========= Random Option Slot 1 ========= 
+// - Physical
+setarray .RandOpt1_P[0],RDMOPT_VAR_HITSUCCESSVALUE,
+					    RDMOPT_DAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_VAR_CRITICALSUCCESSVALUE,
+					    RDMOPT_VAR_ATTPOWER,
+					    RDMOPT_VAR_ATKPERCENT,
+					    RDMOPT_DAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_WATER_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_GROUND_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_FIRE_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_WIND_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_POISON_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_SAINT_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_DARKNESS_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_TELEKINESIS_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_UNDEAD_TARGET;
+						
+// - Magical
+setarray .RandOpt1_M[0],RDMOPT_VAR_PLUSASPDPERCENT,
+						RDMOPT_VAR_ATTMPOWER,
+						RDMOPT_VAR_MAGICATKPERCENT,
+					    RDMOPT_MDAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_WATER_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_GROUND_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_FIRE_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_WIND_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_POISON_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_SAINT_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_DARKNESS_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_TELEKINESIS_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_UNDEAD_TARGET;
+					    
+					  
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P_MinV[0],3,5,1,3,3,3,3,3,3,3,3,3,3;
+setarray .RandOpt1_P_MaxV[0],10,25,5,20,20,20,20,20,20,20,20,20,20;
+setarray .RandOpt1_M_MinV[0],3,5,1,3,3,3,3,3,3,3,3,3,3;
+setarray .RandOpt1_M_MaxV[0],10,25,5,20,20,20,20,20,20,20,20,20,20;
+
+// ========= Random Option Slot 2 ========= 
+// - Physical
+setarray .RandOpt2_P[0],RDMOPT_VAR_PLUSASPD,
+						RDMOPT_VAR_AVOIDSUCCESSVALUE,
+						RDMOPT_DEC_SP_CONSUMPTION,
+						RDMOPT_WEAPON_INDESTRUCTIBLE,
+						RDMOPT_VAR_PLUSASPDPERCENT,
+					    RDMOPT_RACE_DAMAGE_NOTHING,
+					    RDMOPT_RACE_DAMAGE_UNDEAD,
+					    RDMOPT_RACE_DAMAGE_ANIMAL,
+					    RDMOPT_RACE_DAMAGE_PLANT,
+					    RDMOPT_RACE_DAMAGE_INSECT,
+					    RDMOPT_RACE_DAMAGE_FISHS,
+					    RDMOPT_RACE_DAMAGE_DEVIL,
+					    RDMOPT_RACE_DAMAGE_HUMAN,
+					    RDMOPT_RACE_DAMAGE_ANGEL,
+					    RDMOPT_RACE_DAMAGE_DRAGON,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_TARGET,
+					    RDMOPT_VAR_ATKPERCENT,
+					    RDMOPT_DAMAGE_CRI_TARGET,
+					    RDMOPT_DAMAGE_SIZE_SMALL_TARGET,
+					    RDMOPT_DAMAGE_SIZE_MIDIUM_TARGET,
+					    RDMOPT_DAMAGE_SIZE_LARGE_TARGET;
+						
+// - Magical
+setarray .RandOpt2_M[0],RDMOPT_VAR_PLUSASPD,
+						RDMOPT_VAR_AVOIDSUCCESSVALUE,
+						RDMOPT_DEC_SP_CONSUMPTION,
+						RDMOPT_WEAPON_INDESTRUCTIBLE,
+						RDMOPT_DEC_SPELL_CAST_TIME,
+						RDMOPT_VAR_MAGICATKPERCENT,
+						RDMOPT_MDAMAGE_SIZE_SMALL_TARGET,
+						RDMOPT_MDAMAGE_SIZE_MIDIUM_TARGET,
+						RDMOPT_MDAMAGE_SIZE_LARGE_TARGET,
+						RDMOPT_RACE_MDAMAGE_NOTHING,
+						RDMOPT_RACE_MDAMAGE_UNDEAD,
+						RDMOPT_RACE_MDAMAGE_ANIMAL,
+						RDMOPT_RACE_MDAMAGE_PLANT,
+						RDMOPT_RACE_MDAMAGE_INSECT,
+						RDMOPT_RACE_MDAMAGE_FISHS,
+						RDMOPT_RACE_MDAMAGE_DEVIL,
+						RDMOPT_RACE_MDAMAGE_HUMAN,
+						RDMOPT_RACE_MDAMAGE_ANGEL,
+						RDMOPT_RACE_MDAMAGE_DRAGON,
+						RDMOPT_MDAMAGE_SIZE_SMALL_TARGET,
+						RDMOPT_MDAMAGE_SIZE_MIDIUM_TARGET,
+						RDMOPT_MDAMAGE_SIZE_LARGE_TARGET;
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt2_P_MinV[0],1,5,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3;
+setarray .RandOpt2_P_MaxV[0],2,45,10,0,15,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20;
+setarray .RandOpt2_M_MinV[0],1,5,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3;
+setarray .RandOpt2_M_MaxV[0],2,45,10,0,15,10,20,20,20,20,20,20,20,20,20,20,20,20,20;
+
+// ========= Random Option Slot 3 ========= 
+// - Physical
+setarray .RandOpt3_P[0],RDMOPT_VAR_ITEMDEFPOWER,
+					    RDMOPT_VAR_MDEFPOWER,
+					    RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPPERCENT,
+					    RDMOPT_DEC_SPELL_CAST_TIME,
+					    RDMOPT_CLASS_DAMAGE_NORMAL_TARGET,
+					    RDMOPT_CLASS_IGNORE_DEF_PERCENT_NORMAL,
+					    RDMOPT_CLASS_DAMAGE_BOSS_TARGET,
+					    RDMOPT_CLASS_IGNORE_DEF_PERCENT_BOSS,
+					    RDMOPT_DEC_SPELL_DELAY_TIME;
+						
+// - Magical
+setarray .RandOpt3_M[0],RDMOPT_VAR_ITEMDEFPOWER,
+					    RDMOPT_VAR_MDEFPOWER,
+					    RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPPERCENT,
+					    RDMOPT_DEC_SPELL_CAST_TIME,
+					    RDMOPT_CLASS_MDAMAGE_NORMAL,
+					    RDMOPT_CLASS_IGNORE_MDEF_PERCENT_NORMAL,
+					    RDMOPT_CLASS_MDAMAGE_BOSS,
+					    RDMOPT_CLASS_IGNORE_MDEF_PERCENT_BOSS,
+					    RDMOPT_DEC_SPELL_DELAY_TIME;
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt3_P_MinV[0],30,10,1,1,3,1,3,1,3,1;
+setarray .RandOpt3_P_MaxV[0],100,40,5,5,10,10,15,10,15,5;
+setarray .RandOpt3_M_MinV[0],30,10,1,1,3,1,3,1,3,1;
+setarray .RandOpt3_M_MaxV[0],100,40,5,5,10,10,15,10,15,5;
+
+end;
+
+//====================================
+	MN2:
+//====================================
+mes .n$;
+mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+mes "ต้องใช้ ^FF000010 Cash^000000 ในการลบ";
+mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_HAND_R;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 10){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+	//progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 10;
+	
+	set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+end;
+}

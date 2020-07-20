@@ -13,74 +13,122 @@
 //= 1.1 Aligned coordinates with @go.
 //============================================================
 
+maintown	mapflag	noicewall
+maintown	mapflag	nobranch
+maintown	mapflag	privateairship_source
+maintown	mapflag	nodrop
+
 -	script	Healer	-1,{
 
-	.@Price = 0;	// Zeny required for heal
-	.@Buffs = 0;	// Also buff players? (1: yes / 0: no)
-	.@Delay = 0;	// Heal delay, in seconds
+if (getbrokenid(1) > 0) { repairall; }
+//แก้สถานะต่างๆ
+sc_end SC_POISON;
+sc_end SC_FREEZE;
+sc_end SC_SLEEP;
+sc_end SC_STAN;
+sc_end SC_STUN;
+sc_end SC_STONE;
+sc_end SC_SILENCE;
+sc_end SC_BLIND;
+sc_end SC_Bleeding;
+sc_end SC_CONFUSION;
+sc_end SC_CURSE;
+sc_end SC_HALLUCINATION;
+sc_end SC_ORCISH;
 
-	if (@HD > gettimetick(2))
-		end;
-	if (.@Price) {
-		message strcharinfo(0), "Healing costs " + callfunc("F_InsertComma",.@Price) + " Zeny.";
-		if (Zeny < .@Price)
-			end;
-		if (select("^0055FFHeal^000000:^777777Cancel^000000") == 2)
-			end;
-		Zeny -= .@Price;
+sc_start SC_BLESSING,1800000,10;
+sc_start SC_INCREASEAGI,1800000,10;
+sc_start 41,1800000,10; //กอเรีย
+sc_start 40,1800000,10; // MAGNIFICAT เร่ง
+
+		sc_start4 SC_SERVICE4U,180000,10,40,40,0;
+		sc_start4 SC_POEMBRAGI,180000,10,80,100,0;
+
+	if(vip_status(1)||(getgmlevel()>90)){
+
+		sc_start4 SC_SERVICE4U,300000,10,40,40,0;
+		sc_start4 SC_POEMBRAGI,300000,10,80,100,0;
+		sc_start SC_STRFood,300000,7;
+		sc_start SC_AGIFood,300000,7;
+		sc_start SC_VITFood,300000,7;
+		sc_start SC_INTFood,300000,7;
+		sc_start SC_DEXFood,300000,7;
+		sc_start SC_LUKFood,300000,7;
+
 	}
-	specialeffect2 EF_HEAL2;
-	percentheal 100,100;
-	if (.@Buffs) {
-		specialeffect2 EF_INCAGILITY;
-		sc_start SC_INCREASEAGI,240000,10;
-		specialeffect2 EF_BLESSING;
-		sc_start SC_BLESSING,240000,10;
-	}
-	if (.@Delay)
-		@HD = gettimetick(2) + .@Delay;
-	end;
+
+percentheal 100,100; 
+specialeffect2 312;
+
+	identifyall;
+
 }
 
+function	script	heal_card	{
+	identifyall;
+	skilleffect 74,0; sc_start SC_MAGNIFICAT,1800000,5;
+	skilleffect 34,0; sc_start SC_BLESSING,1800000,10;
+	skilleffect 29,0; sc_start SC_INCREASEAGI,1800000,10;
+	if (getbrokenid(1) > 0) { repairall; }
+	sc_start SC_STRFood,1800000,10;
+	sc_start SC_AGIFood,1800000,10;
+	sc_start SC_VITFood,1800000,10;
+	sc_start SC_INTFood,1800000,10;
+	sc_start SC_DEXFood,1800000,10;
+	sc_start SC_LUKFood,1800000,10;
+}
+
+function	script	protect_card	{
+	skilleffect 234,0;
+	SC_Start(SC_CP_HELM,600000,1);
+	SC_Start(SC_CP_ARMOR,600000,1);
+	SC_Start(SC_CP_SHIELD,600000,1);
+	SC_Start(SC_CP_WEAPON,600000,1);
+}
 
 // Duplicates
 //============================================================
-alberta,25,240,6	duplicate(Healer)	Healer#alb	909
-aldebaran,135,118,6	duplicate(Healer)	Healer#alde	909
-amatsu,200,79,4	duplicate(Healer)	Healer#ama	909
-ayothaya,207,169,6	duplicate(Healer)	Healer#ayo	909
-comodo,184,158,6	duplicate(Healer)	Healer#com	909
-einbech,57,36,6	duplicate(Healer)	Healer#einbe	909
-einbroch,57,202,6	duplicate(Healer)	Healer#einbr	909
-geffen,115,72,6	duplicate(Healer)	Healer#gef	909
-gonryun,156,122,6	duplicate(Healer)	Healer#gon	909
-hugel,89,150,6	duplicate(Healer)	Healer#hug	909
-izlude,121,150,6	duplicate(Healer)	Healer#izl	909	//Pre-RE: (125,118)
-jawaii,250,139,4	duplicate(Healer)	Healer#jaw	909
-lighthalzen,152,100,6	duplicate(Healer)	Healer#lhz	909
-louyang,226,103,4	duplicate(Healer)	Healer#lou	909
-manuk,272,144,6	duplicate(Healer)	Healer#man	909
-mid_camp,203,289,6	duplicate(Healer)	Healer#mid	909
-moc_ruins,72,164,4	duplicate(Healer)	Healer#moc	909
-morocc,153,97,6	duplicate(Healer)	Healer#mor	909
-moscovia,220,191,4	duplicate(Healer)	Healer#mos	909
-niflheim,212,182,5	duplicate(Healer)	Healer#nif	909
-payon,179,106,4	duplicate(Healer)	Healer#pay	909
-prontera,162,193,4	duplicate(Healer)	Healer#prt	909
-rachel,125,116,6	duplicate(Healer)	Healer#rac	909
-splendide,201,153,4	duplicate(Healer)	Healer#spl	909
-thor_camp,249,74,4	duplicate(Healer)	Healer#thor	909
-umbala,105,148,3	duplicate(Healer)	Healer#umb	909
-veins,217,121,4	duplicate(Healer)	Healer#ve	909
-xmas,143,136,4	duplicate(Healer)	Healer#xmas	909
-yuno,164,45,4	duplicate(Healer)	Healer#yuno	909
+alberta,25,240,6	duplicate(Healer)	Healer#alb	569
+aldebaran,135,118,6	duplicate(Healer)	Healer#alde	569
+amatsu,200,79,4	duplicate(Healer)	Healer#ama	569
+ayothaya,207,169,6	duplicate(Healer)	Healer#ayo	569
+comodo,184,158,6	duplicate(Healer)	Healer#com	569
+einbech,57,36,6	duplicate(Healer)	Healer#einbe	569
+einbroch,57,202,6	duplicate(Healer)	Healer#einbr	569
+geffen,115,72,6	duplicate(Healer)	Healer#gef	569
+gonryun,156,122,6	duplicate(Healer)	Healer#gon	569
+hugel,89,150,6	duplicate(Healer)	Healer#hug	569
+izlude,121,150,6	duplicate(Healer)	Healer#izl	569	//Pre-RE: (125,118)
+jawaii,250,139,4	duplicate(Healer)	Healer#jaw	569
+lighthalzen,152,100,6	duplicate(Healer)	Healer#lhz	569
+louyang,226,103,4	duplicate(Healer)	Healer#lou	569
+manuk,272,144,6	duplicate(Healer)	Healer#man	569
+mid_camp,203,289,6	duplicate(Healer)	Healer#mid	569
+moc_ruins,72,164,4	duplicate(Healer)	Healer#moc	569
+morocc,153,97,6	duplicate(Healer)	Healer#mor	569
+moscovia,220,191,4	duplicate(Healer)	Healer#mos	569
+niflheim,212,182,5	duplicate(Healer)	Healer#nif	569
+payon,179,106,4	duplicate(Healer)	Healer#pay	569
+prontera,162,193,4	duplicate(Healer)	Healer#prt	569
+rachel,125,116,6	duplicate(Healer)	Healer#rac	569
+splendide,201,153,4	duplicate(Healer)	Healer#spl	569
+thor_camp,249,74,4	duplicate(Healer)	Healer#thor	569
+umbala,105,148,3	duplicate(Healer)	Healer#umb	569
+veins,217,121,4	duplicate(Healer)	Healer#ve	569
+xmas,143,136,4	duplicate(Healer)	Healer#xmas	569
+yuno,164,45,4	duplicate(Healer)	Healer#yuno	569
 
 // Duplicates (Renewal)
 //============================================================
-brasilis,194,221,6	duplicate(Healer)	Healer#bra	909
-dewata,195,187,4	duplicate(Healer)	Healer#dew	909
-dicastes01,201,194,4	duplicate(Healer)	Healer#dic	909
-ecl_in01,45,60,4	duplicate(Healer)	Healer#ecl	909
-malangdo,132,114,6	duplicate(Healer)	Healer#mal	909
-malaya,227,204,6	duplicate(Healer)	Healer#ma	909
-mora,55,152,4	duplicate(Healer)	Healer#mora	909
+brasilis,194,221,6	duplicate(Healer)	Healer#bra	569
+dewata,195,187,4	duplicate(Healer)	Healer#dew	569
+dicastes01,201,194,4	duplicate(Healer)	Healer#dic	569
+ecl_in01,45,60,4	duplicate(Healer)	Healer#ecl	569
+malangdo,132,114,6	duplicate(Healer)	Healer#mal	569
+malaya,227,204,6	duplicate(Healer)	Healer#ma	569
+mora,55,152,4	duplicate(Healer)	Healer#mora	569
+verus04,125,243,4	duplicate(Healer)	Healer#verus	569
+harboro1,294,206,4	duplicate(Healer)	Healer#rockr	569
+sp_cor,225,261,4	duplicate(Healer)	Healer#rudus	569
+god_town,120,44,4	duplicate(Healer)	Healer#godtown	569
+mooc,165,99,4	duplicate(Healer)	Healer#mooc	569

@@ -1,0 +1,215 @@
+//==============================================
+// - Script By : M-Ro Online
+// - Script City : Thailand 
+// - Script Support Server : Hercules & rAthena
+//==============================================
+
+maintown,0,0,0	script	BossLann::BLSV	-1,{
+OnClock0000:
+//OnClock0100:
+OnClock0200:
+//OnClock0300:
+OnClock0400:
+//OnClock0500:
+OnClock0600:
+//OnClock0700:
+OnClock0800:
+//OnClock0900:
+OnClock1000:
+//OnClock1100:
+OnClock1200:
+//OnClock1300:
+OnClock1400:
+//OnClock1500:
+OnClock1600:
+//OnClock1700:
+OnClock1800:
+//OnClock1900:
+OnClock2000:
+//OnClock2100:
+OnClock2200:
+//OnClock2300:
+
+//OnClock0030:
+//OnClock0130:
+//OnClock0230:
+//OnClock0330:
+//OnClock0430:
+//OnClock0530:
+//OnClock0630:
+//OnClock0730:
+//OnClock0830:
+//OnClock0930:
+//OnClock1030:
+//OnClock1130:
+//OnClock1230:
+//OnClock1330:
+//OnClock1430:
+//OnClock1530:
+//OnClock1630:
+//OnClock1730:
+//OnClock1830:
+//OnClock1930:
+//OnClock2030:
+//OnClock2130:
+//OnClock2230:
+//OnClock2330:
+
+OnRes:
+
+if($@BOSSLANN == 0){	set $@BOSSLANN,1;
+
+	set .@rand, rand(200);
+	
+	if (.@rand >= 0 && .@rand < 100){
+		set .@names_boss$,"Kirito";
+		set .@monboss,31032;
+				}
+
+	if (.@rand >= 100 && .@rand < 200){
+		set .@names_boss$,"Asuna";
+		set .@monboss,31022;
+				}
+
+	//if (.@rand >= 180 && .@rand < 200){
+	//	set .@names_boss$,"[Awake]Kirito";
+	//	set .@monboss,31048;
+	//			}
+
+	announce "[ Boss ¡ÅÒ§àÁ×Í§ ] : ¢³Ğ¹Õé ºÍÊ¡ÅÒ§àÁ×Í§ä´é»ÃÒ¡¯µÑÇÍÍ¡ÁÒáÅéÇ ªèÇÂ¡Ñ¹¦èÒÁÑ¹·Õ !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+	monster "maintown",110,30,""+.@names_boss$+"",.@monboss,1,"BLSV::OnDie";
+//	enablenpc "BossLannTW";
+
+	end;
+	
+	
+OnBOSS1:	monster "maintown",110,30,"Kirito",31032,1,"BLSV::OnDie";
+			set $@BOSSLANN,1;
+			announce "[ Boss ¡ÅÒ§àÁ×Í§ ] : ¢³Ğ¹Õé ºÍÊ¡ÅÒ§àÁ×Í§ä´é»ÃÒ¡¯µÑÇÍÍ¡ÁÒáÅéÇ ªèÇÂ¡Ñ¹¦èÒÁÑ¹·Õ !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+			end;
+
+OnBOSS2:	monster "maintown",110,30,"Asuna",31022,1,"BLSV::OnDie";
+			set $@BOSSLANN,1;
+			announce "[ Boss ¡ÅÒ§àÁ×Í§ ] : ¢³Ğ¹Õé ºÍÊ¡ÅÒ§àÁ×Í§ä´é»ÃÒ¡¯µÑÇÍÍ¡ÁÒáÅéÇ ªèÇÂ¡Ñ¹¦èÒÁÑ¹·Õ !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+			end;
+
+OnBOSS3:	monster "maintown",110,30,"[Awake]Kirito",31048,1,"BLSV::OnDie";
+			set $@BOSSLANN,1;
+			announce "[ Boss ¡ÅÒ§àÁ×Í§ ] : ¢³Ğ¹Õé ºÍÊ¡ÅÒ§àÁ×Í§ä´é»ÃÒ¡¯µÑÇÍÍ¡ÁÒáÅéÇ ªèÇÂ¡Ñ¹¦èÒÁÑ¹·Õ !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+			end;
+
+	
+//	getunitdata 31004,UMOB_MODE;
+
+end;	}else{	end;	}
+
+OnDie:
+set $@BOSSLANN,0;
+	announce "[ Boss ¡ÅÒ§àÁ×Í§ ] : ¢³Ğ¹Õé ºÍÊ¡ÅÒ§àÁ×Í§ä´é¶Ù¡¡Ó¨Ñ´áÅéÇ !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+monster "maintown",100,25,"Box Reward",21352,1;
+monster "maintown",108,25,"Box Reward",21352,1;
+monster "maintown",116,25,"Box Reward",21352,1;
+monster "maintown",124,25,"Box Reward",21352,1;
+monster "maintown",132,25,"Box Reward",21352,1;
+monster "maintown",100,30,"Box Reward",21352,1;
+monster "maintown",108,30,"Box Reward",21352,1;
+monster "maintown",116,30,"Box Reward",21352,1;
+monster "maintown",124,30,"Box Reward",21352,1;
+monster "maintown",132,30,"Box Reward",21352,1;
+monster "maintown",100,35,"Box Reward",21352,1;
+monster "maintown",108,35,"Box Reward",21352,1;
+monster "maintown",116,35,"Box Reward",21352,1;
+monster "maintown",124,35,"Box Reward",21352,1;
+monster "maintown",132,35,"Box Reward",21352,1;
+//disablenpc "BossLannTW";
+end;
+}
+
+maintown,97,35,4	warp	BossLannTW	1,1,maintown,100,35
+
+maintown,95,40,4	script	ºÍÊ¡ÅÒ§àÁ×Í§#S	10191,{
+mes "[ ºÍÊ¡ÅÒ§àÁ×Í§ ]";
+mes "ºÍÊ¡ÅÒ§àÁ×Í§à»ç¹ÍĞäÃ·ÕèâË´ÁÒ¡";
+mes "ËÒ¡à¢éÒä»ÃĞÇÑ§µÑÇäÇé´éÇÂËÅĞ";
+mes "^FF0000(à¡Ô´·Ø¡àÇÅÒàÅ¢¤Ùè¢Í§ªÑèÇâÁ§)^000000";
+mes "^FF000000:00 02:00 04:00~^000000";
+next;
+
+if(getgmlevel()==99){
+		menu "¢éÍÁÙÅºÍÊ",nmPL,"[àÃÕÂ¡] - Kirito",boss1,"[àÃÕÂ¡] - Asuna",boss2,"[àÃÕÂ¡] - Awake Kirito",boss3,"Â¡àÅÔ¡",EN;
+		
+		
+boss1:		donpcevent "BLSV::OnBOSS1";
+			end;
+boss2:		donpcevent "BLSV::OnBOSS2";
+			end;
+boss3:		donpcevent "BLSV::OnBOSS3";
+			end;
+			
+	}
+
+nmPL:	
+	
+menu "¢éÍÁÙÅºÍÊ",-,"Â¡àÅÔ¡",EN;
+
+mes "[ ºÍÊ¡ÅÒ§àÁ×Í§ ]";
+mes "ÃèÒ§ : ASUNA";
+mes "HP: 900M";
+mes "Def/Mdef: 454/335";
+mes "Flee: 581";
+mes "Race: Formless";
+mes "Elemant: Neutral(LV.2)";
+mes "^FF0000(Skill : ÊÒÂàÇ·Âì / µÕä¡Å)^000000";
+next;
+mes "[ ºÍÊ¡ÅÒ§àÁ×Í§ ]";
+mes "ÃèÒ§ : KIRITO";
+mes "HP: 900M";
+mes "Def/Mdef: 454/335";
+mes "Flee: 581";
+mes "Race: Formless";
+mes "Elemant: Neutral(LV.2)";
+mes "^FF0000(Skill : ÊÒÂ¡ÒÂÀÒ¾ / µÕã¡Åé)^000000";
+next;
+mes "[ ºÍÊ¡ÅÒ§àÁ×Í§ ]";
+mes "Drop: Boss Tower Ticket 10%";
+mes "¨Ó¹Ç¹ 0~9 ªÔé¹";
+mes "   ^FF0000(15 box)^000000";
+end;
+
+EN:
+end;
+
+OnInit:
+//set $@BOSSLANN,0;
+donpcevent "BLSV::OnRes";
+//waitingroom "# ºÍÊ¡ÅÒ§àÁ×Í§",0;
+end;
+	}
+
+//maintown,87,56,4	script	UNIT_BOSS	910,{
+//
+//OnMinionSummon:
+//	.@minion_id = 1002;
+//	.@minion_count = 1;
+//	monster "maintown",93,57,"Pink Evil Minions",.@minion_id,.@minion_count,strnpcinfo(0)+"::OnMinionKill";
+//	copyarray .gid[getarraysize(.gid)], $@mobid[0], .@minion_count;
+//	end;
+//
+//OnMinionKill:
+//	.@len = getarraysize(.gid);
+//	for(.@a = 0; .@a < .@len; .@a++) {
+//		if(unitexists(.gid[.@a])) {
+//			getunitdata(.gid[.@a],.@mobdata);
+//			if(!.@mobdata[UMOB_HP]) {
+//				dispbottom .@mobdata[UMOB_X]+" "+.@mobdata[UMOB_Y]+" HP:"+.@mobdata[UMOB_HP];
+//				deletearray .gid[.@a], 1;
+//				break;
+//			}
+//		} else {
+//			deletearray .gid[.@a], 1;
+//			.@len--;
+//		}
+//	}
+//	
+//}
+	

@@ -1,0 +1,467 @@
+maintown,36,32,6	script	The King#SEL6	10187,{
+set .@npc$,"[ The King ]";
+	set .@party_id,getcharid(1);
+		
+set .@gettimetick, gettimetick(2);
+		set .@instance_delay, ( instance_delay_dunctel6 - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			mes .@npc$;
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;	}	
+	
+	if(.@party_id == 0){ end; }	
+			
+	if($@MVPTW3party_name == .@party_id){
+	
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunctel6, ( .@gettimetick + ( .instance_delay ));
+	warp "1@esix",98,116;
+	end;
+	}
+	
+	if(getmapusers("1@esix") == 0) { set $@MVPTW3,0;	}
+	
+mes .@npc$;
+mes "พลังแห่งแสงถูกครอบงำ";
+mes "พวกเจ้าจงช่วยเรากำจัดมัน";
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "และลูกทีมที่เก่ง";
+next;
+	menu 
+	"^009933•^000000 ต้องการเข้าร่วม",Plays,
+	"^FF0000•^000000 ยกเลิก",Cancel;
+
+Cancel:
+	mes "ยินดีให้บริการครับ";
+	end;
+
+
+Plays:
+
+	if($@partyDELE6 == .@party_id){
+	
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunctel6, ( .@gettimetick + ( .instance_delay ));
+	warp "1@esix",98,116;
+	end;
+	}
+
+cutin "3rd_wl_queen02",255;
+	set .@party_id,getcharid(1);
+	set $@partyDELE6,getcharid(1);
+	//ถ้าหากตายแล้วกลับมาใหม่ได้ไม่ต้องเอาออก
+	if ($@MVPTW3party_name == .@party_id){
+
+	if(getmapusers("1@esix") == 0) { 
+	set $@MVPTW3,0;
+	set $@MVPTW3party_name,0;
+	mes .@npc$;
+	mes "รีเซทเรียบร้อยแล้ว";
+	end;
+	}
+
+	mes .@npc$;
+	mes "หากคุณตายไม่สามารถกลับเข้าไปได้";
+	end;
+		}
+	
+	if (.@party_id == 0) {
+mes .@npc$;
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "จึงจะสามารถเข้าหอคอยได้";
+	close;
+	} else if (getpartyleader(.@party_id,2) != getcharid(0)) {
+mes .@npc$;
+mes "ท่านไม่ใช่หัวหน้าปาร์ตี้";
+	close;
+	} else if ($@MVPTW3) {
+mes .@npc$;
+mes "ขณะนี้มี Party อื่น";
+mes "กำลังอยู่ในหอคอย";
+	close;
+	} else {
+	//delitem 40027,1;
+	set $@MVPTW3,1;
+	set $@MVPTW3party_name,.@party_id;
+	announce "[The King] : Party "+getpartyname(.@party_id)+" ได้เข้าร่วม Elemental of Six แล้ว !!",0,0xAAEC37;
+	set $@ELE6FD1,3;
+	killmonster "1@esix","All";
+	disablenpc "ddwarpele6";
+	enablenpc "ELE6-1";
+	enablenpc "ELE6-2";
+	enablenpc "ELE6-3";
+	enablenpc "ELE6-1-1";
+	enablenpc "ELE6-2-1";
+	enablenpc "ELE6-3-1";
+	set $@bloodyELE6,0;
+	set $@IceELE6,0;
+	set $@FireELE6,0;
+
+	disablenpc "warpele6";
+	set $@ELE6FD1,3;
+	set $@ELE2A,3;
+	set $@ELE2B,2;
+	mes .@npc$;
+	mes "สามารถเข้าร่วมดันเจี้ยนได้แล้ว";
+	close2;
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunctel6, ( .@gettimetick + ( .instance_delay ));
+	warp "1@esix",98,116;
+	end;
+	
+}
+end;
+	OnInit:
+	disablenpc "ELE6-1";
+	disablenpc "ELE6-2";
+	disablenpc "ELE6-3";
+	disablenpc "ELE6-1-1";
+	disablenpc "ELE6-2-1";
+	disablenpc "ELE6-3-1";
+	disablenpc "ELEF-1-1";
+	disablenpc "ELEF-1-2";
+	disablenpc "ELEF-1-3";
+	disablenpc "ddwarpele6";
+	disablenpc "ELE2-2-1";
+	disablenpc "ELE2-2-2";
+	disablenpc "ELE3-1";
+	disablenpc "warpele6";
+	//waitingroom "# Elemental of Six",0;
+	end;
+}
+
+1@esix,98,126,4	script	Elemental Bloody::ELE6-1	620,{
+mes "[ Bloody Senior ]";
+mes "เจ้าจะต้องเดินทางไปยังธาตุ";
+mes "^FF0000[ Bloody ]^000000";
+mes "ใช่หรือไม่ !!";
+mes "แต่ละทางสามารถไปได้สูงสุด 4 คนเท่านั้น !!";
+next;
+menu "ใช่, ข้าพร้อมจะไป ["+$@bloodyELE6+"]",-,"ไม่, ข้าเลือกทางผิด",CCE;
+
+mes "[ Bloody Senior ]";
+mes "เอาหล่ะงั้นไปกันเลย !!";
+next;
+if($@bloodyELE6 == 4){
+mes "[ Bloody Senior ]";
+mes "ผู้กล้าเดินทางไปครบตามที่กำหนดแล้ว";
+mes "ไม่สามารถเดินทางเพิ่มได้";
+end;
+}
+set $@bloodyELE6,$@bloodyELE6 + 1;
+mapannounce "1@esix","ผู้เล่น ["+strcharinfo(0)+"] เข้าห้อง Bloody["+$@bloodyELE6+"] เรียบร้อยแล้ว",bc_map,0xAAEC37;
+warp "1@esix",102,16;	end;
+
+CCE:
+mes "[ Bloody Senior ]";
+mes "ขอให้เจ้าโชคดี !!";
+end;	}
+
+1@esix,92,120,4	script	Elemental Ice::ELE6-2	637,{
+mes "[ Ice Senior ]";
+mes "เจ้าจะต้องเดินทางไปยังธาตุ";
+mes "^FF0000[ Ice ]^000000";
+mes "ใช่หรือไม่ !!";
+mes "แต่ละทางสามารถไปได้สูงสุด 4 คนเท่านั้น !!";
+next;
+menu "ใช่, ข้าพร้อมจะไป ["+$@IceELE6+"]",-,"ไม่, ข้าเลือกทางผิด",CCE;
+
+mes "[ Ice Senior ]";
+mes "เอาหล่ะงั้นไปกันเลย !!";
+next;
+if($@IceELE6 == 4){
+mes "[ Ice Senior ]";
+mes "ผู้กล้าเดินทางไปครบตามที่กำหนดแล้ว";
+mes "ไม่สามารถเดินทางเพิ่มได้";
+end;
+}
+set $@IceELE6,$@IceELE6 + 1;
+mapannounce "1@esix","ผู้เล่น ["+strcharinfo(0)+"] เข้าห้อง ICE["+$@IceELE6+"] เรียบร้อยแล้ว",bc_map,0xAAEC37;
+warp "1@esix",61,88;	end;
+
+CCE:
+mes "[ Ice Senior ]";
+mes "ขอให้เจ้าโชคดี !!";
+end;	}
+
+1@esix,104,120,4	script	Elemental Fire::ELE6-3	603,{
+mes "[ Fire Senior ]";
+mes "เจ้าจะต้องเดินทางไปยังธาตุ";
+mes "^FF0000[ Fire ]^000000";
+mes "ใช่หรือไม่ !!";
+mes "แต่ละทางสามารถไปได้สูงสุด 4 คนเท่านั้น !!";
+next;
+menu "ใช่, ข้าพร้อมจะไป ["+$@FireELE6+"]",-,"ไม่, ข้าเลือกทางผิด",CCE;
+
+mes "[ Fire Senior ]";
+mes "เอาหล่ะงั้นไปกันเลย !!";
+next;
+if($@FireELE6 == 4){
+mes "[ Fire Senior ]";
+mes "ผู้กล้าเดินทางไปครบตามที่กำหนดแล้ว";
+mes "ไม่สามารถเดินทางเพิ่มได้";
+end;
+}
+set $@FireELE6,$@FireELE6 + 1;
+mapannounce "1@esix","ผู้เล่น ["+strcharinfo(0)+"] เข้าห้อง Fire["+$@FireELE6+"] เรียบร้อยแล้ว",bc_map,0xAAEC37;
+warp "1@esix",132,93;	end;
+
+CCE:
+mes "[ Fire Senior ]";
+mes "ขอให้เจ้าโชคดี !!";
+end;	}
+
+
+1@esix,102,21,4	script	Elemental Bloody::ELE6-1-1	620,{
+mes "[ Bloody Senior ]";
+mes "หากเจ้าพร้อมแล้ว";
+mes "ข้าจะรวมร่างกับร่างแยกของข้า";
+next;
+menu "ใช่, ข้าพร้อมแล้ว",-,"ไม่, เพื่อนข้ายังมาไม่ครบ",CCE2;
+
+close2;
+sleep 2000;
+npctalk "Bloody Senior : เตรียมใจให้พร้อม !!";
+sleep 2000;
+npctalk "Bloody Senior : มันกำลังจะเริ่มต้นขึ้น !!";
+sleep 2000;
+npctalk "Bloody Senior : หากเกิดสิ่งที่ไม่คาดฝันขึ้น ข้าจะกลับมา !!";
+sleep 2000;
+disablenpc "ELE6-1";
+disablenpc "ELE6-1-1";
+donpcevent "ELEF-1::OnMasterPlay";
+end;
+
+CCE2:
+mes "[ Bloody Senior ]";
+mes "งั้นเรารอให้เจ้าพร้อมก่อน";
+end;
+}
+
+
+
+1@esix,65,90,4	script	Elemental Ice::ELE6-2-1	637,{
+mes "[ Ice Senior ]";
+mes "หากเจ้าพร้อมแล้ว";
+mes "ข้าจะรวมร่างกับร่างแยกของข้า";
+next;
+menu "ใช่, ข้าพร้อมแล้ว",-,"ไม่, เพื่อนข้ายังมาไม่ครบ",CCE2;
+
+close2;
+sleep 2000;
+npctalk "Ice Senior : เตรียมใจให้พร้อม !!";
+sleep 2000;
+npctalk "Ice Senior : มันกำลังจะเริ่มต้นขึ้น !!";
+sleep 2000;
+npctalk "Ice Senior : หากเกิดสิ่งที่ไม่คาดฝันขึ้น ข้าจะกลับมา !!";
+sleep 2000;
+disablenpc "ELE6-2";
+disablenpc "ELE6-2-1";
+donpcevent "ELEF-1::OnMasterPlay";
+end;
+
+CCE2:
+mes "[ Ice Senior ]";
+mes "งั้นเรารอให้เจ้าพร้อมก่อน";
+end;
+}
+
+1@esix,136,97,4	script	Elemental Fire::ELE6-3-1	603,{
+mes "[ Fire Senior ]";
+mes "หากเจ้าพร้อมแล้ว";
+mes "ข้าจะรวมร่างกับร่างแยกของข้า";
+next;
+menu "ใช่, ข้าพร้อมแล้ว",-,"ไม่, เพื่อนข้ายังมาไม่ครบ",CCE2;
+
+close2;
+sleep 2000;
+npctalk "Fire Senior : เตรียมใจให้พร้อม !!";
+sleep 2000;
+npctalk "Fire Senior : มันกำลังจะเริ่มต้นขึ้น !!";
+sleep 2000;
+npctalk "Fire Senior : หากเกิดสิ่งที่ไม่คาดฝันขึ้น ข้าจะกลับมา !!";
+sleep 2000;
+disablenpc "ELE6-3";
+disablenpc "ELE6-3-1";
+donpcevent "ELEF-1::OnMasterPlay";
+end;
+
+CCE2:
+mes "[ Bloody Senior ]";
+mes "งั้นเรารอให้เจ้าพร้อมก่อน";
+end;
+}
+
+
+1@esix,0,0,0	script	E6-FADE1::ELEF-1	-1,{
+
+OnMasterPlay:
+set $@ELE6FD1,$@ELE6FD1 - 1;
+if($@ELE6FD1 == 2){ mapannounce "1@esix","ทีมที่ 1 พร้อมแล้ว !!",bc_map,0xAAEC37; }
+if($@ELE6FD1 == 1){ mapannounce "1@esix","ทีมที่ 2 พร้อมแล้ว !!",bc_map,0xAAEC37; }
+if($@ELE6FD1 == 0){ mapannounce "1@esix","ทีมที่ 3 พร้อมแล้ว !!",bc_map,0xAAEC37;
+sleep 4000; mapannounce "1@esix","Grim Reaper : เอาหละ !! สมุนของข้าจงจัดการพวกมันซะ !!",bc_map,0xAAEC37;
+sleep 2000; mapannounce "1@esix","Grim Reaper : อย่าให้พวกมันรอดเข้ามาได้",bc_map,0xAAEC37;
+sleep 2000; mapannounce "1@esix","Grim Reaper : ฮ่า ๆ ๆ !!! พวกเจ้าไม่รอดแน่",bc_map,0xAAEC37;
+donpcevent "ELEF-1-1::OnPlayE";
+donpcevent "ELEF-1-2::OnPlayE";
+donpcevent "ELEF-1-3::OnPlayE";
+end;
+ }
+end;	}
+
+1@esix,101,29,4	script	Captain Arman::ELEF-1-1	31005,{
+end;
+OnPlayE:
+enablenpc "ELEF-1-1";
+sleep 2000;
+npctalk "Knight Bloody : เป็นไงบ้างไอหนุ่ม !!";
+sleep 2000;
+npctalk "Knight Bloody : พร้อมที่จะสู้กับข้ารึยัง !!";
+sleep 2000;
+npctalk "Knight Bloody : ถ้ายัง !! ข้าจะโจมตีก่อนไม่รอแล้วนะ";
+disablenpc "ELEF-1-1";
+areamonster "1@esix",101,29,101,29,"Captain Arman",31005,1,"ELE2-1::OnEL1D";
+end;
+}
+
+1@esix,143,97,4	script	Captain Charman::ELEF-1-2	31006,{
+end;
+OnPlayE:
+enablenpc "ELEF-1-2";
+sleep 2000;
+npctalk "Knight Fire : เป็นไงบ้างไอหนุ่ม !!";
+sleep 2000;
+npctalk "Knight Fire : พร้อมที่จะสู้กับข้ารึยัง !!";
+sleep 2000;
+npctalk "Knight Fire : ถ้ายัง !! ข้าจะโจมตีก่อนไม่รอแล้วนะ";
+disablenpc "ELEF-1-2";
+areamonster "1@esix",143,97,143,97,"Captain Charman",31006,1,"ELE2-1::OnEL1D";
+end;
+}
+
+1@esix,48,95,4	script	Captain Norman::ELEF-1-3	31007,{
+end;
+OnPlayE:
+enablenpc "ELEF-1-3";
+sleep 2000;
+npctalk "Knight Ice : เป็นไงบ้างไอหนุ่ม !!";
+sleep 2000;
+npctalk "Knight Ice : พร้อมที่จะสู้กับข้ารึยัง !!";
+sleep 2000;
+npctalk "Knight Ice : ถ้ายัง !! ข้าจะโจมตีก่อนไม่รอแล้วนะ";
+disablenpc "ELEF-1-3";
+areamonster "1@esix",48,95,48,95,"Captain Norman",31007,1,"ELE2-1::OnEL1D";
+end;
+}
+
+1@esix,0,0,0	script	Recalla::ELE2-1	-1,{
+end;
+OnEL1D:
+set $@ELE2A,$@ELE2A - 1;
+if($@ELE2A == 2){	mapannounce "1@esix","Party Leader : กำจัด Knight สำเร็จ 1 ตัวแล้ว !!",bc_map,0xAAEC37;	}
+if($@ELE2A == 1){	mapannounce "1@esix","Party Leader : กำจัด Knight สำเร็จ 2 ตัวแล้ว !!",bc_map,0xAAEC37;	}
+if($@ELE2A == 0){	mapannounce "1@esix","Party Leader : กำจัด Knight สำเร็จ 3 ตัวแล้ว !!",bc_map,0xAAEC37;
+sleep 2000;	mapannounce "1@esix","Party Leader : เอาหละข้าจะเรียกรวมตัว",bc_map,0xAAEC37;
+sleep 2000;	areawarp "1@esix",0,0,999,999,"1@esix",101,179;
+sleep 2000;	set $@ELE2A,0;	donpcevent "ELE2-2::OnPlayE";
+	}
+end;
+}
+
+1@esix,0,0,0	script	ELEF2-2::ELE2-2	-1,{
+OnPlayE:
+enablenpc "ELE2-2-1";
+sleep 2000;	mapannounce "1@esix","Other Party : เราไม่ยอมให้พวกเจ้า มาแย่งบอสของเราหรอก",bc_map,0xAAEC37;
+sleep 2000;	mapannounce "1@esix","Other Party : กลับออกไปซะ !!",bc_map,0xAAEC37;
+donpcevent "ELE2-2-1::OnFightP";
+end;
+}
+
+1@esix,98,188,6	script	Isabelle::ELE2-2-1	31008,{
+end;
+OnFightP:
+sleep 2000;
+npctalk "Isabelle : สวัสดี สหาย !!";
+sleep 2000;
+npctalk "Isabelle : ทีมเจ้าจะมาแย่งบอส ของทีมเราไม่ได้หรอกนะ !!";
+sleep 2000;
+npctalk "Isabelle : แต่อย่างว่า !!";
+sleep 2000;
+npctalk "Isabelle : ข้าเพียงคนเดียวจะสู้อะไรพวกเจ้าได้ !!";
+sleep 2000;
+npctalk "Isabelle : ออกมา !! พันธมิตรของข้า";
+enablenpc "ELE2-2-2";
+donpcevent "ELE2-2-2::OnFightP";
+end;
+}
+
+1@esix,104,188,4	script	Michel::ELE2-2-2	31009,{
+end;
+OnFightP:
+npctalk "Michel : สวัสดี สหาย !!";
+sleep 2000;
+npctalk "Michel : ทีมเจ้าจะมาแย่งบอส ของทีมเราไม่ได้หรอกนะ !!";
+sleep 2000;
+npctalk "Michel : เอ๊ะ !! มันดูซ้ำๆ ไปหน่อยไม่ใช่ละ";
+sleep 2000;
+npctalk "Michel : เอาเป็นว่า มาสู้กันนนนนนนน !!";
+disablenpc "ELE2-2-1";
+disablenpc "ELE2-2-2";
+areamonster "1@esix",98,188,98,188,"Isabelle",31008,1,"ELE23::OnBOSS6EL";
+areamonster "1@esix",104,188,104,188,"Michel",31009,1,"ELE23::OnBOSS6EL";
+end;	}
+
+
+1@esix,0,0,0	script	FIHT3::ELE23	-1,{
+end;
+OnBOSS6EL:
+set $@ELE2B,$@ELE2B - 1;
+if($@ELE2B == 1){	mapannounce "1@esix","Unknow : กำจัดเสี้ยนหนามไปได้แล้วสินะ!!",bc_map,0xAAEC37;	}
+if($@ELE2B == 0){	mapannounce "1@esix","Unknow : เพียงเท่านี้ !! เพียงเท่านี้ !!!! ฮ่าๆๆๆๆๆ !!!",bc_map,0xAAEC37;
+sleep 2000;	mapannounce "1@esix","Party Leader : เสียงอะไรกัน !!",bc_map,0xAAEC37;
+sleep 2000;	set $@ELE2B,0;	donpcevent "ELE3-1::OnPlayE";
+end;
+	}
+	end;
+}
+
+1@esix,101,209,4	script	White Hunter::ELE3-1	31010,{
+end;
+OnPlayE:
+enablenpc "ELE3-1";
+sleep 2000;
+npctalk "White Hunter : ในที่สุด!!";
+sleep 2000;
+npctalk "White Hunter : การฟื้นคืนชีพของข้า!!";
+sleep 500; specialeffect 312;
+sleep 500; specialeffect 813;
+sleep 500; specialeffect 812;
+sleep 500; specialeffect 816;
+sleep 500; specialeffect 818;
+sleep 500; specialeffect 815;
+sleep 500; specialeffect 809;
+sleep 500; specialeffect 82;
+npctalk "White Hunter : ก็เสร็จ สมบรูณ์สักที!!";
+disablenpc "ELE3-1";
+sleep 2000;
+npctalk "White Hunter : ใครกันนะที่จะล้มข้าได้! ไม่มีทางงงง !!";
+areamonster "1@esix",101,209,101,209,"White Hunter",31010,1,"ELE3-2::Ondevildead";
+end;	}
+
+-	script	En::ELE3-2	-1,{
+end;
+Ondevildead:
+announce "[King] : Party "+getpartyname($@partyDELE6)+" กำจัด White Hunter สำเร็จแล้ว !!!",0;
+sleep 2000;	mapannounce "1@esix","White Hunter : ความมืดก็ยังแพ้ความสว่างอยู่ดี !!",bc_map,0xAAEC37;
+sleep 2000;	mapannounce "1@esix","White Hunter : สักวัน ความมืดจะกลับคืนมา !!",bc_map,0xAAEC37;
+sleep 2000;	mapannounce "1@esix","Party Leader : กลับเมืองกันเถอะ",bc_map,0xAAEC37;
+enablenpc "warpele6";
+end;	}
+
+1@esix,101,199,4	script	Warp Port::warpele6	10007,{
+if(rand(1,100) < 80){ getitem 49529,rand(1,3);	} else { getitem 49529,rand(3,6); }
+if(rand(1,100) > 80){ getitem 49530,1;	} else {  }
+warp "maintown",86,57;
+}

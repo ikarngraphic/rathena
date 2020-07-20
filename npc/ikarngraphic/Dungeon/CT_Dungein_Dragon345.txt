@@ -1,0 +1,217 @@
+maintown,41,41,6	script	Evil Hunter#S	10191,{
+
+	set .@npc$,"[ Evil Hunter ]";
+	set .@party_id,getcharid(1);
+	
+	set .@gettimetick, gettimetick(2);
+
+		set .@instance_delay, ( instance_delay_dunct345 - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			mes .@npc$;
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;	}
+			
+	if(.@party_id == 0){ end; }		
+		
+	if($@MVPTW2party_name == .@party_id){
+	
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunct345, ( .@gettimetick + ( .instance_delay ));
+	warp "1@evil",98,72;
+	end;
+	}		
+	
+	if(getmapusers("1@evil") == 0) { set $@MVPTW2,0;	}
+	
+mes .@npc$;
+mes "สวัสดี ต้องการดื่นน้ำชา";
+mes "ยามบ่ายหรอไม่";
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "และลูกทีมที่เก่ง";
+next;
+	menu 
+	"^009933•^000000 ต้องการเข้าร่วม",Plays,
+	"^FF0000•^000000 ยกเลิก",Cancel;
+
+Cancel:
+	mes "ยินดีให้บริการครับ";
+	end;
+
+
+Plays:
+
+cutin "3rd_wl_queen02",255;
+	set .@party_id,getcharid(1);
+	set $@partyD345,getcharid(1);
+	//ถ้าหากตายแล้วกลับมาใหม่ได้ไม่ต้องเอาออก
+	
+	if($@MVPTW2party_name == .@party_id){
+	
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunct345, ( .@gettimetick + ( .instance_delay ));
+	warp "1@evil",98,72;
+	end;
+	}
+	
+	if ($@MVPTW2party_name == .@party_id){
+
+	if(getmapusers("1@evil") == 0) { 
+	set $@MVPTW2,0;
+	set $@MVPTW2party_name,0;
+	end;
+	}
+
+	mes .@npc$;
+	mes "หากคุณตายไม่สามารถกลับเข้าไปได้";
+	end;
+		}
+	
+	if (.@party_id == 0) {
+mes .@npc$;
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "จึงจะสามารถเข้าหอคอยได้";
+	end;
+	} else if (getpartyleader(.@party_id,2) != getcharid(0)) {
+mes .@npc$;
+mes "ท่านไม่ใช่หัวหน้าปาร์ตี้";
+	end;
+	} else if ($@MVPTW2) {
+mes .@npc$;
+mes "ขณะนี้มี Party อื่น";
+mes "กำลังอยู่ในหอคอย";
+	end;
+	
+	} else {
+	set $@MVPTW2,1;
+	set $@MVPTW2party_name,.@party_id;
+	
+	announce "[Evil Hunter] : Party "+getpartyname(.@party_id)+" ได้เข้าร่วม Heart of Maid แล้ว !!",0,0xAAEC37;
+	disablenpc "ddwarp345";
+	killmonster "1@evil","All";
+	mes .@npc$;
+	mes "สามารถเข้าร่วมดันเจี้ยนได้แล้ว";
+	close2;
+	warp "1@evil",98,72;
+	set .instance_delay, 14400;	// 23 hr
+	set instance_delay_dunct345, ( .@gettimetick + ( .instance_delay ));
+	sleep 15000;
+	donpcevent "DD345-1::OnWanted";	
+	
+	
+		
+	//if(getpartyleader(.@party_id,2) != getcharid(0)){
+	//set .instance_delay, 14400;	// 23 hr
+	//set instance_delay_dunct345, ( .@gettimetick + ( .instance_delay ));
+	//warp "1@evil",98,72;
+	//
+	//} else {
+	//
+	//set .instance_delay, 82800;	// 23 hr
+	//set instance_delay_dunct345, ( .@gettimetick + ( .instance_delay ));
+	//warp "1@evil",98,72;
+	//end;
+	//}
+	end;
+	
+}
+end;
+	OnInit:
+	disablenpc "ddwarp345";
+	//waitingroom "# Heart of Maid",0;
+	end;
+}
+
+
+
+//################################# White Guard ###################################
+1@evil,103,95,4	script	White Guard::DD345-1	31002,{
+end;
+
+OnWanted:
+enablenpc "DD345-1";
+enablenpc "Maid345-t";
+mapannounce "1@evil","White Guard : อากาศช่างสดใสเหลือเกิน",bc_map,0xAAEC37;
+sleep 6000;
+npctalk "White Guard : ใครกันที่เข้ามาที่นี่ !!";
+sleep 2000;
+npctalk "White Guard : ที่นี่ไม่ใช่ที่สำหรับเด็กอย่างเจ้า";
+sleep 2000;
+npctalk "White Guard : ออกไปซะ เจ้าพวกเด็กน้อยทั้งหลาย";
+sleep 2000;
+npctalk "White Guard : เราไม่มีเวลามาเล่นกับพวกเจ้าหรอกนะ";
+sleep 2000;
+npctalk "White Guard : เราจะเตือนเจ้าเป็นครั้งสุดท้าย";
+sleep 2000;
+npctalk "White Guard : ถ้าเจ้าไม่ออกไป เราจะจัดการกับเจ้าซะ";
+sleep 500; specialeffect 82;
+sleep 500; specialeffect 82;
+sleep 500; specialeffect 82;
+sleep 500; specialeffect 82;
+sleep 500; specialeffect 82;
+sleep 500; specialeffect 55;
+sleep 500; specialeffect 56;
+sleep 500; specialeffect 57;
+sleep 500; specialeffect 58;
+sleep 500; specialeffect 805;
+sleep 500; specialeffect 82;	disablenpc "Maid345-t";
+sleep 500; specialeffect 90;	disablenpc "DD345-1";
+sleep 500; specialeffect 90;	areamonster "1@evil",103,95,103,95,"White Guard",31002,1,"Little345::Ondevildead";
+sleep 500; specialeffect 90;
+end;
+}
+
+
+//################################# Dragon ###################################
+1@evil,0,0,0	script	Little345	-1,{
+Ondevildead:
+	mapannounce "1@evil","White Guard : ข้าไม่ยอมแพ้เจ้าหรอกนะ !!",bc_map,0xAAEC37;
+	sleep 4000; mapannounce "1@evil","White Guard : ใครก็ได้ช่วยเราที !!",bc_map,0xAAEC37;
+	//set $@MVPTW2,0;
+	sleep 4000; mapannounce "1@evil","Evil Hunter : ใครกันที่รังแกนายน้อยของข้า !! บังอาจยิ่งนัก !!",bc_map,0xAAEC37;
+	sleep 3000; mapannounce "1@evil","Evil Hunter : ข้าอยากเจอกับพวกเจ้าจริงๆ เลย !!",bc_map,0xAAEC37;
+	donpcevent "Maid345-t::OnTalk";
+end;
+}
+
+1@evil,103,93,4	script	Maid Evil Hunter::Maid345-t	10190,{
+end;
+
+OnTalk:
+enablenpc "Maid345-t";
+sleep 2000;
+npctalk "Maid Evil Hunter : ข้าขอทำความเคารพ นายน้อย !!";
+sleep 2000;
+npctalk "Maid Evil Hunter : เดี๋ยวข้าจะจัดการกับพวกมันเอง !!";
+sleep 2000;
+npctalk "Maid Evil Hunter : นายน้อยไม่ต้องเป็นห่วง !!";
+sleep 2000;
+mapannounce "1@evil","White Guard : เราฝากเจ้า ด้วยนะ !! เรา เรา ...",bc_map,0xAAEC37;
+sleep 2000;
+mapannounce "1@evil","White Guard : เ ... ร ร รา า ~",bc_map,0xAAEC37;
+sleep 1000;
+npctalk "Maid Evil Hunter : นายน้อยยยยยยยยยยยยยยยยย ~ !!";
+disablenpc "Maid345-t";
+areamonster "1@evil",103,93,103,93,"Evil Hunter",31004,1,"Maid345::Ondevildead";
+end;
+}
+
+-	script	NNCC::Maid345	-1,{
+Ondevildead:
+	mapannounce "1@evil","Evil Hunter : สักวันเราจะได้เห็นดีกัน !!",bc_map,0xAAEC37;
+	announce "[Evil Hunter] : Party "+getpartyname(getcharid(1))+" กำจัด White Guard สำเร็จแล้ว !!!",0;
+	set $@MVPTW,0;
+	sleep 4000; 
+	mapannounce "1@evil","เส้นทางกลับถูกเปิดออกแล้ว !!",bc_map,0xAAEC37;
+	enablenpc "ddwarp345";
+end;
+}
+
+
+
+1@evil,103,95,4	script	Warp Port::ddwarp345	10007,{
+if(rand(1,100) < 80){ getitem 49529,rand(1,3);	} else { getitem 49529,rand(3,6); }
+if(rand(1,100) > 80){ getitem 49530,1;	} else {  }
+warp "maintown",86,57;
+end;
+}

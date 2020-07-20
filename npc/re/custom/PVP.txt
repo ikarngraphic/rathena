@@ -1,0 +1,36 @@
+maintown,81,47,4	script	PVP Staff	468,{
+
+	set .@heading$,"[ เจ้าสังเวียนการประลอง ]";
+
+	mes .@heading$;
+	mes "สวัสดี ท่านต้องการเข้าห้อง ^ff0000PVP^000000 หรือไม่";
+	next;
+	switch(select("ข้าจะเข้าไป:ไม่เอาอ่ะ")) {
+
+case 1:
+	mes .@heading$;
+	mes "ไปลุยกันเลย!!";
+	announce "PVP : '"+strcharinfo(0)+"' ได้เข้าสู่ห้อง PVP แล้วครับ",8;
+	
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_IMPOSITIO;
+		sc_end KYRIE;
+	
+	warp "guild_vs3",0,0;
+	end;
+	
+case 2:
+	mes .@heading$;
+	mes "แล้วแต่นะ";
+	end;
+}
+end;
+
+OnInit: 
+    waitingroom "        PVP",0; 
+    end; 
+
+}

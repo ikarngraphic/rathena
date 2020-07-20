@@ -38,6 +38,8 @@
 #include "instance.hpp"
 #include "intif.hpp"
 #include "itemdb.hpp" // MAX_ITEMGROUP
+#include "item_synthesis.hpp"
+#include "item_upgrade.hpp"
 #include "log.hpp"
 #include "mail.hpp"
 #include "map.hpp"
@@ -1022,7 +1024,7 @@ ACMD_FUNC(storage)
 {
 	nullpo_retr(-1, sd);
 
-	if (sd->npc_id || sd->state.vending || sd->state.buyingstore || sd->state.trading || sd->state.storage_flag)
+	if (sd->npc_id || sd->state.vending || sd->state.buyingstore || sd->state.trading || sd->state.storage_flag || sd->state.lapine_ui)
 		return -1;
 
 	if (storage_storageopen(sd) == 1)
@@ -1044,7 +1046,7 @@ ACMD_FUNC(guildstorage)
 {
 	nullpo_retr(-1, sd);
 
-	if (sd->npc_id || sd->state.vending || sd->state.buyingstore || sd->state.trading)
+	if (sd->npc_id || sd->state.vending || sd->state.buyingstore || sd->state.trading || sd->state.lapine_ui)
 		return -1;
 
 	switch (storage_guild_storageopen(sd)) {
@@ -1391,7 +1393,7 @@ ACMD_FUNC(item)
 	get_count = number;
 
 	for(j--; j>=0; j--){ //produce items in list
-		uint32 item_id = item_data[j]->nameid;
+		unsigned short item_id = item_data[j]->nameid;
 		//Check if it's stackable.
 		if (!itemdb_isstackable2(item_data[j]))
 			get_count = 1;
@@ -1422,7 +1424,7 @@ ACMD_FUNC(item2)
 	struct item item_tmp;
 	struct item_data *item_data;
 	char item_name[100];
-	uint32 item_id;
+	unsigned short item_id;
 	int number = 0, bound = BOUND_NONE;
 	int identify = 0, refine = 0, attr = 0;
 	int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
@@ -1460,7 +1462,7 @@ ACMD_FUNC(item2)
 
 	item_id = 0;
 	if ((item_data = itemdb_searchname(item_name)) != NULL ||
-	    (item_data = itemdb_exists(strtoul(item_name, NULL, 10))) != NULL)
+	    (item_data = itemdb_exists(atoi(item_name))) != NULL)
 		item_id = item_data->nameid;
 
 	if (item_id > 500) {
@@ -2373,7 +2375,7 @@ ACMD_FUNC(refine)
 ACMD_FUNC(produce)
 {
 	char item_name[100];
-	uint32 item_id;
+	unsigned short item_id;
 	int attribute = 0, star = 0;
 	struct item_data *item_data;
 	struct item tmp_item;
@@ -2419,7 +2421,7 @@ ACMD_FUNC(produce)
 		if ((flag = pc_additem(sd, &tmp_item, 1, LOG_TYPE_COMMAND)))
 			clif_additem(sd, 0, 0, flag);
 	} else {
-		sprintf(atcmd_output, msg_txt(sd,169), item_id, item_data->name); // The item (%u: '%s') is not equipable.
+		sprintf(atcmd_output, msg_txt(sd,169), item_id, item_data->name); // The item (%hu: '%s') is not equipable.
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
@@ -4038,6 +4040,12 @@ ACMD_FUNC(reload) {
 	} else if (strstr(command, "attendancedb") || strncmp(message, "attendancedb", 4) == 0) {
 		attendance_db.reload();
 		clif_displaymessage(fd, msg_txt(sd, 795)); // Attendance database has been reloaded.
+	} else if (strstr(command, "synthesisdb") || strncmp(message, "synthesisdb", 6) == 0) {
+		item_synthesis_db_reload();
+		clif_displaymessage(fd, msg_txt(sd, 796)); // Item Synthesis database has been reloaded.
+	} else if (strstr(command, "upgradedb") || strncmp(message, "upgradedb", 6) == 0) {
+		item_upgrade_db_reload();
+		clif_displaymessage(fd, msg_txt(sd, 797)); // Item Upgrade database has been reloaded.
 	}
 
 	return 0;
@@ -4065,6 +4073,20 @@ ACMD_FUNC(partysharelvl) {
 		clif_displaymessage(fd, msg_txt(sd,1479)); // Failed to update configuration. Character server is offline.
 
 	return 0;
+}
+
+std::string atcommand_mapinfo_globaldamage_sub(int type) {
+	std::string atker = "";
+	size_t len = 0;
+
+	if (type&BL_PC)   atker.append("PC ");
+	if (type&BL_MOB)  atker.append("Monster ");
+	if (type&BL_PET)  atker.append("Pet ");
+	if (type&BL_HOM)  atker.append("Hom ");
+	if (type&BL_MER)  atker.append("Merc ");
+	if (type&BL_ELEM) atker.append("Elem ");
+
+	return atker;
 }
 
 /*==========================================
@@ -4178,6 +4200,19 @@ ACMD_FUNC(mapinfo) {
 			sprintf(atcmd_output, " > %s : %d%%", skill_get_name(it.first), it.second);
 			clif_displaymessage(fd, atcmd_output);
 		}
+	}
+	
+	//Global Damage adjustment. [Cydh]
+	if (map_getmapflag_sub(m_id, MF_ATK_RATE, NULL)) {
+		sprintf(atcmd_output,"Damage Adjustment for: %s", atcommand_mapinfo_globaldamage_sub(mapdata->atk_rate.rate[DMGRATE_BL]).c_str());
+		clif_displaymessage(fd,atcmd_output);
+		sprintf(atcmd_output," > Short: %d%% | Long: %d%% | Weapon: %d%% | Magic: %d%% | Misc: %d%%",
+			mapdata->atk_rate.rate[DMGRATE_SHORT],
+			mapdata->atk_rate.rate[DMGRATE_LONG],
+			mapdata->atk_rate.rate[DMGRATE_WEAPON],
+			mapdata->atk_rate.rate[DMGRATE_MAGIC],
+			mapdata->atk_rate.rate[DMGRATE_MISC]);
+		clif_displaymessage(fd,atcmd_output);
 	}
 
 	strcpy(atcmd_output,msg_txt(sd,1046)); // PvP Flags:
@@ -4298,6 +4333,8 @@ ACMD_FUNC(mapinfo) {
 		strcat(atcmd_output, " PartyLock |");
 	if (map_getmapflag(m_id, MF_GUILDLOCK))
 		strcat(atcmd_output, " GuildLock |");
+	if (map_getmapflag(m_id, MF_DROPRATE))
+		strcat(atcmd_output, " DropRate |");
 	if (map_getmapflag(m_id, MF_LOADEVENT))
 		strcat(atcmd_output, " Loadevent |");
 	if (map_getmapflag(m_id, MF_NOMAPCHANNELAUTOJOIN))
@@ -5962,7 +5999,7 @@ ACMD_FUNC(skilltree)
 void getring (struct map_session_data* sd)
 {
 	char flag = 0;
-	uint32 item_id;
+	unsigned short item_id;
 	struct item item_tmp;
 	item_id = (sd->status.sex) ? WEDDING_RING_M : WEDDING_RING_F;
 
@@ -6289,7 +6326,7 @@ ACMD_FUNC(autolootitem)
 			return -1;
 		}
 		sd->state.autolootid[i] = item_data->nameid; // Autoloot Activated
-		sprintf(atcmd_output, msg_txt(sd,1192), item_data->name, item_data->jname, item_data->nameid); // Autolooting item: '%s'/'%s' {%u}
+		sprintf(atcmd_output, msg_txt(sd,1192), item_data->name, item_data->jname, item_data->nameid); // Autolooting item: '%s'/'%s' {%d}
 		clif_displaymessage(fd, atcmd_output);
 		sd->state.autolooting = 1;
 		break;
@@ -6300,7 +6337,7 @@ ACMD_FUNC(autolootitem)
 			return -1;
 		}
 		sd->state.autolootid[i] = 0;
-		sprintf(atcmd_output, msg_txt(sd,1194), item_data->name, item_data->jname, item_data->nameid); // Removed item: '%s'/'%s' {%u} from your autolootitem list.
+		sprintf(atcmd_output, msg_txt(sd,1194), item_data->name, item_data->jname, item_data->nameid); // Removed item: '%s'/'%s' {%d} from your autolootitem list.
 		clif_displaymessage(fd, atcmd_output);
 		ARR_FIND(0, AUTOLOOTITEM_SIZE, i, sd->state.autolootid[i] != 0);
 		if (i == AUTOLOOTITEM_SIZE) {
@@ -6325,7 +6362,7 @@ ACMD_FUNC(autolootitem)
 					ShowDebug("Non-existant item %d on autolootitem list (account_id: %d, char_id: %d)", sd->state.autolootid[i], sd->status.account_id, sd->status.char_id);
 					continue;
 				}
-				sprintf(atcmd_output, "'%s'/'%s' {%u}", item_data->name, item_data->jname, item_data->nameid);
+				sprintf(atcmd_output, "'%s'/'%s' {%hu}", item_data->name, item_data->jname, item_data->nameid);
 				clif_displaymessage(fd, atcmd_output);
 			}
 		}
@@ -6408,7 +6445,7 @@ ACMD_FUNC(autoloottype)
 				return -1;
 			}
 			sd->state.autoloottype |= (1<<type); // Stores the type
-			sprintf(atcmd_output, msg_txt(sd,1483), itemdb_typename(type), type); // Autolooting item type: '%s' {%u}
+			sprintf(atcmd_output, msg_txt(sd,1483), itemdb_typename(type), type); // Autolooting item type: '%s' {%d}
 			clif_displaymessage(fd, atcmd_output);
 			break;
 		case 2:
@@ -6417,7 +6454,7 @@ ACMD_FUNC(autoloottype)
 				return -1;
 			}
 			sd->state.autoloottype &= ~(1<<type);
-			sprintf(atcmd_output, msg_txt(sd,1485), itemdb_typename(type), type); // Removed item type: '%s' {%u} from your autoloottype list.
+			sprintf(atcmd_output, msg_txt(sd,1485), itemdb_typename(type), type); // Removed item type: '%s' {%d} from your autoloottype list.
 			clif_displaymessage(fd, atcmd_output);
 			break;
 		case 3:
@@ -7170,6 +7207,10 @@ ACMD_FUNC(mute)
 ACMD_FUNC(refresh)
 {
 	nullpo_retr(-1, sd);
+	if (sd->state.lapine_ui) {
+		clif_displaymessage(sd->fd, msg_txt(sd, 543));
+		return -1;
+	}
 	clif_refresh(sd);
 	return 0;
 }
@@ -7843,7 +7884,7 @@ ACMD_FUNC(iteminfo)
 	}
 	for (i = 0; i < count; i++) {
 		struct item_data * item_data = item_array[i];
-		sprintf(atcmd_output, msg_txt(sd,1277), // Item: '%s'/'%s'[%d] (%u) Type: %s | Extra Effect: %s
+		sprintf(atcmd_output, msg_txt(sd,1277), // Item: '%s'/'%s'[%d] (%hu) Type: %s | Extra Effect: %s
 			item_data->name,item_data->jname,item_data->slot,item_data->nameid,
 			(item_data->type != IT_AMMO) ? itemdb_typename((enum item_types)item_data->type) : itemdb_typename_ammo((enum e_item_ammo)item_data->look),
 			(item_data->script==NULL)? msg_txt(sd,1278) : msg_txt(sd,1279) // None / With script
@@ -7894,7 +7935,7 @@ ACMD_FUNC(whodrops)
 	}
 	for (i = 0; i < count; i++) {
 		item_data = item_array[i];
-		sprintf(atcmd_output, msg_txt(sd,1285), item_data->jname, item_data->slot, item_data->nameid); // Item: '%s'[%d] (ID: %u)
+		sprintf(atcmd_output, msg_txt(sd,1285), item_data->jname, item_data->slot, item_data->nameid); // Item: '%s'[%d] (ID:%hu)
 		clif_displaymessage(fd, atcmd_output);
 
 		if (item_data->mob[0].chance == 0) {
@@ -8295,7 +8336,8 @@ ACMD_FUNC(mapflag) {
 												MF_JEXP,
 												MF_BATTLEGROUND,
 												MF_SKILL_DAMAGE,
-												MF_SKILL_DURATION };
+												MF_SKILL_DURATION,
+												MF_ATK_RATE };
 
 			if (flag && std::find(disabled_mf.begin(), disabled_mf.end(), mapflag) != disabled_mf.end()) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
@@ -9053,7 +9095,7 @@ ACMD_FUNC(stats)
 ACMD_FUNC(delitem)
 {
 	char item_name[100];
-	uint32 nameid;
+	unsigned short nameid;
 	int amount = 0, total, idx;
 	struct item_data* id;
 
@@ -10225,6 +10267,44 @@ ACMD_FUNC(quest) {
 	return 0;
 }
 
+ACMD_FUNC(synthesisui) {
+	nullpo_retr(-1, sd);
+
+#ifdef FEATURE_LAPINE_UI
+	unsigned int itemid;
+	if (sscanf(message, "%u", &itemid) < 1) {
+		clif_displaymessage(fd, "Please input itemid of synthesis id.");
+		return -1;
+	}
+	if (!item_synthesis_open(sd, itemid))
+		return -1;
+	sd->state.lapine_ui |= 4;
+	sd->itemid = itemid;
+#else
+	clif_displaymessage(fd, "Client is not supported.");
+#endif
+	return 0;
+}
+
+ACMD_FUNC(upgradeui) {
+	nullpo_retr(-1, sd);
+
+#ifdef FEATURE_LAPINE_UI
+	unsigned int itemid;
+	if (sscanf(message, "%u", &itemid) < 1) {
+		clif_displaymessage(fd, "Please input itemid of upgrade id.");
+		return -1;
+	}
+	if (!item_upgrade_open(sd, itemid))
+		return -1;
+	sd->state.lapine_ui |= 4;
+	sd->itemid = itemid;
+#else
+	clif_displaymessage(fd, "Client is not supported.");
+#endif
+	return 0;
+}
+
 #include "../custom/atcommand.inc"
 
 /**
@@ -10532,6 +10612,8 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("erasequest", quest),
 		ACMD_DEF2("completequest", quest),
 		ACMD_DEF2("checkquest", quest),
+		ACMD_DEFR(synthesisui, ATCMD_NOCONSOLE | ATCMD_NOAUTOTRADE),
+		ACMD_DEFR(upgradeui, ATCMD_NOCONSOLE | ATCMD_NOAUTOTRADE),
 	};
 	AtCommandInfo* atcommand;
 	int i;

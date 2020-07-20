@@ -37,6 +37,8 @@
 #include "homunculus.hpp"
 #include "instance.hpp"
 #include "intif.hpp"
+#include "item_upgrade.hpp"
+#include "item_synthesis.hpp"
 #include "log.hpp"
 #include "mapreg.hpp"
 #include "mercenary.hpp"
@@ -120,7 +122,7 @@ static struct block_list *bl_list[BL_LIST_MAX];
 static int bl_list_count = 0;
 
 #ifndef MAP_MAX_MSG
-	#define MAP_MAX_MSG 1550
+	#define MAP_MAX_MSG 1600
 #endif
 
 struct map_data map[MAX_MAP_PER_SERVER];
@@ -3656,12 +3658,21 @@ void map_flags_init(void){
 		mapdata->flag[MF_NOCOMMAND] = false; // nocommand mapflag level
 		map_setmapflag_sub(i, MF_BEXP, true, &args); // per map base exp multiplicator
 		map_setmapflag_sub(i, MF_JEXP, true, &args); // per map job exp multiplicator
+		map_setmapflag_sub(i, MF_DROPRATE, true, &args); // per map job exp multiplicator
 
 		// Clear adjustment data, will be reset after loading NPC
 		mapdata->damage_adjust = {};
 		mapdata->skill_damage.clear();
 		mapdata->skill_duration.clear();
 		map_free_questinfo(mapdata);
+		
+		mapdata->atk_rate = {}; //Global Damage Adjustment [Cydh]
+		mapdata->atk_rate.rate[DMGRATE_BL] = BL_ALL;
+		mapdata->atk_rate.rate[DMGRATE_WEAPON] = 100;
+		mapdata->atk_rate.rate[DMGRATE_LONG] = 100;
+		mapdata->atk_rate.rate[DMGRATE_WEAPON] = 100;
+		mapdata->atk_rate.rate[DMGRATE_MAGIC] = 100;
+		mapdata->atk_rate.rate[DMGRATE_MISC] = 100;
 
 		if (instance_start && i >= instance_start)
 			continue;
@@ -4592,6 +4603,20 @@ int map_getmapflag_sub(int16 m, enum e_mapflag mapflag, union u_mapflag_args *ar
 				default:
 					return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
 			}
+		case MF_ATK_RATE:
+			nullpo_retr(-1, args);
+
+			switch (args->flag_val) {
+				case DMGRATE_BL:
+				case DMGRATE_SHORT:
+				case DMGRATE_LONG:
+				case DMGRATE_WEAPON:
+				case DMGRATE_MAGIC:
+				case DMGRATE_MISC:
+					return mapdata->atk_rate.rate[args->flag_val];
+				default:
+					return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
+			}	
 		default:
 			return util::umap_get(mapdata->flag, static_cast<int16>(mapflag), 0);
 	}
@@ -4779,6 +4804,13 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			} else
 				mapdata->flag[mapflag] = false;
 			break;
+		case MF_DROPRATE:
+			if (status) {
+				nullpo_retr(false, args);
+				mapdata->flag[mapflag] = args->flag_val;
+			} else
+				mapdata->flag[mapflag] = false;
+			break;	
 		case MF_BATTLEGROUND:
 			if (status) {
 				nullpo_retr(false, args);
@@ -4845,6 +4877,22 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->flag[mapflag] = status;
 			break;
+		case MF_ATK_RATE:
+			if (!status)
+				mapdata->atk_rate = {};
+			else {
+				nullpo_retr(false, args);
+
+				if (!args->atk_rate.rate[DMGRATE_BL]) {
+					ShowError("map_setmapflag: atk_rate without attacker type for map %s.\n", mapdata->name);
+					return false;
+				}
+
+				memcpy(&mapdata->atk_rate, &args->atk_rate, sizeof(struct s_global_damage_rate));
+			}
+			mapdata->flag[mapflag] = status;
+			break;	
+			
 		default:
 			mapdata->flag[mapflag] = status;
 			break;
@@ -4921,6 +4969,8 @@ void do_final(void){
 	do_final_channel(); //should be called after final guild
 	do_final_vending();
 	do_final_buyingstore();
+	do_final_item_upgrade();
+	do_final_item_synthesis();
 	do_final_path();
 
 	map_db->destroy(map_db, map_db_final);
@@ -5245,6 +5295,8 @@ int do_init(int argc, char *argv[])
 	do_init_quest();
 	do_init_achievement();
 	do_init_battleground();
+	do_init_item_upgrade();
+	do_init_item_synthesis();
 	do_init_npc();
 	do_init_unit();
 	do_init_duel();

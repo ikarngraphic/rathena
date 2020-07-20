@@ -1,0 +1,286 @@
+//===== rAthena Script =======================================
+//= Vicious Mind Weapon Random Option Enchanter
+//===== By ===================================================
+//= llchrisll
+//===== Version ==============================================
+//= 1.0 - Initial Version
+//===== Tested With ==========================================
+//= rAthena 03/26/2018 Revision
+//= GIT Hash: 333f0dddc8353663eacba0423751988c9bc38e34
+//===== Description ==========================================
+//= This script handles the random options for the Vicious Mind Weapons
+//  until rAthena changes the way the Random Option Database is handled.
+//= Instead of defining every possible random option for each option slot
+//  this enchanter will be used.
+//===== Comments =============================================
+//= ...
+/* db/import/mob_db.txt:
+// Sky Fortress Instance Mobs
+// Original by Alayne, Drops updated by [llchrisll] based on Nova Ro Wiki,
+// since divine-pride.net also doesn't have every Weapon Drop listed.
+
+*/
+//===== Credits ==============================================
+//= NovaRo for their Information regarding the possible Options.
+//============================================================
+
+
+maintown,125,112,4	script	Upgrade Costume#Enc	10300,{
+mes .n$;
+mes "สวัสดีท่าน, "+strcharinfo(0)+"!";
+mes "มีอะไรให้ข้าช่วยมั้ย ?";
+mes "ใช้ : ^000099Enchant Solution^000000";
+if (getgmlevel() > 90){ mes "ID : 59601,59602"; } else { mes "  (ในการเสริมพลัง)"; }
+mes "และใช้ ^FF000010^000000 Cash";
+mes "  (ในการลบพลัง)";
+next;
+menu "- เสริมพลัง Costume",MN1,"- ลบออฟไอเท็ม",MN2,"- ยกเลิกการทำงาน",EX1;
+
+//====================================
+	MN1:
+//====================================
+mes .n$;
+mes "ก่อนที่เราจะเริ่มการเสริมพลัง ข้าขอแนะนำให้ท่านควรจะสวมอุปกรณ์ที่ต้องการเสียก่อน";
+mes "นอกจากนั้น คุณสมบัติที่จะเพิ่มเข้ามา ข้าไม่รับประกันนะว่าท่านจะได้รูปแบบไหน!";
+next;
+mes .n$;
+mes "มาเริ่มกันเลย ขอข้าดูอุปกรณ์ของท่านหน่อยนะ";
+next;
+
+setarray .@indices[1], EQI_COSTUME_HEAD_TOP,EQI_COSTUME_HEAD_MID,EQI_COSTUME_HEAD_LOW;
+		for( set .@i,1; .@i <= 3; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@part, .@indices[ select(.@menu$) ];
+	set .@id, getequipid(.@part);
+
+	//set .@part,EQI_HAND_R; // Save equip location
+	
+mes .n$;
+
+if(!getequipid(.@part)) {
+	mes "ท่านไม่ได้สวมใส่อุปกรณ์อยู่นี่!";
+	end;
+}
+
+if(countitem(getequipid(.@part)) > 1) {
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+
+mes "อุปกรณ์ที่สวมใส่: "+getitemname(getequipid(.@part));
+set .@ropt1,getequiprandomoption(.@part,0,ROA_ID);
+set .@ropt2,getequiprandomoption(.@part,1,ROA_ID);
+if(.@ropt1 || .@ropt2) {
+	mes " ";
+	mes "ขอภัย อุปกรณ์นี้ผ่านการเสริมพลังมาแล้ว";
+	mes "กรุณาเลือกอุปกรณ์ชิ้นอื่น";
+	end;
+}
+
+next;
+menu " - Physical",PS1," - Magical",MG1," - Exit",EX1;
+
+	PS1:
+		set .@Type$,"P";
+		set .itemdel,59601;
+		goto encpass;
+
+	MG1:
+		set .@Type$,"M";
+		set .itemdel,59602;
+		goto encpass;
+
+	EX1:
+		mes .n$;
+		mes "ไว้เจอกันใหม่";
+		end;
+
+
+	encpass:
+
+	if(countitem(.itemdel) < 1){
+					mes .n$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					mes "ใช้ : ^000099" + getitemname(.itemdel) + "^000000";
+					end;
+				}
+	
+	//delitem
+	delitem .itemdel,1;	//จำนวนชิ้น
+
+// Randomize each Option Slot:
+// Random Option 1
+set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+	set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+else 
+	set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+	
+// Random Option 2
+set .@Opt2,rand(getarraysize(getd(".RandOpt2_"+.@Type$)));
+if(getd(".RandOpt2_"+.@Type$+"_MinV["+.@Opt2+"]") != getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]"))
+	set .@Opt2_V,rand(getd(".RandOpt2_"+.@Type$+"_MinV["+.@Opt2+"]"),getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]"));
+else 
+	set .@Opt2_V,getd(".RandOpt2_"+.@Type$+"_MaxV["+.@Opt2+"]");
+
+// Apply options to equipped weapon
+setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+setrandomoption(.@part,1,getd(".RandOpt2_"+.@Type$+"["+.@Opt2+"]"),.@Opt2_V,0);
+mes .n$;
+mes "การเสริมพลังให้แก่ \""+getitemname(getequipid(.@part))+"\" เสร็จสมบูรณ์";
+end;
+
+OnInit:
+set .n$,"[ Costume Upgrade ]";
+// ========= Random Option Slot 1 ========= 
+// - Physical
+setarray .RandOpt1_P[0],RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPPERCENT,
+					    RDMOPT_VAR_ATKPERCENT,
+					    RDMOPT_VAR_ATTPOWER,
+					    RDMOPT_VAR_PLUSASPD,
+					    RDMOPT_CLASS_DAMAGE_BOSS_TARGET,
+					    RDMOPT_CLASS_DAMAGE_NORMAL_USER,
+					    RDMOPT_CLASS_DAMAGE_BOSS_USER,
+					    RDMOPT_CLASS_IGNORE_DEF_PERCENT_BOSS,
+					    RDMOPT_DAMAGE_SIZE_MIDIUM_USER,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_TARGET,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_USER,
+					    RDMOPT_HEAL_VALUE,
+					    RDMOPT_HEAL_MODIFY_PERCENT;
+						
+// - Magical
+setarray .RandOpt1_M[0],RDMOPT_VAR_MAXHPPERCENT, // Weapon Element - Neutral
+					    RDMOPT_VAR_MAXSPPERCENT,
+					    RDMOPT_VAR_MAGICATKPERCENT,
+					    RDMOPT_VAR_ATTMPOWER,
+					    RDMOPT_VAR_MDEFPOWER,
+					    RDMOPT_CLASS_MDAMAGE_BOSS,
+					    RDMOPT_CLASS_DAMAGE_NORMAL_USER,
+					    RDMOPT_CLASS_DAMAGE_BOSS_USER,
+					    RDMOPT_CLASS_IGNORE_MDEF_PERCENT_BOSS,
+					    RDMOPT_DAMAGE_SIZE_MIDIUM_USER,
+					    RDMOPT_DEC_SPELL_DELAY_TIME,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_USER,
+					    RDMOPT_HEAL_VALUE,
+					    RDMOPT_DEC_SP_CONSUMPTION;
+					    // ToDo: // Recover 1000 of Damage lost from size penalties
+					  
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P_MinV[0],10,10,2,20,1,10,3,10,10,3,3,5,10,10;
+setarray .RandOpt1_P_MaxV[0],25,15,5,60,3,30,10,30,15,10,10,10,30,30;
+setarray .RandOpt1_M_MinV[0],10,10,2,20,1,10,3,10,10,3,3,5,10,10;
+setarray .RandOpt1_M_MaxV[0],25,15,5,60,3,30,10,30,15,10,10,10,30,30;
+
+// ========= Random Option Slot 2 ========= 
+// - Physical
+setarray .RandOpt2_P[0],RDMOPT_VAR_MAXHPPERCENT,
+					    RDMOPT_VAR_MAXSPPERCENT,
+					    RDMOPT_VAR_ATKPERCENT,
+					    RDMOPT_VAR_ATTPOWER,
+					    RDMOPT_VAR_PLUSASPD,
+					    RDMOPT_CLASS_DAMAGE_BOSS_TARGET,
+					    RDMOPT_CLASS_DAMAGE_NORMAL_USER,
+					    RDMOPT_CLASS_DAMAGE_BOSS_USER,
+					    RDMOPT_CLASS_IGNORE_DEF_PERCENT_BOSS,
+					    RDMOPT_DAMAGE_SIZE_MIDIUM_USER,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_TARGET,
+					    RDMOPT_RANGE_ATTACK_DAMAGE_USER,
+					    RDMOPT_HEAL_VALUE,
+					    RDMOPT_HEAL_MODIFY_PERCENT;
+						
+// - Magical
+setarray .RandOpt2_M[0],RDMOPT_VAR_MAXHPPERCENT, // Weapon Element - Neutral
+					   RDMOPT_VAR_MAXSPPERCENT,
+					   RDMOPT_VAR_MAGICATKPERCENT,
+					   RDMOPT_VAR_ATTMPOWER,
+					   RDMOPT_VAR_MDEFPOWER,
+					   RDMOPT_CLASS_MDAMAGE_BOSS,
+					   RDMOPT_CLASS_DAMAGE_NORMAL_USER,
+					   RDMOPT_CLASS_DAMAGE_BOSS_USER,
+					   RDMOPT_CLASS_IGNORE_MDEF_PERCENT_BOSS,
+					   RDMOPT_DAMAGE_SIZE_MIDIUM_USER,
+					   RDMOPT_DEC_SPELL_DELAY_TIME,
+					   RDMOPT_RANGE_ATTACK_DAMAGE_USER,
+					   RDMOPT_HEAL_VALUE,
+					   RDMOPT_DEC_SP_CONSUMPTION;
+					   
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt2_P_MinV[0],10,10,2,20,1,10,3,10,10,3,3,5,10,10;
+setarray .RandOpt2_P_MaxV[0],25,15,5,60,3,30,10,30,15,10,10,10,30,30;
+setarray .RandOpt2_M_MinV[0],10,10,2,20,1,10,3,10,10,3,3,5,10,10;
+setarray .RandOpt2_M_MaxV[0],25,15,5,60,3,30,10,30,15,10,10,10,30,30;
+end;
+
+//====================================
+	MN2:
+//====================================
+mes .n$;
+mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+mes "ต้องใช้ ^FF000010 Cash^000000 ในการลบ";
+mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_COSTUME_HEAD_TOP,EQI_COSTUME_HEAD_MID,EQI_COSTUME_HEAD_LOW;
+		for( set .@i,1; .@i <= 3; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 10){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+//	progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 10;
+	
+	set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+end;
+}

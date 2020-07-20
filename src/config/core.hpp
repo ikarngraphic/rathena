@@ -12,7 +12,7 @@
 #include "../custom/defines_pre.hpp"
 
 /// Max number of items on @autolootid list
-#define AUTOLOOTITEM_SIZE 10
+#define AUTOLOOTITEM_SIZE 15
 
 /// The maximum number of atcommand and @warp suggestions
 #define MAX_SUGGESTIONS 10
@@ -47,7 +47,7 @@
 #define HP_SP_TABLES
 
 /// Uncomment to enable VIP system.
-//#define VIP_ENABLE
+#define VIP_ENABLE
 
 /// Enable VIP script changes? (requires VIP_ENABLE)
 /// The primary effects of this are restrictions on non-VIP players, such as requiring
@@ -57,8 +57,8 @@
 
 #ifdef VIP_ENABLE
 	#define MIN_STORAGE 300 // Default number of storage slots.
-	#define MIN_CHARS 3 // Default number of characters per account.
-	#define MAX_CHAR_VIP 6 // This must be less than MAX_CHARS
+	#define MIN_CHARS 12 // Default number of characters per account.
+	#define MAX_CHAR_VIP 3 // This must be less than MAX_CHARS
 	#define MAX_CHAR_BILLING 0 // This must be less than MAX_CHARS
 #endif
 

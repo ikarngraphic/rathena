@@ -1,0 +1,159 @@
+//	 == Temporal Jewel Enchants ==
+//	  == ikarngraphic ==
+
+glast_01,244,286,4	script	Temporal Jewel#cus	562,{
+
+	disable_items;
+
+	set .name$,"[ Temporal Jewel ]";
+	.item1 = 42029;	//Temporal Jewel
+
+
+//============= Script ==============
+
+mes .name$;
+mes "ยินดีให้บริการตลอดเวลาค่ะ";
+mes "กรุณาเลือกสิ่งที่ท่านต้องการ";
+mes "ค่าบริการครั้งละ ^FF000050^000000 Cash";
+mes "และ ^FF0000Temporal Jewel^000000 1 ea.";
+mes " ";
+		if (checkweight(1201,1) == 0) {
+			mes "ช่องเก็บของเต็ม";
+			end;
+				}
+		if (MaxWeight - Weight < 10000) {
+			mes "น้ำหนักเกิน";
+			end;
+				}
+next;
+menu "เสริมพลัง, Temporal Jewel",EN_EQ,"ข้ายังไม่ต้องการออฟตอนนี้",END_EQ;
+
+//=================================================================================================================================
+
+//	Main function
+
+//=================================================================================================================================
+EN_EQ:
+					mes .name$;
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "เลือกไอเท็มที่เจ้าต้องการจะออฟ ?";
+	setarray .@indices[1], EQI_ARMOR;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+					
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะออฟ ^000099" + getequipname(.@id) + "^000000";
+
+			if (.@id == EQI_ARMOR) goto encup;
+
+//=================================================================================================================================
+
+//        Selection
+	encup:
+
+//=================================================================================================================================
+	
+	//สุ่มหิน
+	//set .@enc, callfunc("F_Rand",25670,25671, 25687,25688,25689, 25693);
+
+	//ตรวจสอบไอเท็ม
+	if (getequipid(EQI_ARMOR) == 15388)  goto enc1;
+		
+	mes .name$;
+	mes "ไอเท็มชิ้นนี้ไม่สามารถออฟได้นิ !!";
+	mes "กลับมาหาเมื่อเจ้ามีของที่ต้องการ";
+	end;
+
+	enc1:
+
+		callfunc "Resetcardslot";
+
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	if(@card4 != 0){
+		next;
+			mes .name$;
+			mes "ออฟของเจ้าครบแล้วนิ กรุณารีเซทก่อน";
+			end;
+	}
+
+	if(countitem(.item1) < 1){
+					mes .name$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					end;
+				}
+				
+	if (#CASHPOINTS < 50){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}			
+
+					mes .name$;
+					mes "ออฟเลยไหม ?";
+				if (select( "^000099เอาเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes "[Costume Enchanter]";
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+					specialeffect2 EF_REPAIRWEAPON;
+					progressbar "0x00ff00",1;
+					delitem .item1,1;
+					set #CASHPOINTS, #CASHPOINTS - 50;
+
+	if(@card4 == 0){
+
+		set .@enc,42029;
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, .@enc;
+	equip .@part;
+	next;
+		mes .name$;
+		mes "เสริมพลังไอเท็ม";
+		mes "ช่องที่ 3 : ^FF0000Temporal Jewel^000000 สำเร็จ";
+		end;
+	
+	}
+end;
+
+//===============================================================================
+//         Out Option	
+	END_EQ:
+
+//===============================================================================
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+OnInit:	
+	.item1 = 42029;	//Temporal Jewel
+	
+end;
+
+}

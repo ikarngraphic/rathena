@@ -1,0 +1,15 @@
+prontera,152,192,6	script	Kafra Employee::kaf_pron_c	4_F_KAFRA1,{
+	cutin "kafra_01",2;
+	callfunc "F_KafSet";
+	callfunc "F_Kafra",0,8,2,500,0;
+	savepoint "prontera",155,183,1,1;
+	callfunc "F_KafEnd",0,1,"in the middle of Prontera";
+}
+
+mooc,159,99,4	script	Kafra Employee::kaf_mooc_1	4_F_KAFRA1,{
+	cutin "kafra_01",2;
+	callfunc "F_KafSet";
+	callfunc "F_Kafra",0,8,2,500,0;
+	savepoint "mooc",162,91,1,1;
+	callfunc "F_KafEnd",0,1,"in the middle of Tower";
+}	

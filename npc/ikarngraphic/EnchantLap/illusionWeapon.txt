@@ -1,0 +1,127 @@
+maintown,126,127,6	script	Illusion Weapon(Lv.4)#ENCLAP	10310,{
+
+	mes "[ Illusion Enchant ]";
+	mes "เลือกไอเท็มที่จะออฟ";
+	mes "( ^FF0000Change Item Option^000000 )";
+	next;
+
+	setarray .@indices[1], EQI_HAND_R;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+					
+	mes "[ Illusion Enchant ]";
+	mes "เลือกสายที่ต้องการ";	
+		next;
+	menu "- Physical Illusion Stone",ATKMODE,"- Magical Illusion Stone",MATKMODE,"- ยกเลิกก่อนดีกว่า",EED;
+	
+ATKMODE:	
+
+	if(.@part == 28762){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28254){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 32301){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28022){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 1326){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 13469){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 16065){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 32005){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28612){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 18149){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 13338){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 2039) { set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 16063){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 13337){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 1846){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 26007){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 26109){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28725){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 18174){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28626){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28244){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 28745){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 2051){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	if(.@part == 21050){ set .@idenc,7227; set .@modeenc,1; goto SUCC; }
+	
+		mes "[ Illusion Enchant ]";
+		mes "a";
+		end;
+
+MATKMODE:	
+	if(.@part == 28762){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28254){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 32301){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28022){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 1326){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 13469){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 16065){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 32005){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28612){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 18149){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 13338){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 2039){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 16063){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 13337){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 1846){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 26007){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 26109){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28725){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 18174){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28626){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28244){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 28745){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 2051){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	if(.@part == 21050){ set .@idenc,7227; set .@modeenc,2; goto SUCC; }
+	
+		mes "[ Illusion Enchant ]";
+		mes "a";
+		end;
+	
+		end;
+	
+SUCC:
+				
+	if (countitem(.@idenc) < 1 ) {
+	next;
+					mes "[ Illusion Enchant ]";
+					mes "ไม่มีไอเท็ม ที่กำหนด";
+					mes "ไปหามาก่อน";
+					end;
+				}
+				
+	if (countitem(.@part) > 1 ) {
+	next;
+					mes "[ Illusion Enchant ]";
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}			
+	
+	.@last_lapine_card1 = getequipcardid(.@id,0);
+	.@last_lapine_card2 = getequipcardid(.@id,1);
+	.@last_lapine_card3 = getequipcardid(.@id,2);
+	.@last_lapine_card4 = getequipcardid(.@id,3);
+	.@last_lapine_refine = getequiprefinerycnt(.@id);
+	
+	delitem .@idenc,1;
+	delitem .@part,1;	
+	
+	if(.@modeenc == 1){ callfunc("F_Lapine_ILL_Piece_A", .@opts[0], .@vals[0], .@opts[1], .@vals[1], .@opts[2], .@vals[2]); }
+	if(.@modeenc == 2){ callfunc("F_Lapine_ILL_Piece_B", .@opts[0], .@vals[0], .@opts[1], .@vals[1], .@opts[2], .@vals[2]); }
+   
+    .@params[0] = 0;
+    getitem3(.@part,1,1,.@last_lapine_refine,0,.@last_lapine_card1,.@last_lapine_card2,.@last_lapine_card3,.@last_lapine_card4,.@opts,.@vals,.@params);
+	equip .@part;
+	end;
+
+EED:
+end;
+
+}

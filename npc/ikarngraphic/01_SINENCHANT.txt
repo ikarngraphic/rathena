@@ -1,0 +1,72 @@
+-	shop	GC_SINWEA	-1,65161:1,65164:1,65165:1,65166:1,65167:1,65168:1,65169:1;
+
+maintown,147,108,4	script	Gacha Sin Weapon	562,{
+		set .name$,"[ Gacha Sin Weapon ]";
+		
+		set .@itemuse,65103;
+		set .@itemea,7;
+		
+mes .name$;
+mes "สวัสดีครับ ยินดีให้บริการครับ";
+mes "ใช้ ^2CDEB8"+getitemname(.@itemuse)+"^000000 : "+.@itemea+" ea.";
+mes "คุณมี : ^DE2C52"+countitem(.@itemuse)+"^000000";
+//mes "โอกาศได้มีแค่ 1% เท่านั้น";
+mes "กรุณาเลือกเมนูที่ท่านต้องการครับ";
+//mes "   ^FF0000เปิดจริงไม่มีตู้นี้^000000";
+//cutin "jpn_anni2_04",2;
+next;
+menu " - สุ่มไอเท็ม",L_YES," - ดูของรางวัล",L_SEE," - ยกเลิก",L_EX;
+
+L_YES:
+	close2;
+	//cutin "jpn_anni2_04",255;
+	if (countitem(.@itemuse) < .@itemea){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	delitem .@itemuse,.@itemea;
+
+//	specialeffect2 408;
+	progressbar "0x007000", 1;
+
+set .@rand, rand(200);
+	if (.@rand >= 0 && .@rand < 150){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],65164,65165,65167,65168;
+				}
+
+	if (.@rand >= 150 && .@rand < 200){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],65161,65166,65169,65166,65169;
+	}
+
+
+set .@get, .@item[rand(getarraysize(.@item))];
+getitem .@get,1;
+specialeffect2 .@eff;
+//if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+end;
+
+
+L_SEE:
+	//cutin "jpn_anni2_04",255;
+	callfunc "Shop_HQPC","GC_SINWEA",1;
+
+L_EX:
+	//cutin "jpn_anni2_04",255;
+end;
+
+OnBuyItem:
+	if(getgmlevel() > 90){ getitem @bought_nameid[0],@bought_quantity[0]; }
+end;
+
+OnInit: 
+//waitingroom "กาชาปองสุ่มการ์ดบอส",0;
+end;
+}
+
+

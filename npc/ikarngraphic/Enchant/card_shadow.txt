@@ -1,0 +1,239 @@
+//===== Current Version: =====================================
+//= 1.1 
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Exchange cards for points?.?
+//============================================================
+
+maintown,140,135,4	script	Card Input	870,{
+	mes "[ Card Input ]";
+	mes "หวัดดี, "+strcharinfo(0)+"!";
+	mes "มีอะไรให้ข้ารับใช้ไหม ?";
+	next;
+	switch(select(" - ยัด Input Card: - ออก")) {
+	case 1:
+		mes "[ Card Input ]";
+		mes "กรุณาเลือกการ์ด";
+		mes "ที่เจ้าต้อง";
+		mes "แล้วใส่ไอเท็มไว้ในตัว";
+		deletearray @sold_nameid[0],getarraysize(@sold_nameid);
+		callshop "card_shop",2;
+		npcshopattach "card_shop";
+		end;
+	case 2:
+		mes "[ Card Input ]";
+		mes "แล้วมาใหม่น่ะ!";
+		close;		
+	}
+
+OnSellItem:
+
+	//EQI_SHADOW_ARMOR (15)	Shadow Armor			sh_armor;
+	//EQI_SHADOW_WEAPON (16)	Shadow Weapon       sh_weapon;
+	//EQI_SHADOW_SHIELD (17)	Shadow Shield       sh_shield;
+	//EQI_SHADOW_SHOES (18)	Shadow Shoes            sh_shoes;
+	//EQI_SHADOW_ACC_R (19)	Shadow Accessory 2      sh_right_acc;
+	//EQI_SHADOW_ACC_L (20)	Shadow Accessory 1		sh_left_acc;
+	
+	//EQI_HEAD_TOP (1)	Upper head gear
+	//EQI_ARMOR (2)	Armor (Where you keep your Jackets and Robes)
+	//EQI_HAND_L (3)	What is in your Left hand.
+	//EQI_HAND_R (4)	What is in your Right hand.
+	//EQI_GARMENT (5)	The garment slot (Mufflers, Hoods, Manteaus)
+	//EQI_SHOES (6)	What foot gear the player has on.
+	//EQI_ACC_L (7)	Accessory 1.
+	//EQI_ACC_R (8)	Accessory 2.
+	//EQI_HEAD_MID (9)	Middle Headgear (masks and glasses)
+	//EQI_HEAD_LOW (10)	Lower Headgear (beards, some masks)
+	//EQI_COSTUME_HEAD_LOW (11)	Lower Costume Headgear
+	//EQI_COSTUME_HEAD_MID (12)	Middle Costume Headgear
+	//EQI_COSTUME_HEAD_TOP (13)	Upper Costume Headgear
+	//EQI_COSTUME_GARMENT (14)	Costume Garment
+	//EQI_SHADOW_ARMOR (15)	Shadow Armor
+	//EQI_SHADOW_WEAPON (16)	Shadow Weapon
+	//EQI_SHADOW_SHIELD (17)	Shadow Shield
+	//EQI_SHADOW_SHOES (18)	Shadow Shoes
+	//EQI_SHADOW_ACC_R (19)	Shadow Accessory 2
+	//EQI_SHADOW_ACC_L (20)	Shadow Accessory 1
+
+
+
+	//Lower
+	if(@sold_nameid[0] == 43080) goto eq_low;
+	if(@sold_nameid[0] == 43081) goto eq_low;
+	if(@sold_nameid[0] == 43082) goto eq_low;
+	if(@sold_nameid[0] == 43083) goto eq_low;
+	if(@sold_nameid[0] == 43051) goto eq_low;
+	if(@sold_nameid[0] == 43091) goto eq_low;
+	if(@sold_nameid[0] == 43047) goto eq_low;
+
+	//Shadow Armor
+	if(@sold_nameid[0] == 43060) goto sh_armor;
+	if(@sold_nameid[0] == 43063) goto sh_armor;
+	if(@sold_nameid[0] == 43064) goto sh_armor;
+	
+	//Shadow Weapon
+	if(@sold_nameid[0] == 43077) goto sh_weapon;
+	if(@sold_nameid[0] == 43067) goto sh_weapon;
+	if(@sold_nameid[0] == 43084) goto sh_weapon;
+	if(@sold_nameid[0] == 43092) goto sh_weapon;
+	if(@sold_nameid[0] == 43062) goto sh_weapon;
+	
+	//Shadow Shield
+	
+	//Shadow Foot
+	if(@sold_nameid[0] == 43045) goto sh_shoes;
+	if(@sold_nameid[0] == 43079) goto sh_shoes;
+	if(@sold_nameid[0] == 43076) goto sh_shoes;
+	
+	//Left Shadow Accessory
+	if(@sold_nameid[0] == 43057) goto sh_left_acc;
+	if(@sold_nameid[0] == 43061) goto sh_left_acc;
+
+end;
+
+//===========================================================
+	eq_low:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_HEAD_LOW) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_HEAD_LOW));
+	.@idcard = EQI_HEAD_LOW;
+	@ref = getequiprefinerycnt(EQI_HEAD_LOW);
+	goto enchantsucc;
+	end;
+	
+//===========================================================
+	sh_armor:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_SHADOW_ARMOR) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_SHADOW_ARMOR));
+	.@idcard = EQI_SHADOW_ARMOR;
+	@ref = getequiprefinerycnt(EQI_SHADOW_ARMOR);
+	goto enchantsucc;
+	end;
+	
+//===========================================================
+	sh_weapon:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_SHADOW_WEAPON) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_SHADOW_WEAPON));
+	.@idcard = EQI_SHADOW_WEAPON;
+	@ref = getequiprefinerycnt(EQI_SHADOW_WEAPON);
+	goto enchantsucc;
+	end;
+//===========================================================
+	sh_shield:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_SHADOW_SHIELD) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_SHADOW_SHIELD));
+	.@idcard = EQI_SHADOW_SHIELD;
+	@ref = getequiprefinerycnt(EQI_SHADOW_SHIELD);
+	goto enchantsucc;
+	end;
+//===========================================================
+	sh_shoes:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_SHADOW_SHOES) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_SHADOW_SHOES));
+	.@idcard = EQI_SHADOW_SHOES;
+	@ref = getequiprefinerycnt(EQI_SHADOW_SHOES);
+	goto enchantsucc;
+	end;
+//===========================================================
+	sh_right_acc:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_SHADOW_ACC_R) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_SHADOW_ACC_R));
+	.@idcard = EQI_SHADOW_ACC_R;
+	@ref = getequiprefinerycnt(EQI_SHADOW_ACC_R);
+	goto enchantsucc;
+	end;
+//===========================================================
+	sh_left_acc:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_SHADOW_ACC_L) == 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_SHADOW_ACC_L));
+	.@idcard = EQI_SHADOW_ACC_L;
+	@ref = getequiprefinerycnt(EQI_SHADOW_ACC_L);
+	goto enchantsucc;
+	end;
+//===========================================================
+
+	enchantsucc:
+
+//===========================================================
+	
+	set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@idcard,0);
+	@card2 = getequipcardid(.@idcard,1);
+	@card3 = getequipcardid(.@idcard,2);
+	@card4 = getequipcardid(.@idcard,3);
+	.@ref = getequiprefinerycnt(.@id);
+		
+	mes "[ Card Input ]";
+	mes "ไอเท็ม : "+getitemname(.@id)+"";
+	mes "การ์ด : "+getitemname(.itemcarduse)+"";
+	mes "ถูกต้องหรือไม่ ?";
+	
+	if (countitem(.@id) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	
+	next;
+	menu "ถูกต้องแล้ว",-,"ไม่ใช่ไอเท็มนี้",NoMes;
+	
+	if (@card1 == 0){
+	
+	specialeffect2 154;
+	//delitem2 .@id, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	delitem .@id,1;
+	getitem2 .@id, 1, 1, .@ref, 0, .itemcarduse, @card2, @card3, @card4;
+	delitem .itemcarduse,1;
+	equip .@id;
+	end;
+	
+	} else {
+	
+	mes "[ Card Input ]";
+	mes "กรุณาถอดการ์ดเก่าก่อน";
+	end;
+	
+	}
+	
+	
+	
+ErrMes:
+mes "[ Card Input ]";
+mes "คุณไม่ได้สวมใส่ไอเท็ม Input";
+mes "กรุณาสวมใส่ไอเท็มก่อน";
+end;	
+
+NoMes:
+mes "ไว้เจอกันใหม่";
+end;
+
+
+OnInit:
+	waitingroom "    Card Input",0;
+end;
+}

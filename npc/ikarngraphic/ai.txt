@@ -1,0 +1,29 @@
+maintown,80,156,0,0	monster	ทดสอบดาเมจกึ่งมนุษย์	1905,1,0
+maintown,89,156,0,0	monster	ทดสอบดาเมจทั่วไป	1906,1,0
+
+-	script	SearchItem2	-1,{
+
+emotion 18;
+mes "สวัสดีค่ะระบบนี้คุณสามารถค้นหา";
+mes "สินค้าจากร้านค้าแผงลอยที่ตั้งร้านอยู่ได้";
+mes "กรุณาพิมชื่อสินค้าที่คุณต้องการค้นหา";
+mes "แล้วกดค้นหาได้เลยค่ะ";
+searchstores 255,0;
+close;
+OnInit:
+waitingroom "  ค้นหาไอเท็มร้านค้า",0;
+end;
+}
+
+
+//Refine
+//maintown,56,94,4	warp	RefuneTW	1,1,1@herbs,85,50
+//1@herbs,85,46,4	warp	RefuneWT	1,1,maintown,56,89
+//
+//maintown,59,92,4	script	 #0	858,{
+//end;
+//
+//OnInit:
+//waitingroom "ตีบวก เอนช้าน เควส",0;
+//end;
+//}

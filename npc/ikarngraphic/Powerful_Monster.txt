@@ -1,0 +1,64 @@
+-	script	Boss_adjustment	-1,{
+	OnNPCKillEvent:
+		getmapxy(.@map$,.@x,.@y,0);
+		
+		if ( .@map$ == "bossnia_01" ){ end; }
+		if ( .@map$ == "bossnia_02" ){ end; }
+		if ( .@map$ == "bossnia_03" ){ end; }
+		if ( .@map$ == "bossnia_04" ){ end; }
+		if ( .@map$ == "1@tower" ){ end; }
+		if ( .@map$ == "2@tower" ){ end; }
+		if ( .@map$ == "3@tower" ){ end; }
+		if ( .@map$ == "4@tower" ){ end; }
+		if ( .@map$ == "5@tower" ){ end; }
+		if ( .@map$ == "6@tower" ){ end; }
+			
+		if (killedrid == 1038) { set .@bossid,32038; set .@nameboss$,"Powerful Osiris"; }
+		if (killedrid == 1039) { set .@bossid,32039; set .@nameboss$,"Powerful Baphomet"; }
+		if (killedrid == 1046) { set .@bossid,32046; set .@nameboss$,"Powerful Doppelganger"; }
+		if (killedrid == 1059) { set .@bossid,32059; set .@nameboss$,"Powerful Mistress"; }
+		if (killedrid == 1086) { set .@bossid,32086; set .@nameboss$,"Powerful Golden Thief Bug"; }
+		if (killedrid == 1087) { set .@bossid,32087; set .@nameboss$,"Powerful Orc Hero"; }
+		if (killedrid == 1112) { set .@bossid,32112; set .@nameboss$,"Powerful Drake"; }
+		if (killedrid == 1115) { set .@bossid,32115; set .@nameboss$,"Powerful Eddga"; }
+		if (killedrid == 1147) { set .@bossid,32147; set .@nameboss$,"Powerful Maya"; }
+		if (killedrid == 1150) { set .@bossid,32150; set .@nameboss$,"Powerful Moonlight Flower"; }
+		if (killedrid == 1157) { set .@bossid,32157; set .@nameboss$,"Powerful Pharaoh"; }
+		if (killedrid == 1159) { set .@bossid,32159; set .@nameboss$,"Powerful Phreeoni"; }
+		if (killedrid == 1190) { set .@bossid,32190; set .@nameboss$,"Powerful Orc Lord"; }
+		if (killedrid == 1251) { set .@bossid,32251; set .@nameboss$,"Powerful Knight of Windstorm"; }
+		if (killedrid == 1252) { set .@bossid,32252; set .@nameboss$,"Powerful Garm"; }
+		if (killedrid == 1272) { set .@bossid,32272; set .@nameboss$,"Powerful Dark Lord"; }
+		if (killedrid == 1312) { set .@bossid,32312; set .@nameboss$,"Powerful Turtle General"; }
+		if (killedrid == 1373) { set .@bossid,32373; set .@nameboss$,"Powerful Lord of Death"; }
+		if (killedrid == 1389) { set .@bossid,32389; set .@nameboss$,"Powerful Dracula"; }
+		if (killedrid == 1418) { set .@bossid,32418; set .@nameboss$,"Powerful Evil Snake Lord"; }
+		if (killedrid == 1492) { set .@bossid,32492; set .@nameboss$,"Powerful Incantation Samurai"; }
+		if (killedrid == 1511) { set .@bossid,32511; set .@nameboss$,"Powerful Amon Ra"; }
+		if (killedrid == 1583) { set .@bossid,32583; set .@nameboss$,"Powerful Tao Gunka"; }
+		if (killedrid == 1623) { set .@bossid,32623; set .@nameboss$,"Powerful RSX 0806"; }
+		if (killedrid == 1630) { set .@bossid,32630; set .@nameboss$,"Powerful Bacsojin"; }
+		if (killedrid == 1685) { set .@bossid,32685; set .@nameboss$,"Powerful Vesper"; }
+		if (killedrid == 1688) { set .@bossid,32688; set .@nameboss$,"Powerful Lady Tanee"; }
+		if (killedrid == 1708) { set .@bossid,32708; set .@nameboss$,"Powerful Thanatos"; }
+		if (killedrid == 1719) { set .@bossid,32719; set .@nameboss$,"Powerful Detale"; }
+		if (killedrid == 1734) { set .@bossid,32734; set .@nameboss$,"Powerful Kiel D-01"; }
+		if (killedrid == 1751) { set .@bossid,32751; set .@nameboss$,"Powerful Valkyrie Randgris"; }
+		if (killedrid == 1768) { set .@bossid,32768; set .@nameboss$,"Powerful Gloom Under Night"; }
+		if (killedrid == 1779) { set .@bossid,32779; set .@nameboss$,"Powerful Ktullanux"; }
+		if (killedrid == 1785) { set .@bossid,32785; set .@nameboss$,"Powerful Atroce"; }
+		if (killedrid == 1832) { set .@bossid,32832; set .@nameboss$,"Powerful Ifrit"; }
+		if (killedrid == 1871) { set .@bossid,32871; set .@nameboss$,"Powerful Fallen Bishop"; }
+		if (killedrid == 1885) { set .@bossid,32885; set .@nameboss$,"Powerful Gopinich"; }
+		
+			monster .@map$,.@x,.@y,.@nameboss$,.@bossid,1,strnpcinfo(0)+"::OnMobDead";
+		end;
+
+	OnMobDead:
+			set .@rand, rand(200);
+				if (.@rand >= 198 && .@rand < 200){
+					getitem 7227,1;
+					specialeffect2 986;
+				}
+		end;
+}

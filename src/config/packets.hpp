@@ -13,7 +13,7 @@
 	/// Do NOT edit this line! To set your client version, please do this instead:
 	/// In Windows: Add this line in your src\custom\defines_pre.hpp file: #define PACKETVER YYYYMMDD
 	/// In Linux: The same as above or run the following command: ./configure --enable-packetver=YYYYMMDD
-	#define PACKETVER 20200401
+	#define PACKETVER 20200304
 #endif
 
 #ifndef PACKETVER_RE
@@ -65,6 +65,10 @@
 /// When enabled, this will set the guild storage size to the level of the skill * 100.
 #if PACKETVER >= 20131223
 	#define OFFICIAL_GUILD_STORAGE
+#endif
+
+#if PACKETVER >= 20160525
+	#define FEATURE_LAPINE_UI
 #endif
 
 #ifndef DUMP_UNKNOWN_PACKET

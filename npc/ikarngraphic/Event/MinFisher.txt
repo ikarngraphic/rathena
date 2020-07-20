@@ -1,0 +1,289 @@
+/*
+
+	Author	Goddameit
+	Version	2013/02/06
+	Web	http://bit.ly/MDuQ9F
+
+*/
+
+function	script	Fisher_Main	{
+
+	if( getarg(0) == 2 )
+	{
+		undisguise;
+		if( strcharinfo(3) == "maintown" )
+			warp "SavePoint",0,0;
+		end;
+	}
+//=======================================================================================================
+//
+//=======================================================================================================
+	else if( strcharinfo(3) == "maintown" && getequipid(9) == 49536)
+	{
+		if( getarg(0) == 0 )
+			disguise 1406;
+		else if( getarg(0) == 1 )
+		{
+			set .@r, rand(1000);
+			
+			if(diggenergy <= 0){ end; }
+			
+			set diggenergy,diggenergy - 1;
+				dispbottom "[ พลังงานทำงาน ] : แต้มพลังงาน : "+diggenergy+" แต้ม", 0x18C4EA;
+			
+			if( .@r < 500 ){
+			
+				dispbottom "[Fishing] : โชคไม่ดีเลยไม่ได้รับไอเท็ม", 0xff0000;
+				specialeffect2 155;
+				
+			} else if( .@r >= 500 && .@r < 990 ){
+			
+				set .@r3,rand(1,100);
+			
+				if(.@r3 < 85) { getitem rand(49546,49548),1; } else { getitem rand(49546,49550),1; }
+				specialeffect2 154;
+				
+			} else {
+				getitem rand(49546,49548),rand(2,5);
+				specialeffect2 154;
+			}
+			
+		}else
+			;
+		return;
+	}
+//=======================================================================================================
+//
+//=======================================================================================================
+	else if( strcharinfo(3) == "maintown" && getequipid(9) == 49537)
+	{
+		if( getarg(0) == 0 )
+			disguise 1406;
+		else if( getarg(0) == 1 )
+		{
+			set .@r, rand(1000);
+			
+			if(diggenergy <= 0){ end; }
+			
+			set diggenergy,diggenergy - 1;
+				dispbottom "[ พลังงานทำงาน ] : แต้มพลังงาน : "+diggenergy+" แต้ม", 0x18C4EA;
+			
+			if( .@r < 400 ){
+			
+				dispbottom "[Fishing] : โชคไม่ดีเลยไม่ได้รับไอเท็ม", 0xff0000;
+				specialeffect2 155;
+				
+			} else if( .@r >= 400 && .@r < 990 ){
+			
+				set .@r3,rand(1,100);
+			
+				if(.@r3 < 70) { getitem rand(49546,49549),1; } else { getitem rand(49546,49550),1; }
+				specialeffect2 154;
+				
+			} else {
+				getitem rand(49546,49549),rand(2,5);
+				specialeffect2 154;
+			}
+			
+		}else
+			;
+		return;
+	}
+//=======================================================================================================
+//	LV.03
+//=======================================================================================================
+	else if( strcharinfo(3) == "maintown" && getequipid(9) == 49538)
+	{
+		if( getarg(0) == 0 )
+			disguise 1406;
+		else if( getarg(0) == 1 )
+		{
+			set .@r, rand(1000);
+			
+			if(diggenergy <= 0){ end; }
+			
+			set .@r2, rand(1000);
+			
+			if( .@r2 < 800 ){
+			
+			set diggenergy,diggenergy - 1;
+				dispbottom "[ พลังงานทำงาน ] : แต้มพลังงาน : "+diggenergy+" แต้ม", 0x18C4EA;
+			} else {
+				dispbottom "[ พลังงานทำงาน ] : แต้มพลังงาน : "+diggenergy+" แต้ม (ไม่เสียพลังงาน)", 0x18C4EA;
+			}
+				
+			
+			if( .@r < 350 ){
+			
+				dispbottom "[Fishing] : โชคไม่ดีเลยไม่ได้รับไอเท็ม", 0xff0000;
+				specialeffect2 155;
+				
+			} else if( .@r >= 350 && .@r < 925 ){
+			
+				set .@r3,rand(1,100);
+			
+				if(.@r3 < 70) { getitem rand(49546,49550),1; } else { getitem rand(49546,49550),2; }
+				specialeffect2 154;
+				
+			} else {
+				getitem rand(49546,49550),rand(2,5);
+				specialeffect2 154;
+			}
+			
+		}else
+			;
+		return;
+	}
+	
+	else
+		;
+	return;
+}
+
+-	script	Fisherx	-1,{
+
+OnLill:
+	set .@t,0;
+
+OnInit:
+	if(!.@t)set .@t,0;
+	areamonster "maintown",102,103,135,92,"--ja--",21323,.@t,"Fisherx::OnLill";
+	end;
+}
+
+maintown,108,97	monster	Fish	21323,1,5000
+maintown,113,97	monster	Fish	21323,1,5000
+maintown,118,97	monster	Fish	21323,1,5000
+maintown,123,97	monster	Fish	21323,1,5000
+maintown,128,97	monster	Fish	21323,1,5000
+
+maintown,104,89,4	script	ของตกปลา#fish	929,{
+mes "[ ของตกปลา ]";
+mes "ท่านต้องการไอเท็มชิ้นไหน";
+mes "เลือกมาได้เลย";
+next;
+menu "- ^FF0000"+getitemname(49536)+"^000000",ea1,"- ^FF0000"+getitemname(49537)+"^000000",ea2,"- ยกเลิก",ext;
+
+
+ea1:
+mes "[ ของตกปลา ]";
+	set .@itemsell,49536;
+	set .@zenym,100000;
+mes "<ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM>";
+mes "ราคา : ^FF0000"+.@zenym+"^000000";
+next;
+switch(select(" - เช่า 1 ชั่วโมง: - เช่า 2 ชั่วโมง: - เช่า 3 ชั่วโมง")) {
+case 1:
+	set .@time,3600;
+	set .@zeny,250000;
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 2:
+	set .@time,7200;
+	set .@zeny,600000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 3:
+	set .@time,10800;
+	set .@zeny,1500000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+}
+
+ea2:
+mes "[ ของตกปลา ]";
+	set .@itemsell,49537;
+	set .@zenym,250000;
+mes "<ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM>";
+mes "ราคา : ^FF0000"+.@zenym+"^000000";
+next;
+switch(select(" - เช่า 1 ชั่วโมง: - เช่า 2 ชั่วโมง: - เช่า 3 ชั่วโมง")) {
+case 1:
+	set .@time,3600;
+	set .@zeny,350000;
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 2:
+	set .@time,7200;
+	set .@zeny,800000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 3:
+	set .@time,10800;
+	set .@zeny,2000000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+}
+
+SetItem:
+
+ set .@zenyu,.@zeny+.@zenym;
+ 
+if (Zeny < .@zenyu){
+mes "[ ของตกปลา ]";
+mes "คุณมีเงินไม่พอสำหรับเช่าไอเท็มนิ !!"; 
+end;	}
+
+set Zeny, Zeny - .@zenyu;
+
+rentitem .@itemsell,.@time;
+mes "[ ของตกปลา ]";
+mes "คุณได้รับ <ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM> !!"; 
+mes "เป็นที่เรียบร้อยแล้วค่ะ !!";
+end;
+
+ext:
+mes "[ ของตกปลา ]";
+mes "ไว้เจอกันใหม่ !!";
+end;
+
+OnInit:
+waitingroom "     ของตกปลา",0;
+end;
+}

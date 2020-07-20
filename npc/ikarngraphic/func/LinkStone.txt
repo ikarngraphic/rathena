@@ -1,0 +1,471 @@
+function	script	LINKSKILL	{
+
+	// Job RuneKnight+
+	if(#LINK_01 == 4060 || #LINK_02 == 4060 || #LINK_03 == 4060 || #LINK_04 == 4060 || #LINK_05 == 4060 || #LINK_06 == 4060 || #LINK_07 == 4060 || #LINK_08 == 4060 || #LINK_09 == 4060 || #LINK_10 == 4060 || #LINK_11 == 4060 || #LINK_12 == 4060){ bonus2 bHPRegenRate,120,100; bonus bLongAtkDef,10; if(!getmapflag(strcharinfo(3),mf_pvp) && !getmapflag(strcharinfo(3),mf_gvg)){ bonus bSpeedRate,50; } }
+	
+	// Job Warlock+
+	if(#LINK_01 == 4061 || #LINK_02 == 4061 || #LINK_03 == 4061 || #LINK_04 == 4061 || #LINK_05 == 4061 || #LINK_06 == 4061 || #LINK_07 == 4061 || #LINK_08 == 4061 || #LINK_09 == 4061 || #LINK_10 == 4061 || #LINK_11 == 4061 || #LINK_12 == 4061){ bonus bFixedCast,-500; bonus2 bSPRegenRate,15,100; autobonus2 "{ bonus2 bSPRegenRate,500,1000; }",10,3000,BF_NORMAL|BF_SKILL,"{ specialeffect2 208; }"; }
+	
+	// Job Ranger+
+	if(#LINK_01 == 4062 || #LINK_02 == 4062 || #LINK_03 == 4062 || #LINK_04 == 4062 || #LINK_05 == 4062 || #LINK_06 == 4062 || #LINK_07 == 4062 || #LINK_08 == 4062 || #LINK_09 == 4062 || #LINK_10 == 4062 || #LINK_11 == 4062 || #LINK_12 == 4062){ bonus bHit,20; bonus bCritical,10; skill "AC_OWL",5; bonus bLongAtkDef,5; }
+	
+	// Job Arch Bishop+
+	if(#LINK_01 == 4063 || #LINK_02 == 4063 || #LINK_03 == 4063 || #LINK_04 == 4063 || #LINK_05 == 4063 || #LINK_06 == 4063 || #LINK_07 == 4063 || #LINK_08 == 4063 || #LINK_09 == 4063 || #LINK_10 == 4063 || #LINK_11 == 4063 || #LINK_12 == 4063){ bonus2 bExpAddRace,RC_All,(JobLevel/2); bonus bHealpower2,100; bonus bMaxHPrate,5; autobonus2 "{ bonus2 bHPRegenRate,5000,1000; }",10,3000,BF_NORMAL|BF_SKILL,"{ specialeffect2 204; }"; }
+	
+	// Job Mechanic+
+	if(#LINK_01 == 4064 || #LINK_02 == 4064 || #LINK_03 == 4064 || #LINK_04 == 4064 || #LINK_05 == 4064 || #LINK_06 == 4064 || #LINK_07 == 4064 || #LINK_08 == 4064 || #LINK_09 == 4064 || #LINK_10 == 4064 || #LINK_11 == 4064 || #LINK_12 == 4064){ bonus bUnbreakableWeapon; skill "MC_DISCOUNT",5; skill "BS_SKINTEMPER",3; }
+	
+	// Job Guillotine Cross+
+	if(#LINK_01 == 4065 || #LINK_02 == 4065 || #LINK_03 == 4065 || #LINK_04 == 4065 || #LINK_05 == 4065 || #LINK_06 == 4065 || #LINK_07 == 4065 || #LINK_08 == 4065 || #LINK_09 == 4065 || #LINK_10 == 4065 || #LINK_11 == 4065 || #LINK_12 == 4065){ bonus bCritAtkRate,20; bonus bAspd,3; skill "TF_MISS",5; skill "AS_RIGHT",(BaseLevel/50);  }
+	
+	// Job Royal Guard+
+	if(#LINK_01 == 4073 || #LINK_02 == 4073 || #LINK_03 == 4073 || #LINK_04 == 4073 || #LINK_05 == 4073 || #LINK_06 == 4073 || #LINK_07 == 4073 || #LINK_08 == 4073 || #LINK_09 == 4073 || #LINK_10 == 4073 || #LINK_11 == 4073 || #LINK_12 == 4073){ bonus bMdef,10; bonus bDef,30; skill "AL_DP",5; skill "SM_MOVINGRECOVERY",1;  }
+	
+	// Job Sorcerer+
+	if(#LINK_01 == 4074 || #LINK_02 == 4074 || #LINK_03 == 4074 || #LINK_04 == 4074 || #LINK_05 == 4074 || #LINK_06 == 4074 || #LINK_07 == 4074 || #LINK_08 == 4074 || #LINK_09 == 4074 || #LINK_10 == 4074 || #LINK_11 == 4074 || #LINK_12 == 4074){ bonus bFixedCast,-500; bonus bNoCastCancel; skill "SA_FREECAST",(BaseLevel/35); }
+	
+	// Job Minsterel+
+	if(#LINK_01 == 4075 || #LINK_02 == 4075 || #LINK_03 == 4075 || #LINK_04 == 4075 || #LINK_05 == 4075 || #LINK_06 == 4075 || #LINK_07 == 4075 || #LINK_08 == 4075 || #LINK_09 == 4075 || #LINK_10 == 4075 || #LINK_11 == 4075 || #LINK_12 == 4075){ bonus bMaxHPrate,(BaseLevel/30)+5; bonus2 bExpAddRace,RC_All,(JobLevel/2); bonus bHPrecovRate,20; }
+	
+	// Job Wanderer+
+	if(#LINK_01 == 4076 || #LINK_02 == 4076 || #LINK_03 == 4076 || #LINK_04 == 4076 || #LINK_05 == 4076 || #LINK_06 == 4076 || #LINK_07 == 4076 || #LINK_08 == 4076 || #LINK_09 == 4076 || #LINK_10 == 4076 || #LINK_11 == 4076 || #LINK_12 == 4076){ bonus bMaxSPrate,(BaseLevel/30)+5; bonus2 bExpAddRace,RC_All,(JobLevel/2); bonus bSPrecovRate,20; }
+	
+	// Job Sura+
+	if(#LINK_01 == 4077 || #LINK_02 == 4077 || #LINK_03 == 4077 || #LINK_04 == 4077 || #LINK_05 == 4077 || #LINK_06 == 4077 || #LINK_07 == 4077 || #LINK_08 == 4077 || #LINK_09 == 4077 || #LINK_10 == 4077 || #LINK_11 == 4077 || #LINK_12 == 4077){ bonus bUseSPrate,-20; itemskill "AL_TELEPORT",1; skill "MO_SPIRITSRECOVERY",5; bonus bBaseAtk,20; }
+	
+	// Job Genetic+
+	if(#LINK_01 == 4078 || #LINK_02 == 4078 || #LINK_03 == 4078 || #LINK_04 == 4078 || #LINK_05 == 4078 || #LINK_06 == 4078 || #LINK_07 == 4078 || #LINK_08 == 4078 || #LINK_09 == 4078 || #LINK_10 == 4078 || #LINK_11 == 4078 || #LINK_12 == 4078){ bonus bUnbreakableArmor; skill "MC_OVERCHARGE",3; skill "CR_FULLPROTECTION",1; bonus bVariableCastrate,-20; }
+	
+	// Job Shadow Chaser+
+	if(#LINK_01 == 4079 || #LINK_02 == 4079 || #LINK_03 == 4079 || #LINK_04 == 4079 || #LINK_05 == 4079 || #LINK_06 == 4079 || #LINK_07 == 4079 || #LINK_08 == 4079 || #LINK_09 == 4079 || #LINK_10 == 4079 || #LINK_11 == 4079 || #LINK_12 == 4079){ bonus2 bSubEle,Ele_All,10; bonus2 bMagicSubDefEle,Ele_All,10; skill "TF_STEAL",1; skill "RG_SNATCHER",3; }
+	
+	// Job Kagerou+
+	if(#LINK_01 == 4211 || #LINK_02 == 4211 || #LINK_03 == 4211 || #LINK_04 == 4211 || #LINK_05 == 4211 || #LINK_06 == 4211 || #LINK_07 == 4211 || #LINK_08 == 4211 || #LINK_09 == 4211 || #LINK_10 == 4211 || #LINK_11 == 4211 || #LINK_12 == 4211){ skill "NJ_NEN",5; skill "NJ_NINPOU",10; bonus bAddStealRate,100; if(!getmapflag(strcharinfo(3),mf_pvp) && !getmapflag(strcharinfo(3),mf_gvg)){ bonus bSpeedRate,25; } }
+	
+	// Job Oboro+
+	if(#LINK_01 == 4212 || #LINK_02 == 4212 || #LINK_03 == 4212 || #LINK_04 == 4212 || #LINK_05 == 4212 || #LINK_06 == 4212 || #LINK_07 == 4212 || #LINK_08 == 4212 || #LINK_09 == 4212 || #LINK_10 == 4212 || #LINK_11 == 4212 || #LINK_12 == 4212){ bonus bNoWalkDelay; bonus bUseSPrate,-10; if(!getmapflag(strcharinfo(3),mf_pvp) && !getmapflag(strcharinfo(3),mf_gvg)){ bonus bSpeedRate,25; } }
+	
+	// Job Rebellion+
+	if(#LINK_01 == 4215 || #LINK_02 == 4215 || #LINK_03 == 4215 || #LINK_04 == 4215 || #LINK_05 == 4215 || #LINK_06 == 4215 || #LINK_07 == 4215 || #LINK_08 == 4215 || #LINK_09 == 4215 || #LINK_10 == 4215 || #LINK_11 == 4215 || #LINK_12 == 4215){ skill "GS_SINGLEACTION",5; bonus bLongAtkRate,(JobLevel/5); bonus2 bSubRace,RC_DemiHuman,2; bonus2 bSubRace,RC_Player,2; }
+	
+	// Job Summoner+
+	if(#LINK_01 == 4218 || #LINK_02 == 4218 || #LINK_03 == 4218 || #LINK_04 == 4218 || #LINK_05 == 4218 || #LINK_06 == 4218 || #LINK_07 == 4218 || #LINK_08 == 4218 || #LINK_09 == 4218 || #LINK_10 == 4218 || #LINK_11 == 4218 || #LINK_12 == 4218){ skill "SU_POWEROFSEA",1; skill "SU_POWEROFLAND",1; skill "SU_POWEROFLIFE",1; skill "SU_SPRITEMABLE",1; }
+	
+	// Job Star Emperor+
+	if(#LINK_01 == 4239 || #LINK_02 == 4239 || #LINK_03 == 4239 || #LINK_04 == 4239 || #LINK_05 == 4239 || #LINK_06 == 4239 || #LINK_07 == 4239 || #LINK_08 == 4239 || #LINK_09 == 4239 || #LINK_10 == 4239 || #LINK_11 == 4239 || #LINK_12 == 4239){ skill "TK_POWER",(JobLevel/13); skill "SJ_UNIVERSESTANCE",1; bonus bBaseAtk,20; }
+	
+	// Job Soul Reaper+
+	if(#LINK_01 == 4240 || #LINK_02 == 4240 || #LINK_03 == 4240 || #LINK_04 == 4240 || #LINK_05 == 4240 || #LINK_06 == 4240 || #LINK_07 == 4240 || #LINK_08 == 4240 || #LINK_09 == 4240 || #LINK_10 == 4240 || #LINK_11 == 4240 || #LINK_12 == 4240){ bonus bDelayRate,-5; skill "SL_KAINA",4; bonus bMatk,30; bonus bNoMagicDamage,5; }
+	
+}
+
+// ==================================================================================================================================================
+//		NPC SETTING
+// ==================================================================================================================================================
+
+maintown,66,41,4	script	Linker Master#Test	620,{
+
+	.name$ = "[ ^FF0000Linker Master^000000 ]";	//NPC Name
+
+	if(unknowlinkskill == 0){
+		if(#unknowlinkskill == 0){
+		set #LINK_01,-1;
+		set #LINK_02,-1;
+		set #LINK_03,-1;
+		set #LINK_04,-1;
+		set #LINK_05,-1;
+		set #LINK_06,-1;
+		set #LINK_07,-1;
+		set #LINK_08,-1;
+		set #LINK_09,-1;
+		set #LINK_10,-1;
+		set #LINK_11,-1;
+		set #LINK_12,-1;
+		set #unknowlinkskill,1;
+		}
+		mes .name$;
+		mes "ระบบ '^000088Link Skill^000000' ตัวละคร(ในไอดีเดียวกัน)";
+		mes "เพื่อเพิ่มความสามารถพิเศษ จากตัวละครอื่นในไอดีเดียวกัน";
+		mes "ทำให้ตัวละครอื่นๆ เก่งขึ้นด้วยความสามารถอาชีพอื่นๆ";
+		next;
+		mes .name$;
+		mes "โดยมีเงื่อนไขดังต่อไปนี้";
+		mes "1.ใช้ตัวละครเลเวล 250 ขึ้นไป";
+		mes "2.เป็นตัวละคร Class3(Transcendent)";
+		mes "^777777ไม่สามารถใช้อาชีพซ้ำได้^000000";
+		mes "ถ้าพร้อมแล้วเริ่มกันเลย!";
+			set unknowlinkskill,1;
+			getitem 49572,1;
+		next;	
+	}
+	
+	mes .name$;
+	mes "ระบบ '^000088Link Skill^000000' ตัวละคร(ในไอดีเดียวกัน)";
+	mes "เพื่อเพิ่มความสามารถพิเศษ จากตัวละครอื่นในไอดีเดียวกัน";
+	mes "ต้องสวมใส่ : ^777777"+getitemname(49572)+"^000000";
+	mes "ระบบ '^000088Link Skill^000000' ถึงจะทำงาน";
+	next;
+	menu "[^5fbd3aEdit^000000] - แก้ไขลิ้งสกิล",EDLSK_1,
+	"[^5fbd3aRead^000000] - รายละเอียดเพิ่มเติม",READLSK,
+	"[^5fbd3aMyCharactor^000000] - อาชีพทั้งหมด",MACHA,
+	"[^FF0000Cancel^000000] - ยกเลิก",EXRSL;
+
+//======================================================================================
+// แก้ไขลิ้งสกิล	
+			EDLSK_1:
+//======================================================================================
+
+	mes .name$;
+	mes "เงื่อนไขในการลิ้งคือ นำตัวละครนั้น";
+	mes "มาเปิดลิ้งสกิลด้วยตนเอง เท่านั้น!!";
+	mes "^777777ระบบจะใช้ลิ้งเดียวกันทั้งไอดี^000000";
+	next;
+	menu "1) ^5fbd3a"+jobname(#LINK_01)+"^000000",L01S,
+	"2) ^5fbd3a"+jobname(#LINK_02)+"^000000",L02S,
+	"3) ^5fbd3a"+jobname(#LINK_03)+"^000000",L03S,
+	"4) ^5fbd3a"+jobname(#LINK_04)+"^000000",L04S,
+	"5) ^5fbd3a"+jobname(#LINK_05)+"^000000",L05S,
+	"6) ^5fbd3a"+jobname(#LINK_06)+"^000000",L06S,
+	"7) ^5fbd3a"+jobname(#LINK_07)+"^000000",L07S,
+	"8) ^5fbd3a"+jobname(#LINK_08)+"^000000",L08S,
+	"9) ^5fbd3a"+jobname(#LINK_09)+"^000000",L09S,
+	"10) ^5fbd3a"+jobname(#LINK_10)+"^000000",L10S,
+	"11) ^5fbd3a"+jobname(#LINK_11)+"^000000",L11S,
+	"12) ^5fbd3a"+jobname(#LINK_12)+"^000000",L12S,
+	"- ^FF0000ยกเลิกลิ้งสกิลทั้งหมด^000000",LSSET0,
+	"[^FF0000Cancel^000000] - ยกเลิก",EXRSL;
+	end;
+
+	
+//======================================================================================
+			L01S:
+			set .@settingslot,1;	goto SETALL;
+			L02S:
+			set .@settingslot,2;	goto SETALL;
+			L03S:
+			set .@settingslot,3;	goto SETALL;
+			L04S:
+			set .@settingslot,4;	goto SETALL;
+			L05S:
+			set .@settingslot,5;	goto SETALL;
+			L06S:
+			set .@settingslot,6;	goto SETALL;
+			L07S:
+			set .@settingslot,7;	goto SETALL;
+			L08S:
+			set .@settingslot,8;	goto SETALL;
+			L09S:
+			set .@settingslot,9;	goto SETALL;
+			L10S:
+			set .@settingslot,10;	goto SETALL;
+			L11S:
+			set .@settingslot,11;	goto SETALL;
+			L12S:
+			set .@settingslot,12;	goto SETALL;
+			
+//======================================================================================
+
+
+//======================================================================================
+// แก้ไขทั้งหมด	
+			MACHA:
+//======================================================================================
+
+		query_sql "SELECT `name`,`class`,`base_level` FROM `char` WHERE `account_id` LIKE '"+getcharid(3)+"'" + "ORDER BY CAST(`char_num` AS UNSIGNED) DESC LIMIT 30",
+		.@name$,.@class,.@lv;
+
+	mes .name$;
+	mes "Charactor : "+getarraysize(.@name$)+" ตัวละครของคุณ";
+	for (set .@i,0; .@i<getarraysize(.@name$); set .@i,.@i+1)
+		mes (.@i+1) +".^886A08"+ .@name$[.@i] +"^000000("+jobname(.@class[.@i])+"): Lv.^DF013A"+ .@lv[.@i] +"^000000";		
+		end;
+
+
+//======================================================================================
+// แก้ไขทั้งหมด	
+			SETALL:
+//======================================================================================
+
+	set .@idjobnow,readparam(19);
+
+		if (BaseLevel < 250){
+		
+			mes .name$;
+			mes "^777777ยังไม่สามารถใช้งานโหมดลิ้งสกิลได้^000000";
+			mes "^777777กรุณาเก็บเลเวล ให้มากกว่า Lv.250^000000";
+			mes "^777777เพื่อเปิดใช้งาน ลิ้งสกิล^000000";
+			end;
+		
+		}
+	
+	mes .name$;
+	mes "ตัวละคร : "+strcharinfo(0)+"";
+	mes "อาชีพ : ^000088"+jobname(readparam(19))+"^000000("+readparam(19)+")";
+	mes " ";
+	mes "ความสามารถ :";
+	     if(readparam(19) == 4060){ mes "- HP Regen 1200 ทุกๆ 1 วินาที","- ป้องกันโจมตีระยะไกล 10%","^FF0000ไม่มีผลใน GVG/PVP^000000","- วิ่งไวขึ้น 50%"; }
+	else if(readparam(19) == 4061){ mes "- ลด Fixcast 0.5 วิ","- SP Regen 150 ทุกๆ 1 วินาที","- เมื่อถูกโจมตีมีโอกาสเพิ่ม SP 500 เป็นเวลา 3 วินาที"; }
+	else if(readparam(19) == 4062){ mes "- Hit +20","- Critical +10","- ป้องกันโจมตีระยะไกล 5%","- ได้รับสกิล Owl's Eye(Lv.5)"; }
+	else if(readparam(19) == 4063){ mes "- EXP เพิ่มตาม JobLevel หาร 2","- ได้รับผลของสกิล Heal +100%","- เมื่อถูกโจมตีมีโอกาสเพิ่ม HP 5000 เป็นเวลา 3 วินาที","- MaxHP +5%"; }
+	else if(readparam(19) == 4064){ mes "- อาวุธไม่ถูกทำลาย","- ได้รับสกิล Discount(Lv.5)","- ได้รับสกิล Skin Tempering(Lv.3)"; }
+	else if(readparam(19) == 4065){ mes "- เพิ่มความแรง Critical 20%","- Aspd +3","- ได้รับสกิล Improve Dodge(Lv.5)","- ได้รับสกิล Righthand Mastery(Lv.(LV/50))"; }
+	else if(readparam(19) == 4073){ mes "- Mdef +10","- Def +30","- ได้รับสกิล Divine Protection(Lv.5)","- ได้รับสกิล Moving HP-Recovery(Lv.1)"; }
+	else if(readparam(19) == 4074){ mes "- ลด Fixcast 0.5 วิ","- การร่ายสกิลไม่ถูกยกเลิก","- ได้รับสกิล Free Cast(Lv.(LV/35))"; }
+	else if(readparam(19) == 4075){ mes "- MaxHP +5% +(LV/30)%","- EXP เพิ่มตาม JobLevel หาร 2","- HP recovery 20%"; }
+	else if(readparam(19) == 4076){ mes "- MaxSP +5% +(LV/30)%","- EXP เพิ่มตาม JobLevel หาร 2","- SP recovery 20%"; }
+	else if(readparam(19) == 4077){ mes "- ลดการใช้ SP 20%","- Atk +20","- ได้รับสกิล Teleport(Lv.1)","- ได้รับสกิล Spiritual Cadence(Lv.5)"; }
+	else if(readparam(19) == 4078){ mes "- เกราะไม่ถูกทำลาย","- ลดระยะเวลาการร่ายเวทย์ 20%","- ได้รับสกิล Overcharge(Lv.3)","- ได้รับสกิล Full Protection(Lv.1)"; }
+	else if(readparam(19) == 4079){ mes "- ป้องกันทุกธาตุ 10%","- ได้รับสกิล Steal(Lv.1)","- ได้รับสกิล Snatcher(Lv.3)"; }
+	else if(readparam(19) == 4211){ mes "- ได้รับสกิล Soul(Lv.5)","- ได้รับสกิล Spirit of the Blade(Lv.10)","^FF0000ไม่มีผลใน GVG/PVP^000000","- วิ่งไวขึ้น 25%"; }
+	else if(readparam(19) == 4212){ mes "- ได้รัยสถานะ Endure ตลอดเวลา","- ลดการใช้ SP 10%","^FF0000ไม่มีผลใน GVG/PVP^000000","- วิ่งไวขึ้น 25%"; }
+	else if(readparam(19) == 4215){ mes "- เพิ่มความแรงการโจมตีระยะไกล (JobLevel/5)%","- ป้องกันกึ่งมนุษย์ 2%","- ได้รับสกิล Single Action(Lv.5)"; }
+	else if(readparam(19) == 4218){ mes "- ได้รับสกิล Power of Sea(Lv.1)","- ได้รับสกิล Power of Land(Lv.1)","- ได้รับสกิล Power of Life(Lv.1)","- ได้รับสกิล Spirit Marble(Lv.1)"; }
+	else if(readparam(19) == 4239){ mes "- Atk +20","- ได้รับสกิล Kihop(Lv.(LV/13))","- ได้รับสกิล Universe Stance(Lv.1)"; }
+	else if(readparam(19) == 4240){ mes "- ไม่สนเวทย์ 5%","- Matk +30","- ลด Delay 5%","- ได้รับสกิล Kaina(Lv.4)"; } 	else { mes "Can't"; end; }
+	
+	next;
+	menu "[^5fbd3aYes^000000] - แก้ไขลิ้งสกิล",-,"[^FF0000Cancel^000000] - ยกเลิก",EXRSL;
+	
+	if(readparam(19) == #LINK_01){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_02){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_03){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_04){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_05){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_06){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_07){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_08){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_09){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_10){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_11){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	if(readparam(19) == #LINK_12){ mes .name$; mes "มีลิ้งอาชีพดกียวกันอยู่แล้ว","ไม่สามารถ ลงทะเบียนลิ้งสกิลได้!"; end; }
+	
+	mes .name$;
+	mes "แก้ไขลำดับลิ้ง : "+.@settingslot+"";
+	if(.@settingslot == 1){ set #LINK_01,readparam(19); }
+	if(.@settingslot == 2){ set #LINK_02,readparam(19); }
+	if(.@settingslot == 3){ set #LINK_03,readparam(19); }
+	if(.@settingslot == 4){ set #LINK_04,readparam(19); }
+	if(.@settingslot == 5){ set #LINK_05,readparam(19); }
+	if(.@settingslot == 6){ set #LINK_06,readparam(19); }
+	if(.@settingslot == 7){ set #LINK_07,readparam(19); }
+	if(.@settingslot == 8){ set #LINK_08,readparam(19); }
+	if(.@settingslot == 9){ set #LINK_09,readparam(19); }
+	if(.@settingslot == 10){ set #LINK_10,readparam(19); }
+	if(.@settingslot == 11){ set #LINK_11,readparam(19); }
+	if(.@settingslot == 12){ set #LINK_12,readparam(19); }
+	
+	end;
+
+//======================================================================================
+// ยกเลิกลิ้งสกิลทั้งหมด	
+			LSSET0:
+//======================================================================================
+
+	mes .name$;
+	mes "ต้องการยกเลิกลิ้งสกิลทั้งหมดหรือไม่";
+	next;
+	menu "[^5fbd3aYes^000000] - ยกเลิกลิ้งสกิลทั้งหมด",-,"[^FF0000Cancel^000000] - ไม่ยกเลิกแล้ว",EXRSL;
+	set #LINK_01,-1;
+	set #LINK_02,-1;
+	set #LINK_03,-1;
+	set #LINK_04,-1;
+	set #LINK_05,-1;
+	set #LINK_06,-1;
+	set #LINK_07,-1;
+	set #LINK_08,-1;
+	set #LINK_09,-1;
+	set #LINK_10,-1;
+	set #LINK_11,-1;
+	set #LINK_12,-1;
+	end;	
+	
+//======================================================================================
+// ข้อมูล	
+			READLSK:
+//======================================================================================
+
+	mes .name$;
+	mes "1.ใช้ตัวละครเลเวล 300 ขึ้นไป";
+	mes "2.เป็นตัวละคร Class3(Transcendent)";
+	mes "^777777ไม่สามารถใช้อาชีพซ้ำได้^000000";
+	mes " ";
+	mes " ";
+	mes "ดูรายละเอียดของแต่ละอาชีพหรือไม่";
+	next;
+	menu "- ^777777"+jobname(4060)+"^000000",JJ4060,
+	"- ^777777"+jobname(4061)+"^000000",JJ4061,
+	"- ^777777"+jobname(4062)+"^000000",JJ4062,
+	"- ^777777"+jobname(4063)+"^000000",JJ4063,
+	"- ^777777"+jobname(4064)+"^000000",JJ4064,
+	"- ^777777"+jobname(4065)+"^000000",JJ4065,
+	"- ^777777"+jobname(4073)+"^000000",JJ4073,
+	"- ^777777"+jobname(4074)+"^000000",JJ4074,
+	"- ^777777"+jobname(4075)+"^000000",JJ4075,
+	"- ^777777"+jobname(4076)+"^000000",JJ4076,
+	"- ^777777"+jobname(4077)+"^000000",JJ4077,
+	"- ^777777"+jobname(4078)+"^000000",JJ4078,
+	"- ^777777"+jobname(4079)+"^000000",JJ4079,
+	"- ^777777"+jobname(4211)+"^000000",JJ4211,
+	"- ^777777"+jobname(4212)+"^000000",JJ4212,
+	"- ^777777"+jobname(4215)+"^000000",JJ4215,
+	"- ^777777"+jobname(4218)+"^000000",JJ4218,
+	"- ^777777"+jobname(4239)+"^000000",JJ4239,
+	"- ^777777"+jobname(4240)+"^000000",JJ4240,
+	"[^FF0000Cancel^000000] - ไม่ต้องการดูข้อมูล",EXRSL;
+	end;
+	
+//======================================================================================
+			JJ4060:
+			set .@jobb,4060;	goto SECL_ALL;
+			JJ4061:
+			set .@jobb,4061;	goto SECL_ALL;
+			JJ4062:
+			set .@jobb,4062;	goto SECL_ALL;
+			JJ4063:
+			set .@jobb,4063;	goto SECL_ALL;
+			JJ4064:
+			set .@jobb,4064;	goto SECL_ALL;
+			JJ4065:
+			set .@jobb,4065;	goto SECL_ALL;
+			JJ4073:
+			set .@jobb,4073;	goto SECL_ALL;
+			JJ4074:
+			set .@jobb,4074;	goto SECL_ALL;
+			JJ4075:
+			set .@jobb,4075;	goto SECL_ALL;
+			JJ4076:
+			set .@jobb,4076;	goto SECL_ALL;
+			JJ4077:
+			set .@jobb,4077;	goto SECL_ALL;
+			JJ4078:
+			set .@jobb,4078;	goto SECL_ALL;
+			JJ4079:
+			set .@jobb,4079;	goto SECL_ALL;
+			JJ4211:
+			set .@jobb,4211;	goto SECL_ALL;
+			JJ4212:
+			set .@jobb,4212;	goto SECL_ALL;
+			JJ4215:
+			set .@jobb,4215;	goto SECL_ALL;
+			JJ4218:
+			set .@jobb,4218;	goto SECL_ALL;
+			JJ4239:
+			set .@jobb,4239;	goto SECL_ALL;
+			JJ4240:
+			set .@jobb,4240;	goto SECL_ALL;
+			
+//======================================================================================	
+	
+//======================================================================================
+// 
+			SECL_ALL:
+//======================================================================================
+
+	mes .name$;
+	mes "Link > ^777777"+jobname(.@jobb)+"^000000 :";
+	if(.@jobb == 4060){ mes "- HP Regen 1200 ทุกๆ 1 วินาที","- ป้องกันโจมตีระยะไกล 10%","^FF0000ไม่มีผลใน GVG/PVP^000000","- วิ่งไวขึ้น 50%"; }
+	if(.@jobb == 4061){ mes "- ลด Fixcast 0.5 วิ","- SP Regen 150 ทุกๆ 1 วินาที","- เมื่อถูกโจมตีมีโอกาสเพิ่ม SP 500 เป็นเวลา 3 วินาที"; }
+	if(.@jobb == 4062){ mes "- Hit +20","- Critical +10","- ป้องกันโจมตีระยะไกล 5%","- ได้รับสกิล Owl's Eye(Lv.5)"; }
+	if(.@jobb == 4063){ mes "- EXP เพิ่มตาม JobLevel หาร 2","- ได้รับผลของสกิล Heal +100%","- เมื่อถูกโจมตีมีโอกาสเพิ่ม HP 5000 เป็นเวลา 3 วินาที","- MaxHP +5%"; }
+	if(.@jobb == 4064){ mes "- อาวุธไม่ถูกทำลาย","- ได้รับสกิล Discount(Lv.5)","- ได้รับสกิล Skin Tempering(Lv.3)"; }
+	if(.@jobb == 4065){ mes "- เพิ่มความแรง Critical 20%","- Aspd +3","- ได้รับสกิล Improve Dodge(Lv.5)","- ได้รับสกิล Righthand Mastery(Lv.(LV/50))"; }
+	if(.@jobb == 4073){ mes "- Mdef +10","- Def +30","- ได้รับสกิล Divine Protection(Lv.5)","- ได้รับสกิล Moving HP-Recovery(Lv.1)"; }
+	if(.@jobb == 4074){ mes "- ลด Fixcast 0.5 วิ","- การร่ายสกิลไม่ถูกยกเลิก","- ได้รับสกิล Free Cast(Lv.(LV/35))"; }
+	if(.@jobb == 4075){ mes "- MaxHP +5% +(LV/30)%","- EXP เพิ่มตาม JobLevel หาร 2","- HP recovery 20%"; }
+	if(.@jobb == 4076){ mes "- MaxSP +5% +(LV/30)%","- EXP เพิ่มตาม JobLevel หาร 2","- SP recovery 20%"; }
+	if(.@jobb == 4077){ mes "- ลดการใช้ SP 20%","- Atk +20","- ได้รับสกิล Teleport(Lv.1)","- ได้รับสกิล Spiritual Cadence(Lv.5)"; }
+	if(.@jobb == 4078){ mes "- เกราะไม่ถูกทำลาย","- ลดระยะเวลาการร่ายเวทย์ 20%","- ได้รับสกิล Overcharge(Lv.3)","- ได้รับสกิล Full Protection(Lv.1)"; }
+	if(.@jobb == 4079){ mes "- ป้องกันทุกธาตุ 10%","- ได้รับสกิล Steal(Lv.1)","- ได้รับสกิล Snatcher(Lv.3)"; }
+	if(.@jobb == 4211){ mes "- ได้รับสกิล Soul(Lv.5)","- ได้รับสกิล Spirit of the Blade(Lv.10)","^FF0000ไม่มีผลใน GVG/PVP^000000","- วิ่งไวขึ้น 25%"; }
+	if(.@jobb == 4212){ mes "- ได้รัยสถานะ Endure ตลอดเวลา","- ลดการใช้ SP 10%","^FF0000ไม่มีผลใน GVG/PVP^000000","- วิ่งไวขึ้น 25%"; }
+	if(.@jobb == 4215){ mes "- เพิ่มความแรงการโจมตีระยะไกล (JobLevel/5)%","- ป้องกันกึ่งมนุษย์ 2%","- ได้รับสกิล Single Action(Lv.5)"; }
+	if(.@jobb == 4218){ mes "- ได้รับสกิล Power of Sea(Lv.1)","- ได้รับสกิล Power of Land(Lv.1)","- ได้รับสกิล Power of Life(Lv.1)","- ได้รับสกิล Spirit Marble(Lv.1)"; }
+	if(.@jobb == 4239){ mes "- Atk +20","- ได้รับสกิล Kihop(Lv.(LV/13))","- ได้รับสกิล Universe Stance(Lv.1)"; }
+	if(.@jobb == 4240){ mes "- ไม่สนเวทย์ 5%","- Matk +30","- ลด Delay 5%","- ได้รับสกิล Kaina(Lv.4)"; }
+	end;	
+	
+
+//======================================================================================
+// ออก	
+			EXRSL:
+//======================================================================================
+
+	mes .name$;
+	mes "หากต้องการแก้ไข หรือ ทราบข้อมูล";
+	mes "กรุณามาติดต่อใหม่อีกครั้ง !";
+	end;
+	
+//======================================================================================	
+	OnInit:
+	waitingroom "     Link Skill",0;
+	initnpctimer;
+	end;
+OnTimer5000:
+	specialeffect 310,AREA,"Promotion Treader";
+	initnpctimer;
+	end;
+	
+//======================================================================================
+
+}
+
+//mooc,155,121,6	script	Testa#01	620,{
+//
+//query_sql "SELECT `name`,`class`,`base_level` FROM `char` WHERE `account_id` LIKE '"+getcharid(3)+"'" + "ORDER BY CAST(`char_num` AS UNSIGNED) DESC LIMIT 30",
+//.@name$,.@class,.@lv;
+//
+//
+//	mes "[ Charactor : "+getarraysize(.@name$)+" Slot ]";
+//	for (set .@i,0; .@i<getarraysize(.@name$); set .@i,.@i+1)
+//		mes (.@i+1) +". ^886A08"+ .@name$[.@i] +"^000000("+.@class[.@i]+") : LV.^DF013A"+ .@lv[.@i] +"^000000";
+//		mes " ";		
+//		close;
+//
+//
+//OnInit:
+//waitingroom "    Charactor",0;
+//end;
+//
+//}
+
+
+//===== rAthena Script =============================================
+//= Punching Bag NPC
+//===== By: ========================================================
+//= Secretdataz
+//===== Current Version: ===========================================
+//= 0.1
+//===== Changelog: =================================================
+//= 0.1 Initial commit
+//===== Compatible With: ===========================================
+//= rAthena Project
+//===== Additional Comments: =======================================
+//= When duplicating this NPC. Only use NUMBER after the # [secret]
+//==================================================================
+1@herbs,106,85,0	script	PunchingBag#0	844,{
+	end;
+	
+OnMyMobDead:
+OnInit:
+	getunitdata(getnpcid(0), .@d);
+	monster strnpcinfo(4),.@d[UNPC_X],.@d[UNPC_Y],"DPS Meter",1905,1,strnpcinfo(0)+"::OnMyMobDead";
+	.@dupid = atoi(strnpcinfo(2));
+	.gid[.@dupid] = $@mobid[0];
+	.mhp[.@dupid] = strmobinfo(4,1905);
+	setunitdata .gid[.@dupid],UMOB_MODE,.@d[UMOB_MODE]|0x4000000|0x0200000; // Set MD_STATUS_IMMUNE (0x4000000) because EDP/burn/%MHP based status can skew the DPS counter so much.
+	initnpctimer;
+	end;
+	
+OnTimer1000:
+	.@dupid = atoi(strnpcinfo(2));
+	if(unitexists(.gid[.@dupid])){
+		getunitdata(.gid[.@dupid],.@d);
+		.@diff = (.mhp[.@dupid] - .@d[UMOB_HP]);
+		if(.@diff > 0){
+			npctalk "DPS Meter : ได้รับ Damage " + (.@diff/1) + " DPS จากวินาทีล่าสุด";
+			setunitdata .gid[.@dupid],UMOB_HP,.mhp[.@dupid];
+			specialeffect EF_HEAL;
+		}
+	}
+	initnpctimer;
+}

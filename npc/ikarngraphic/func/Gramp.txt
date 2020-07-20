@@ -1,0 +1,786 @@
+//**********************************************************************************
+// ____                    _                                            _   _  ____ 
+//|  _ \ ___   ___   ____ | |  ___   ____   ___   ___   __  ___   _  _ | |_| |/ __ |
+//| |__// _ \ / _ \ |  _ \| | / _ \ |  _ \ / _ \ /  _| / _)/ _ \ | \| ||___  |\__  |
+//| |  |  __/ ||_|| | |__/| | | __/ | |__/|  __/ | |  _\ \ ||_|| | \\ |    | |   | |
+//|_|___\___|_\___/_| |___|_|_\___|_| |____\___|_|_|_(___/ \___/_|_|\_|____|_|___|_|
+//------------------|_|-------------|_|---------------------------------------------
+//**********************************************************************************
+//===== rAthena Script =============================================================
+//= Eden Group (Gramps)
+//===== By: ========================================================================
+//= Peopleperson49 (Eddie)
+//===== Start Date: ================================================================
+//= 17MAR2016
+//===== Current Version: ===========================================================
+//= 4.9
+//===== Compatible With: ===========================================================
+//= rAthena SVN
+//===== Description: ===============================================================
+//= Created custom Gramps script following the set conditions of the official iRO
+//= 	version based on the wiki. Some modifications have been made based on player
+//= 	suggestions such as allowing the player to collect a partial reward after
+//= 	killing at least 150 of the monster (to minimize players getting bored).
+//= 	Players can perform one mission every 23 hours (timer starts when the player
+//= 	accepts a quest). Each monster will give their normal experience in the
+//= 	wild, but the reward equals (normal Base/Job Exp*400). Players can reset the
+//= 	23 hour cooldown with a Super Blue Gemstone once every 3 hours. Kills from
+//= 	party members count toward your mission total if you see the kill on your
+//= 	screen and they are less than 30 levels higher than the quest player. If
+//= 	they level up to the next mission range before they complete the current
+//= 	mission they can still collect their reward. If their a VIP Member at the
+//= 	time of completion they have the option to collect the normal amount of
+//= 	Base/Job Experience or double either one of them. Also have a low chance of
+//= 	earning the associated monsters card. This is actually slightly higher for
+//= 	players assisting others.
+//===== Version Control: ===========================================================
+//= 1.0 First Version.
+//= 1.1	Expanded the inital 10 test mobs to over 100 options based within in 8
+//= 	function scripts for the various levels. Changed the minimum base level from
+//= 	31->21.
+//= 1.2 Added reqirement to join Eden Group before you can use Gramps.
+//= 1.3	Modified the cooldown timer to start when the quest is initiated instead of
+//= 	when it finished.
+//= 1.4	Made kills from party members count if they are on the same map.
+//= 1.5 Made kills from party members only count if they are within in 16 spaces of
+//= 	the player to allign with the iRO wiki.
+//= 1.6	Added a zeny price of 135,000z to allign with the iRO wiki.
+//= 1.7	Added the option for VIP accounts to double their base or job exp to allign
+//= 	with the iRO wiki.
+//= 1.8	Added my custom Super Blue Gemstone item to take the place of the Magical
+//= 	Stone (6320). Stone can only be used every (3) hours to reset the cooldown
+//= 	period.
+//= 1.9	Added feature to allow players to collect a partial reward after they kill
+//= 	150 of the mob.
+//= 2.0	Added a BaseLevel check of 30 to count toward kills. Prevents high level
+//= 	characters from killing mobs for a much lower character.
+//= 2.1	Fixed the bug that wouldn't let players collect their reward if they moved
+//= 	into the next level range.
+//= 2.2	Added a tracker to the script that tracks super blue gemstone and the number
+//= 	of times it is completed.
+//= 2.3 Modifed tracker to tell when it was completed, canceled, or collected early.
+//= 2.4 Divided all those trackers into one for each level range.
+//= 2.5	Modified the .GrampsArray$ to allow a low chance of dropping the monsters
+//= 	card. The chance is slightly higher for other party members. These values
+//= 	not yet set and currently uses a "0" for a placeholder. Used ancient mummy
+//= 	(1297) to test function.
+//= 2.6	Expeanded the amount of mobs to over 160 and divided into (10) level ranges.
+//= 2.7	Removed the mobs such as kobald, novus, or ferus; that had more than one mob
+//= 	with the same name for simplicity.
+//= 2.8	Yet again rearranged the mobs in each range based on the experiece they
+//= 	grant.
+//= 2.9	Modified the mob selection menu to include the amount of base/job experience
+//= 	that will be earned. Also modified the several locatons to tell what the
+//= 	gramps reward will be using mes or dispbottom.
+//= 3.0	Added a detailed help section based off of the iRO wiki.
+//= 3.1	Added a timer that tell players how many hours they have remaining on thier
+//= 	cooldown timer.
+//= 3.2	Fixed the getmapxy error by using BL_PC instead of 0.
+//= 3.3	Swapped the switch menu options so that if you rapidly clicked it would just
+//= 	exit the script and not do stuff such as cancel your current quest or use
+//= 	a super blue gemstone unless you deliberately pick the second option.
+//= 3.4	Added some witty old man type pharses throughout the script.
+//= 3.5	Added the F_InsertComma command throughout the script as needed.
+//= 3.6	Modified the Collect my mission reward! section to work show up in the menu
+//= 	once they player kills atleast 150 of the mob.
+//= 3.7	Added an info section that hinted at the existance of my custom Nune
+//= 	Dungeon.
+//= 3.8	Removed each function script and carried out the same task within the script
+//= 	itself.
+//= 3.9	Added the GrampsCompMessage to limit the mission complete message to every
+//= 	10 kills instead of every kill after they reach their goal.
+//= 4.0	Modified the OnNPCKill section to streamline it. Also
+//= 4.1	Added itemlink command for the super blue gemstone.
+//= 4.2	Combed RateMyServer.net for the associated card number of all 166 mobs and
+//= 	added them to the script.
+//= 4.3	Fixed the improper mobID for goat, 1386->1372.
+//= 4.4	Added $GrampsResetItem variable to allow players to easily modify what
+//= 	gramps accepts as the reset item. For those wanting this to use the official
+//= 	Magical Stone (6320). Also replaced every instance of Super Blue Gemstone
+//= 	with ^0000FF"+getitemname($GrampsResetItem)+"^000000. Used a global variable so it could
+//= 	be standardized even in the additional accessory scripts.
+//= 4.5	Added $GrampsCardTracker to track home many card have been found by players
+//= 	using gramps.
+//= 4.6	Scripted in the ability to increase the Base/Job experience earned when the
+//= 	player has used a battle manual type item to increase experience.
+//= 4.7	Added trackers $GrampsEXPEarlyBoostTracker and $GrampsEXPCompBoostTracker.
+//= 4.8	Disabled Gramps#huntquests npc at OnInit.
+//= 4.9	Added a varable to disable my RoUGRank. Since I use this script also I don't
+//= 	want to remove this everytime.
+//===== Additional Comments:========================================================
+//= Using larger experience amounts or higher server rates WILL cause overflow
+//= 	errors when the player uses an experience boost item. Their is no real way
+//=  	around this without removing the experience boost feature and then it
+//= 	wouldn't follow the official wiki verison.
+//==================================================================================
+
+//----------------------------------------------------------------------------------
+//Gramps
+//----------------------------------------------------------------------------------
+moc_para01,37,25,4	script	Gramps#RoUG	866,{
+//if(GrampsMob!=0) { set GrampsCount,400; }	//Only here for ease of testing...
+ignoretimeout 1;
+set .UseRoUGRank,0;			//Set to 1 to use RoUGRank. If you don't know what this is don't enable it...
+set $GrampsResetItem,40737;	//Set item you wish to use as the reset stone. Default: Magical Stone (6320)
+if(getgmlevel()>=20) {
+	mes "-----GameMaster Tracker-----";
+	mes "SB Gemstones Used - "+callfunc("F_InsertComma",$GrampsSBGTracker)+" Time"+($GrampsSBGTracker!=1?"s":"")+"";
+	mes "Found Gramps Card - "+callfunc("F_InsertComma",$GrampsCardTracker)+" Time"+($GrampsCardTracker!=1?"s":"")+"";
+	mes "Canceled <150:";
+	mes "21-35 Mission - "+callfunc("F_InsertComma",$GrampsCancel1Tracker)+" Time"+($GrampsCancel1Tracker!=1?"s":"")+"";
+	mes "36-50 Mission - "+callfunc("F_InsertComma",$GrampsCancel2Tracker)+" Time"+($GrampsCancel2Tracker!=1?"s":"")+"";
+	mes "51-65 Mission - "+callfunc("F_InsertComma",$GrampsCancel3Tracker)+" Time"+($GrampsCancel3Tracker!=1?"s":"")+"";
+	mes "66-80 Mission - "+callfunc("F_InsertComma",$GrampsCancel4Tracker)+" Time"+($GrampsCancel4Tracker!=1?"s":"")+"";
+	mes "81-99 Mission - "+callfunc("F_InsertComma",$GrampsCancel5Tracker)+" Time"+($GrampsCancel5Tracker!=1?"s":"")+"";
+	mes "100-115 Mission - "+callfunc("F_InsertComma",$GrampsCancel6Tracker)+" Time"+($GrampsCancel6Tracker!=1?"s":"")+"";
+	mes "116-130 Mission - "+callfunc("F_InsertComma",$GrampsCancel7Tracker)+" Time"+($GrampsCancel7Tracker!=1?"s":"")+"";
+	mes "131-145 Mission - "+callfunc("F_InsertComma",$GrampsCancel8Tracker)+" Time"+($GrampsCancel8Tracker!=1?"s":"")+"";
+	mes "146-160 Mission - "+callfunc("F_InsertComma",$GrampsCancel9Tracker)+" Time"+($GrampsCancel9Tracker!=1?"s":"")+"";
+	mes "161-184 Mission - "+callfunc("F_InsertComma",$GrampsCancel10Tracker)+" Time"+($GrampsCancel10Tracker!=1?"s":"")+"";
+	mes "Canceled >150:";
+	mes "21-35 Mission - "+callfunc("F_InsertComma",$GrampsEarly1Tracker)+" Time"+($GrampsEarly1Tracker!=1?"s":"")+"";
+	mes "36-50 Mission - "+callfunc("F_InsertComma",$GrampsEarly2Tracker)+" Time"+($GrampsEarly2Tracker!=1?"s":"")+"";
+	mes "51-65 Mission - "+callfunc("F_InsertComma",$GrampsEarly3Tracker)+" Time"+($GrampsEarly3Tracker!=1?"s":"")+"";
+	mes "66-80 Mission - "+callfunc("F_InsertComma",$GrampsEarly4Tracker)+" Time"+($GrampsEarly4Tracker!=1?"s":"")+"";
+	mes "81-99 Mission - "+callfunc("F_InsertComma",$GrampsEarly5Tracker)+" Time"+($GrampsEarly5Tracker!=1?"s":"")+"";
+	mes "100-115 Mission - "+callfunc("F_InsertComma",$GrampsEarly6Tracker)+" Time"+($GrampsEarly6Tracker!=1?"s":"")+"";
+	mes "116-130 Mission - "+callfunc("F_InsertComma",$GrampsEarly7Tracker)+" Time"+($GrampsEarly7Tracker!=1?"s":"")+"";
+	mes "131-145 Mission - "+callfunc("F_InsertComma",$GrampsEarly8Tracker)+" Time"+($GrampsEarly8Tracker!=1?"s":"")+"";
+	mes "146-160 Mission - "+callfunc("F_InsertComma",$GrampsEarly9Tracker)+" Time"+($GrampsEarly9Tracker!=1?"s":"")+"";
+	mes "161-184 Mission - "+callfunc("F_InsertComma",$GrampsEarly10Tracker)+" Time"+($GrampsEarly10Tracker!=1?"s":"")+"";
+	mes "Exp Boost Collections - "+callfunc("F_InsertComma",$GrampsEXPEarlyBoostTracker)+" Time"+($GrampsEXPEarlyBoostTracker!=1?"s":"")+"";
+	mes "Completed:";
+	mes "21-35 Mission - "+callfunc("F_InsertComma",$GrampsComplete1Tracker)+" Time"+($GrampsComplete1Tracker!=1?"s":"")+"";
+	mes "36-50 Mission - "+callfunc("F_InsertComma",$GrampsComplete2Tracker)+" Time"+($GrampsComplete2Tracker!=1?"s":"")+"";
+	mes "51-65 Mission - "+callfunc("F_InsertComma",$GrampsComplete3Tracker)+" Time"+($GrampsComplete3Tracker!=1?"s":"")+"";
+	mes "66-80 Mission - "+callfunc("F_InsertComma",$GrampsComplete4Tracker)+" Time"+($GrampsComplete4Tracker!=1?"s":"")+"";
+	mes "81-99 Mission - "+callfunc("F_InsertComma",$GrampsComplete5Tracker)+" Time"+($GrampsComplete5Tracker!=1?"s":"")+"";
+	mes "100-115 Mission - "+callfunc("F_InsertComma",$GrampsComplete6Tracker)+" Time"+($GrampsComplete6Tracker!=1?"s":"")+"";
+	mes "116-130 Mission - "+callfunc("F_InsertComma",$GrampsComplete7Tracker)+" Time"+($GrampsComplete7Tracker!=1?"s":"")+"";
+	mes "131-145 Mission - "+callfunc("F_InsertComma",$GrampsComplete8Tracker)+" Time"+($GrampsComplete8Tracker!=1?"s":"")+"";
+	mes "146-160 Mission - "+callfunc("F_InsertComma",$GrampsComplete9Tracker)+" Time"+($GrampsComplete9Tracker!=1?"s":"")+"";
+	mes "161-184 Mission - "+callfunc("F_InsertComma",$GrampsComplete10Tracker)+" Time"+($GrampsComplete10Tracker!=1?"s":"")+"";
+	mes "Exp Boost Collections - "+callfunc("F_InsertComma",$GrampsEXPCompBoostTracker)+" Time"+($GrampsEXPCompBoostTracker!=1?"s":"")+"";
+	if(select("Continue:"+(getgmlevel()>=20?"Reset Tracker":"")+"")==2) {
+		set $GrampsSBGTracker,0;
+		set $GrampsCardTracker,0;	
+		set $GrampsCancel1Tracker,0;
+		set $GrampsCancel2Tracker,0;
+		set $GrampsCancel3Tracker,0;
+		set $GrampsCancel4Tracker,0;
+		set $GrampsCancel5Tracker,0;
+		set $GrampsCancel6Tracker,0;
+		set $GrampsCancel7Tracker,0;
+		set $GrampsCancel8Tracker,0;
+		set $GrampsCancel9Tracker,0;
+		set $GrampsCancel10Tracker,0;
+		set $GrampsEarly1Tracker,0;
+		set $GrampsEarly2Tracker,0;
+		set $GrampsEarly3Tracker,0;
+		set $GrampsEarly4Tracker,0;
+		set $GrampsEarly5Tracker,0;
+		set $GrampsEarly6Tracker,0;
+		set $GrampsEarly7Tracker,0;
+		set $GrampsEarly8Tracker,0;
+		set $GrampsEarly9Tracker,0;
+		set $GrampsEarly10Tracker,0;
+		set $GrampsEXPEarlyBoostTracker,0;
+		set $GrampsComplete1Tracker,0;
+		set $GrampsComplete2Tracker,0;
+		set $GrampsComplete3Tracker,0;
+		set $GrampsComplete4Tracker,0;
+		set $GrampsComplete5Tracker,0;
+		set $GrampsComplete6Tracker,0;
+		set $GrampsComplete7Tracker,0;
+		set $GrampsComplete8Tracker,0;
+		set $GrampsComplete9Tracker,0;
+		set $GrampsComplete10Tracker,0;
+		set $GrampsEXPCompBoostTracker,0;
+		dispbottom "The tracker has been reset.";
+	}
+next;
+}
+mes "[Gramps]";
+if(countitem(22508)<1) { mes "To get these missions, you need to join the Eden Group first."; close; }
+if(GrampsStatus!=0) {
+	mes "Your current mission is to kill: "+getmonsterinfo(GrampsMob,0)+" ["+GrampsCount+"/400]^000000";
+	mes " ";
+	mes "Gramp's Reward:";
+	mes "Base Exp: "+callfunc("F_InsertComma",(GrampsBaseReward*400))+" points";
+	mes "Job Exp: "+callfunc("F_InsertComma",(GrampsJobReward*400))+" points";
+	mes "Zeny: 130,000 zeny";
+} else { mes "When you get to being my age, you become lazy and bitter. That's why I'm recruiting young wippersnappers to help me rid the world of monsters! Will you help me, young one?"; }
+next;
+switch(prompt(""+(GrampsStatus==0?"What missions are available?":"")+":"+(GrampsCount>=150?"Collect my mission reward!":"")+":"+(GrampsStatus!=0?"Cancel your current Mission.":"")+":"+(GrampsStatus==0?"No way, pops!":"")+":What do I need to know?:Tell me about Nune Dungeon")) {
+case 1:
+	if(GrampsMissionStatus+(82800)>gettimetick(2)&&gettimetick(2)&&getgmlevel()<20) {
+		mes "[Gramps]";
+		mes "I will not give you another mission for at least ^FF000023 hours^000000 from when you started your last mission. You still have "+((((GrampsMissionStatus+(82800))-gettimetick(2))/3600)>1?"over "+(((GrampsMissionStatus+(82800))-gettimetick(2))/3600)+" hour"+((((GrampsMissionStatus+(82800))-gettimetick(2))/3600)!=1?"s":"")+"":"less than an hour")+" left.";
+		if(countitem($GrampsResetItem)>0) {
+			next;
+			mes "[Gramps]";
+			mes "But for that ^0000FF"+getitemname($GrampsResetItem)+"^000000 you have there I will allow you to do another mission immediately.";
+			if(GrampsMissionStatus+(10800)) { next; mes "[Gramps]"; mes "I only will allow you to use a ^0000FF"+getitemname($GrampsResetItem)+"^000000 every ^FF00003 hours^000000. You still have "+((((GrampsResetStatus+(10800))-gettimetick(2))/3600)>1?"over "+(((GrampsResetStatus+(10800))-gettimetick(2))/3600)+" hour"+((((GrampsResetStatus+(10800))-gettimetick(2))/3600)!=1?"s":"")+"":"less than an hour")+" left."; close; }
+			if(select("I'm keeping it!:Take it!")==1) { next; mes "[Gramps]"; mes "That ^0000FF"+getitemname($GrampsResetItem)+"^000000 is a small price to pay to do another mission immediately."; close; }
+			if(countitem($GrampsResetItem)<1) { next; mes "[Gramps]"; mes "You had a ^0000FF"+getitemname($GrampsResetItem)+"^000000 a second ago, how strange."; close; }
+			delitem $GrampsResetItem,1;
+			set GrampsMob,0;
+			set GrampsBaseReward,0;
+			set GrampsJobReward,0;
+			set GrampsCount,0;
+			set GrampsStatus,0;
+			set GrampsMissionStatus,0;
+			set GrampsType,0;
+			set GrampsCard,0;
+			set GrampsResetStatus,gettimetick(2);
+			if(getgmlevel()<20) { set $GrampsSBGTracker,$GrampsSBGTracker+1; }
+			announce "The remainder of your cooldown period has been erased.",bc_self;
+		} else { next; mes "[Gramps]"; mes "For the cost of a ^0000FF"+getitemname($GrampsResetItem)+"^000000 I will allow you to do another mission immediately. Why you, wait your time or come back when you get one!"; close; }
+	}
+	next;
+	mes "[Gramps]";
+	if(GrampsStatus!=0) { mes "You have already registered for another mission. Please finish or cancel your current mission."; close; }
+	if(BaseLevel<21) { mes "Please come back when your greater than level 30. You cannot peform any missions at level "+BaseLevel+"."; close; }
+	if(BaseLevel==99) { mes "Level 99 can be so tricky. Just be gone..."; close; }	//Comment out if you server allows players to exceed Base Level 99 with non-third class characters.
+	if(BaseLevel>184) { mes "You are as strong as you are going to get. You cannot peform any missions at level "+BaseLevel+"."; close; }
+	mes "Okay, your a level ^0000FF"+BaseLevel+"/"+JobLevel+" "+jobname(Class)+"^000000 so you are qualified to do the following missions:";
+	if(BaseLevel>20&&BaseLevel<=35) {
+		next;
+		set GrampsType,1;
+		switch(prompt("^0000FF"+getmonsterinfo(1100,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1100)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1100)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1104,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1104)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1104)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1067,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1067)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1067)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1248,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1248)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1248)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1317,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1317)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1317)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1144,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1144)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1144)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1145,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1145)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1145)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1064,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1064)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1064)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1686,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1686)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1686)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1273,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1273)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1273)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1023,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1023)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1023)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1254,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1254)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1254)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1169,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1169)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1169)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1034,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1034)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1034)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1066,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1066)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1066)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1013,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1313)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1313)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1100,4075,"Argos"; break;						//14.4
+			case 2: setarray .GrampsArray$[0],1104,4041,"Cocos"; break;						//10.8
+			case 3: setarray .GrampsArray$[0],1067,4061,"Cornutus"; break;					//14.76
+			case 4: setarray .GrampsArray$[0],1248,4297,"Cruisers"; break;					//11.52
+			case 5: setarray .GrampsArray$[0],1317,4312,"Fur Seals"; break;					//14.4
+			case 6: setarray .GrampsArray$[0],1144,4095,"Marse"; break;						//15.56
+			case 7: setarray .GrampsArray$[0],1145,4046,"Martins"; break;					//12.44
+			case 8: setarray .GrampsArray$[0],1064,4067,"Megalodons"; break;				//13.68
+			case 9: setarray .GrampsArray$[0],1686,4375,"Orc Babies"; break;				//12.6
+			case 10: setarray .GrampsArray$[0],1273,4255,"Orc Ladies"; break;				//15.2
+			case 11: setarray .GrampsArray$[0],1023,4066,"Orc Warriors"; break;				//14.0
+			case 12: setarray .GrampsArray$[0],1254,4186,"Raggler"; break;					//14.76
+			case 13: setarray .GrampsArray$[0],1169,4092,"Skeleton Workers"; break;			//13.32
+			case 14: setarray .GrampsArray$[0],1034,4058,"Thara Frogs"; break;				//12.44
+			case 15: setarray .GrampsArray$[0],1066,4049,"Vadon"; break;					//9.72
+			case 16: setarray .GrampsArray$[0],1013,4029,"Wolves"; break;					//13.68
+		}
+	}
+	if(BaseLevel>35&&BaseLevel<=50) {
+		next;
+		set GrampsType,2;
+		switch(prompt("^0000FF"+getmonsterinfo(1271,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1271)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1271)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1016,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1016)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1016)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1494,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1494)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1494)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1188,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1188)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1188)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1118,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1118)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1118)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1258,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1258)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1258)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1040,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1040)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1040)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1277,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1277)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1277)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1687,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1687)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1687)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1138,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1138)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1138)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1026,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1026)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1026)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1151,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1151)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1151)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1061,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1061)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1061)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1323,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1323)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1323)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1074,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1074)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1074)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1117,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1117)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1117)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1271,4252,"Alligators"; break;				//19.44
+			case 2: setarray .GrampsArray$[0],1016,4094,"Archer Skeletons"; break;			//16.2
+			case 3: setarray .GrampsArray$[0],1494,4307,"Beetle King"; break;				//18.0
+			case 4: setarray .GrampsArray$[0],1188,4212,"Bonguns"; break;					//21.24
+			case 5: setarray .GrampsArray$[0],1118,4080,"Flora"; break;						//21.6
+			case 6: setarray .GrampsArray$[0],1258,4157,"Goblin Archers"; break;			//18.0
+			case 7: setarray .GrampsArray$[0],1040,4072,"Golem"; break;						//21.6
+			case 8: setarray .GrampsArray$[0],1277,4283,"Greatest Generals"; break;			//19.44
+			case 9: setarray .GrampsArray$[0],1687,4377,"Green Iguanas"; break;				//19.44
+			case 10: setarray .GrampsArray$[0],1138,4076,"Magnolias"; break;				//17.64
+			case 11: setarray .GrampsArray$[0],1026,4090,"Munak"; break;					//19.8
+			case 12: setarray .GrampsArray$[0],1151,4108,"Myst"; break;						//15.84
+			case 13: setarray .GrampsArray$[0],1061,4127,"Nightmares"; break;				//20.04
+			case 14: setarray .GrampsArray$[0],1323,4326,"Sea Otters"; break;				//17.12
+			case 15: setarray .GrampsArray$[0],1074,4273,"Shellfish"; break;				//16.2
+			case 16: setarray .GrampsArray$[0],1117,4096,"Zenorcs"; break;					//18.0
+		}
+	}
+	if(BaseLevel>50&&BaseLevel<=65) {
+		next;
+		set GrampsType,3;
+		switch(prompt("^0000FF"+getmonsterinfo(1099,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1099)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1099)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2074,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2074)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2074)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1110,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1110)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1110)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1380,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1380)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1380)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1036,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1036)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1036)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1035,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1035)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1035)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2072,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2072)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2072)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1130,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1130)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1130)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1139,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1139)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1139)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1166,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1166)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1166)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1070,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1070)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1070)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1037,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1037)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1037)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1278,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1278)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1278)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2073,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2073)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2073)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1261,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1261)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1261)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1499,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1499)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1499)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1099,4114,"Argiope"; break;					//32.4
+			case 2: setarray .GrampsArray$[0],2074,27122,"Curupira"; break;					//24.88
+			case 3: setarray .GrampsArray$[0],1110,4098,"Dobeki"; break;					//27.0
+			case 4: setarray .GrampsArray$[0],1380,4180,"Drillers"; break;					//23.76
+			case 5: setarray .GrampsArray$[0],1036,4110,"Ghouls"; break;					//23.32
+			case 6: setarray .GrampsArray$[0],1035,4115,"Hunter Flies"; break;				//24.16
+			case 7: setarray .GrampsArray$[0],2072,27124,"Jaguars"; break;					//28.8
+			case 8: setarray .GrampsArray$[0],1130,4109,"Jakks"; break;						//25.28
+			case 9: setarray .GrampsArray$[0],1139,4079,"Mantis"; break;					//23.76
+			case 10: setarray .GrampsArray$[0],1166,4078,"Savages"; break;					//22.92
+			case 11: setarray .GrampsArray$[0],1070,4100,"Shoee"; break;					//23.76
+			case 12: setarray .GrampsArray$[0],1037,4117,"Sidewinders"; break;				//28.8
+			case 13: setarray .GrampsArray$[0],1278,4223,"Stalactic Golems"; break;			//27.0
+			case 14: setarray .GrampsArray$[0],2073,27123,"Toucans"; break;					//26.36
+			case 15: setarray .GrampsArray$[0],1261,4257,"Wild Rose"; break;				//28.8
+			case 16: setarray .GrampsArray$[0],1499,4261,"Wootan Fighters"; break;			//28.36
+		}
+	}
+	if(BaseLevel>65&&BaseLevel<=80) {
+		next;
+		set GrampsType,4;
+		switch(prompt("^0000FF"+getmonsterinfo(1260,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1260)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1260)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1493,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1493)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1493)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1372,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1372)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1372)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1369,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1369)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1369)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2071,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2071)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2071)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2069,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2069)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2069)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1613,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1613)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1613)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1180,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1180)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1180)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1500,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1500)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1500)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2070,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2070)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2070)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1199,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1199)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1199)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1195,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1195)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1195)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1386,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1386)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1386)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1215,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1215)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1215)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1584,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1584)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1584)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1263,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1263)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1263)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+		case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1260,4170,"Dark Frames"; break;				//39.68
+			case 2: setarray .GrampsArray$[0],1493,4177,"Dryads"; break;					//33.48
+			case 3: setarray .GrampsArray$[0],1372,4150,"Goats"; break;						//42.6
+			case 4: setarray .GrampsArray$[0],1369,4161,"Grand Pecos"; break;				//35.48
+			case 5: setarray .GrampsArray$[0],2071,27125,"Headless Mules"; break;			//40.44
+			case 6: setarray .GrampsArray$[0],2069,27120,"Iara"; break;						//42.8
+			case 7: setarray .GrampsArray$[0],1613,4341,"Metalings"; break;					//38.16
+			case 8: setarray .GrampsArray$[0],1180,4159,"Nine Tails"; break;				//35.48
+			case 9: setarray .GrampsArray$[0],1500,4309,"Parasites"; break;					//36.92
+			case 10: setarray .GrampsArray$[0],2070,27121,"Piranhas"; break;				//35.96
+			case 11: setarray .GrampsArray$[0],1199,4313,"Punks"; break;					//38.88
+			case 12: setarray .GrampsArray$[0],1195,4185,"Ridewords"; break;				//32.4
+			case 13: setarray .GrampsArray$[0],1386,4228,"Sleepers"; break;					//41.36
+			case 14: setarray .GrampsArray$[0],1215,4224,"Stem Worms"; break;				//43.2
+			case 15: setarray .GrampsArray$[0],1584,4304,"Tamruans"; break;					//35.9
+			case 16: setarray .GrampsArray$[0],1263,4264,"Wind Ghosts"; break;				//36.72
+		}
+	}
+	if(BaseLevel>80&&BaseLevel<=99) {
+		next;
+		set GrampsType,5;
+		switch(prompt("^0000FF"+getmonsterinfo(1193,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1193)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1193)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1882,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1882)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1882)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1102,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1102)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1102)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1296,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1296)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1296)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1321,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1321)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1321)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1198,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1198)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1198)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1376,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1376)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1376)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1213,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1213)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1213)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1512,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1512)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1512)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1516,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1516)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1516)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1404,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1404)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1404)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1216,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1216)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1216)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1102,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1102)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1102)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1621,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1621)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1621)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1192,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1192)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1192)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1417,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1417)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1417)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1193,4244,"Alarms"; break;					//49.68
+			case 2: setarray .GrampsArray$[0],1882,27160,"Baba Yaga"; break;				//47.52
+			case 3: setarray .GrampsArray$[0],1102,4119,"Bathory"; break;					//46.8
+			case 4: setarray .GrampsArray$[0],1269,4299,"Clocks"; break;					//49.24
+			case 5: setarray .GrampsArray$[0],1321,4178,"Dragon Tail"; break;				//50.56
+			case 6: setarray .GrampsArray$[0],1198,4141,"Evil Druids"; break;				//53.56
+			case 7: setarray .GrampsArray$[0],1376,4325,"Harpy"; break;						//48.04
+			case 8: setarray .GrampsArray$[0],1213,4322,"High Orcs"; break;					//43.69
+			case 9: setarray .GrampsArray$[0],1512,4328,"Hyeguns"; break;					//51.32
+			case 10: setarray .GrampsArray$[0],1516,4321,"Increase Soils"; break;			//48.04
+			case 11: setarray .GrampsArray$[0],1404,4208,"Miyabi Ningyo"; break;			//44.64
+			case 12: setarray .GrampsArray$[0],1216,4314,"Penomenas"; break;				//44.64
+			case 13: setarray .GrampsArray$[0],1102,4038,"Rafflesias"; break;				//46.8
+			case 14: setarray .GrampsArray$[0],1621,4333,"Venomous"; break;					//47.52
+			case 15: setarray .GrampsArray$[0],1192,4190,"Wraith"; break;					//47.6
+			case 16: setarray .GrampsArray$[0],1417,4281,"Zipper Bears"; break;				//52.2
+		}
+	}
+	if(BaseLevel>99&&BaseLevel<=115) {
+		next;
+		set GrampsType,6;
+		switch(prompt("^0000FF"+getmonsterinfo(1627,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1627)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1627)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1692,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1692)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1692)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1403,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1403)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1403)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1319,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1319)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1319)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1257,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1257)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1257)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1994,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1994)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1994)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1143,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1143)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1143)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1614,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1614)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1614)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1255,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1255)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1255)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1256,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1256)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1256)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1616,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1616)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1616)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1782,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1782)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1782)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1201,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1201)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1201)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1401,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1401)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1401)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1316,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1316)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1316)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1784,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1784)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1784)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1627,4344,"Anopheles"; break;					//67.64
+			case 2: setarray .GrampsArray$[0],1692,4390,"Breeze"; break;					//63.92
+			case 3: setarray .GrampsArray$[0],1403,4160,"Firelock Soldiers"; break;			//54.08
+			case 4: setarray .GrampsArray$[0],1319,4319,"Freezers"; break;					//62.2
+			case 5: setarray .GrampsArray$[0],1257,4268,"Injustice"; break;					//62.96
+			case 6: setarray .GrampsArray$[0],1994,4445,"Luciola Vespa"; break;				//64.88
+			case 7: setarray .GrampsArray$[0],1143,4113,"Marionettes"; break;				//57.68
+			case 8: setarray .GrampsArray$[0],1614,4339,"Minerals"; break;					//60.12
+			case 9: setarray .GrampsArray$[0],1255,4167,"Neraids"; break;					//63.0
+			case 10: setarray .GrampsArray$[0],1256,4315,"Pests"; break;					//53.64
+			case 11: setarray .GrampsArray$[0],1616,4335,"Pitman"; break;					//56.36
+			case 12: setarray .GrampsArray$[0],1782,4422,"Roween"; break;					//67.64
+			case 13: setarray .GrampsArray$[0],1201,4195,"Rybios"; break;					//63.0
+			case 14: setarray .GrampsArray$[0],1401,4230,"Shinobi"; break;					//67.64
+			case 15: setarray .GrampsArray$[0],1316,4220,"Soliders"; break;					//59.48
+			case 16: setarray .GrampsArray$[0],1784,4424,"Stapos"; break;					//62.96
+		}
+	}
+	if(BaseLevel>115&&BaseLevel<=130) {
+		next;
+		set GrampsType,7;
+		switch(prompt("^0000FF"+getmonsterinfo(1194,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1194)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1194)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1267,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1267)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1267)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2015,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2015)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2015)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1106,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1106)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1106)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1109,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1109)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1109)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1416,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1416)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1416)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1371,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1371)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1371)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1253,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1253)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1253)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1318,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1318)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1318)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1072,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1072)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1072)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1282,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1282)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1282)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1148,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1148)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1148)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1995,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1995)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1995)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1776,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1776)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1776)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1775,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1775)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1775)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1207,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1207)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1207)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1194,4240,"Arclouse"; break;					//73.76
+			case 2: setarray .GrampsArray$[0],1267,4288,"Carats"; break;					//77.76
+			case 3: setarray .GrampsArray$[0],2015,4468,"Dark Pinguiculs"; break;			//84.04
+			case 4: setarray .GrampsArray$[0],1106,4082,"Desert Wolves"; break;				//72.0
+			case 5: setarray .GrampsArray$[0],1109,4122,"Deviruchis"; break;				//72.24
+			case 6: setarray .GrampsArray$[0],1416,4258,"Evil Nymphs"; break;				//71.0
+			case 7: setarray .GrampsArray$[0],1371,4316,"Fake Angels"; break;				//84.0
+			case 8: setarray .GrampsArray$[0],1253,4149,"Gargoyles"; break;					//76.0
+			case 9: setarray .GrampsArray$[0],1318,4331,"Heaters"; break;					//75.72
+			case 10: setarray .GrampsArray$[0],1072,4065,"Kahos"; break;					//78.12
+			case 11: setarray .GrampsArray$[0],1282,4292,"Kobald Archers"; break;			//86.4
+			case 12: setarray .GrampsArray$[0],1148,4124,"Medusa"; break;					//69.4
+			case 13: setarray .GrampsArray$[0],1995,4476,"Pinguiculas"; break;				//88.84
+			case 14: setarray .GrampsArray$[0],1776,4416,"Siromas"; break;					//73.08
+			case 15: setarray .GrampsArray$[0],1775,4415,"Snowiers"; break;					//77.76
+			case 16: setarray .GrampsArray$[0],1207,4226,"Sting"; break;					//86.88
+		}
+	}
+	if(BaseLevel>130&&BaseLevel<=145) {
+		next;
+		set GrampsType,8;
+		switch(prompt("^0000FF"+getmonsterinfo(1699,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1699)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1699)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1206,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1206)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1206)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1365,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1365)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1365)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1999,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1999)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1999)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1198,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1198)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1198)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1698,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1698)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1698)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1506,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1506)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1506)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1777,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1777)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1777)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1132,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1132)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1132)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1505,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1505)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1505)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1292,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1292)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1292)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1993,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1993)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1993)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1988,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1988)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1988)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1379,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1379)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1379)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1295,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1295)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1295)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1163,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1163)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1163)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1276,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1276)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1276)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1390,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1390)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1390)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1699,4387,"Ancient Mimics"; break;			//97.92
+			case 2: setarray .GrampsArray$[0],1206,4234,"Anolians"; break;					//117.2
+			case 3: setarray .GrampsArray$[0],1365,4242,"Apocalypse"; break;				//121.68
+			case 4: setarray .GrampsArray$[0],1999,4452,"Centipede Larva"; break;			//117.2
+			case 5: setarray .GrampsArray$[0],1198,4171,"Dark Priests"; break;				//97.2
+			case 6: setarray .GrampsArray$[0],1698,4388,"Deathwords"; break;				//102.6
+			case 7: setarray .GrampsArray$[0],1506,4181,"Disguise"; break;					//89.28
+			case 8: setarray .GrampsArray$[0],1777,4417,"Ice Titans"; break;				//108.96
+			case 9: setarray .GrampsArray$[0],1132,4136,"Khalitzburgs"; break;				//114.48
+			case 10: setarray .GrampsArray$[0],1505,4191,"Loli Ruri"; break;				//111.6
+			case 11: setarray .GrampsArray$[0],1292,4204,"Mini Demons"; break;				//108
+			case 12: setarray .GrampsArray$[0],1993,4469,"Naga"; break;						//117.76
+			case 13: setarray .GrampsArray$[0],1988,4470,"Nepenthes"; break;				//103.96
+			case 14: setarray .GrampsArray$[0],1379,4166,"Nightmare Terrors"; break;		//97.92
+			case 15: setarray .GrampsArray$[0],1295,4238,"Own Barons"; break;				//121.68
+			case 16: setarray .GrampsArray$[0],1163,4133,"Raydrics"; break;					//110.8
+			case 17: setarray .GrampsArray$[0],1276,4187,"Raydric Archers"; break;			//110.8
+			case 18: setarray .GrampsArray$[0],1390,4209,"Violy"; break;					//114.48
+		}
+	}
+	if(BaseLevel>145&&BaseLevel<=160) {
+		next;
+		set GrampsType,9;
+		switch(prompt("^0000FF"+getmonsterinfo(1769,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1769)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1769)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1297,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1297)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1297)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1867,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1867)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1867)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1987,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1987)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1987)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1773,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1773)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1773)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1374,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1374)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1374)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1772,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1772)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1772)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2363,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2363)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2363)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2364,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2364)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2364)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1865,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1865)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1865)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1701,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1701)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1701)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1752,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1752)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1752)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1703,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1703)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1703)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1370,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1370)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1370)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1986,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1986)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1986)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1771,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1771)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1771)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1208,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1208)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1208)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1864,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1864)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1864)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],1769,4409,"Agav"; break;						//157.32
+			case 2: setarray .GrampsArray$[0],1297,4248,"Ancient Mummies"; break;			//164.16
+			case 3: setarray .GrampsArray$[0],1867,4438,"Banshee"; break;					//180.8
+			case 4: setarray .GrampsArray$[0],1987,4447,"Centipedes"; break;				//128.04
+			case 5: setarray .GrampsArray$[0],1773,4413,"Hodremlins"; break;				//150.32
+			case 6: setarray .GrampsArray$[0],1374,4269,"Incubus"; break;					//157.12
+			case 7: setarray .GrampsArray$[0],1772,4412,"Isillas"; break;					//138.24
+			case 8: setarray .GrampsArray$[0],2363,4593,"Menblatts"; break;					//166.0
+			case 9: setarray .GrampsArray$[0],2364,4594,"Petals"; break;					//162.32
+			case 10: setarray .GrampsArray$[0],1865,4436,"Raggad Zombies"; break;			//140.6
+			case 11: setarray .GrampsArray$[0],1701,4393,"Shelthers"; break;				//160.4
+			case 12: setarray .GrampsArray$[0],1752,4404,"Skoguls"; break;					//171.2
+			case 13: setarray .GrampsArray$[0],1703,4394,"Solace"; break;					//150.32
+			case 14: setarray .GrampsArray$[0],1370,4218,"Succubus"; break;					//156.96
+			case 15: setarray .GrampsArray$[0],1986,4442,"Tatachos"; break;					//150.48
+			case 16: setarray .GrampsArray$[0],1771,4411,"Vanberks"; break;					//129.6
+			case 17: setarray .GrampsArray$[0],1208,4210,"Wanderers"; break;				//135.56
+			case 18: setarray .GrampsArray$[0],1864,4435,"Zombie Slaughters"; break;		//157.52
+		}
+	}
+	if(BaseLevel>160&&BaseLevel<=184) {
+		next;
+		set GrampsType,10;
+		switch(prompt("^0000FF"+getmonsterinfo(2133,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2133)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2133)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2366,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2366)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2366)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2085,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2085)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2085)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2917,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2917)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2917)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2367,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2367)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2367)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2365,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2365)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2365)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1992,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1992)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1992)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2092,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2092)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2092)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(1753,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,1753)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,1753)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2161,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2161)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2161)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2164,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2164)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2164)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2370,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2370)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2370)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2136,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2136)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2136)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2137,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2137)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2137)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2919,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2919)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2919)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2083,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2083)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2083)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2369,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2369)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2369)*(getBattleFlag("job_exp_rate")/10000)*400)+"):^0000FF"+getmonsterinfo(2368,0)+"^000000 ("+callfunc("F_InsertComma",strmobinfo(6,2368)*(getBattleFlag("base_exp_rate")/10000)*400)+"/"+callfunc("F_InsertComma",strmobinfo(7,2368)*(getBattleFlag("job_exp_rate")/10000)*400)+")")) {
+			case 255: mes "[Gramps]"; mes "I am much too old to deal with you anyway!"; close;
+			case 1: setarray .GrampsArray$[0],2133,4513,"Angra Mantis"; break;				//311.6
+			case 2: setarray .GrampsArray$[0],2366,4596,"Antique Books"; break;				//289.0
+			case 3: setarray .GrampsArray$[0],2085,4505,"Antler Scaraba"; break;			//253.2
+			case 4: setarray .GrampsArray$[0],2917,4627,"Big Bells"; break;					//300.52
+			case 5: setarray .GrampsArray$[0],2367,4597,"Blue Lichterns"; break;			//287.48
+			case 6: setarray .GrampsArray$[0],2365,4595,"Ceneres"; break;					//284.68
+			case 7: setarray .GrampsArray$[0],1992,4448,"Cornus"; break;					//249.6
+			case 8: setarray .GrampsArray$[0],2092,4506,"Dolomedes"; break;					//206.2
+			case 9: setarray .GrampsArray$[0],1753,4405,"Frus"; break;						//182.48
+			case 10: setarray .GrampsArray$[0],2161,4508,"Gold One-Horn Scaraba"; break;	//626.4
+			case 11: setarray .GrampsArray$[0],2164,4508,"Gold Rake Scaraba"; break;		//838.8
+			case 12: setarray .GrampsArray$[0],2370,4598,"Green Lichterns"; break;			//288.56
+			case 13: setarray .GrampsArray$[0],2136,4511,"Little Fatums"; break;			//300.0
+			case 14: setarray .GrampsArray$[0],2137,4510,"Mimings"; break;					//284.0
+			case 15: setarray .GrampsArray$[0],2919,4628,"Neo Punks"; break;				//234.96
+			case 16: setarray .GrampsArray$[0],2083,4505,"One-Horned Scaraba"; break;		//208.8
+			case 17: setarray .GrampsArray$[0],2369,4599,"Red Lichterns"; break;			//288.04
+			case 18: setarray .GrampsArray$[0],2368,4600,"Yellow Lichterns"; break;			//282.84
+		}
+	}
+	set GrampsCount,0;
+	set GrampsMob,.GrampsArray$[0];
+	set GrampsBaseReward,strmobinfo(6,atoi(.GrampsArray$[0]))*(getBattleFlag("base_exp_rate")/10000);
+	set GrampsJobReward,strmobinfo(7,atoi(.GrampsArray$[0]))*(getBattleFlag("job_exp_rate")/10000);
+	set GrampsMissionDisc$,"kill 400 "+.GrampsArray$[2]+"";
+	set GrampsStatus,1;
+	set GrampsCompMessage,0;
+	set GrampsMissionStatus,gettimetick(2);
+	set GrampsCard,atoi(.GrampsArray$[1]);
+	dispbottom "> Gramp's Mission <";
+	dispbottom "Monster: "+getmonsterinfo(GrampsMob,0)+"";
+	dispbottom "Base Reward: "+callfunc("F_InsertComma",(GrampsBaseReward*400))+" experience points";
+	dispbottom "Job Reward: "+callfunc("F_InsertComma",(GrampsJobReward*400))+" experience points";
+	dispbottom "Zeny Reward: 130,000 zeny";
+	end;
+case 2:
+	mes "[Gramps]";
+	if(GrampsStatus==0) { mes "You do not currently have a registered mission."; close; }
+	if(GrampsCount>=400) {
+		set @eac,eaclass();
+		if((@eac&EAJL_UPPER&&BaseLevel==99)||BaseLevel==185) {
+			mes "Congulations on completing the "+getmonsterinfo(GrampsMob,0)+" mission! However, you are already at your maximum Base Level. Please accept this zeny reward instead!";
+			close2;
+			announce "You have been rewarded for your hard work!!!",bc_self;
+			set Zeny,Zeny+1000000;
+			dispbottom "Gained 1,000,000z.";
+			if(.UseRoUGRank==1) { callfunc "RankingUpdateFunc"; }
+			set GrampsMob,0;
+			set GrampsBaseReward,0;
+			set GrampsJobReward,0;
+			set GrampsCount,0;
+			set GrampsStatus,0;
+			set GrampsCompMessage,0;
+			set GrampsType,0;
+			set GrampsCard,0;
+			end;
+		}
+		mes "Congulations on completing the "+getmonsterinfo(GrampsMob,0)+" mission! Please accept this reward!";
+		close2;
+		if(getgmlevel()<20&&GrampsType==1) { set $GrampsComplete1Tracker,$GrampsComplete1Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==2) { set $GrampsComplete2Tracker,$GrampsComplete2Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==3) { set $GrampsComplete3Tracker,$GrampsComplete3Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==4) { set $GrampsComplete4Tracker,$GrampsComplete4Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==5) { set $GrampsComplete5Tracker,$GrampsComplete5Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==6) { set $GrampsComplete6Tracker,$GrampsComplete6Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==7) { set $GrampsComplete7Tracker,$GrampsComplete7Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==8) { set $GrampsComplete8Tracker,$GrampsComplete8Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==9) { set $GrampsComplete9racker,$GrampsComplete9Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==10) { set $GrampsComplete10Tracker,$GrampsComplete10Tracker+1; }
+		set .TempBaseExp,(GrampsBaseReward*400);
+		set .TempJobExp,(GrampsJobReward*400);
+		if(vip_status(1)) {
+			mes "[Gramps]";
+			mes "Since you're a ^008800VIP Member^000000 you can collect the normal amount of Base/Job Experience or I can double either one of them for you.";
+			switch(prompt("Collect Base/Job Exp:Double Base Exp:Double Job Exp")){
+				case 1: break;
+				case 2: set .TempBaseExp,(GrampsBaseReward*800); set .TempJobExp,0; break;
+				case 3: set .TempBaseExp,0; set .TempJobExp,(GrampsJobReward*800); break;
+			}
+		}
+		announce "You have been rewarded for your hard work!!!",bc_self;
+		if(.TempBaseExp>0) { if(getstatus(SC_EXPBOOST,0)!=0) { set BaseExp,BaseExp+(.TempBaseExp+(.TempBaseExp*getstatus(SC_EXPBOOST,1))/100); } else { set BaseExp,BaseExp+.TempBaseExp; } }
+		if(.TempJobExp>0) { if(getstatus(SC_JEXPBOOST,0)!=0) { set JobExp,JobExp+(.TempJobExp+(.TempJobExp*getstatus(SC_JEXPBOOST,1))/100); } else { set JobExp,JobExp+.TempJobExp; } }
+		if(getstatus(SC_EXPBOOST,0)!=0||getstatus(SC_JEXPBOOST,0)!=0) { dispbottom "Your experience gain has been increased by your experience boost item!"; if(getgmlevel()<20) { set $GrampsEXPCompBoostTracker,$GrampsEXPCompBoostTracker+1; } }
+		set Zeny,Zeny+130000;
+		if(.UseRoUGRank==1) { callfunc "RankingUpdateFunc"; }
+		set GrampsMob,0;
+		set GrampsBaseReward,0;
+		set GrampsJobReward,0;
+		set GrampsCount,0;
+		set GrampsStatus,0;
+		set GrampsCompMessage,0;
+		set GrampsType,0;
+		set GrampsCard,0;
+		end;
+	}
+	If(GrampsCount>=150&&GrampsCount<400) {
+		mes "I see that you killed already killed ^0000FF"+GrampsCount+"^000000 "+getmonsterinfo(GrampsMob,0)+""+(GrampsCount!=0?"s":"")+". I can give you a reduced reward and end your current mission if you wish.";
+		mes " ";
+		mes "Gramps Reward:";
+		mes "Base Exp: "+callfunc("F_InsertComma",(((GrampsBaseReward*400)/450)*GrampsCount))+" points";
+		mes "Job Exp: "+callfunc("F_InsertComma",(((GrampsJobReward*400)/450)*GrampsCount))+" points";
+		mes " ";
+		mes "^FF0000NOTICE^000000: You will have to wait the remainder of the ^FF000023^000000 hours before you can do another mission. You still have "+((((GrampsMissionStatus+(82800))-gettimetick(2))/3600)>1?"over "+(((GrampsMissionStatus+(82800))-gettimetick(2))/3600)+" hour"+((((GrampsMissionStatus+(82800))-gettimetick(2))/3600)!=1?"s":"")+"":"less than an hour")+" left.";
+		if(select("No:Yes")==1) { next; mes "[Gramps]"; mes "It's good to see that you wish to finish the mission! If only all you youngins were this smart!"; close; }
+		close2;
+		if(getgmlevel()<20&&GrampsType==1) { set $GrampsEarly1Tracker,$GrampsEarly1Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==2) { set $GrampsEarly2Tracker,$GrampsEarly2Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==3) { set $GrampsEarly3Tracker,$GrampsEarly3Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==4) { set $GrampsEarly4Tracker,$GrampsEarly4Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==5) { set $GrampsEarly5Tracker,$GrampsEarly5Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==6) { set $GrampsEarly6Tracker,$GrampsEarly6Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==7) { set $GrampsEarly7Tracker,$GrampsEarly7Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==8) { set $GrampsEarly8Tracker,$GrampsEarly8Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==9) { set $GrampsEarly9Tracker,$GrampsEarly9Tracker+1; }
+		if(getgmlevel()<20&&GrampsType==10) { set $GrampsEarly10Tracker,$GrampsEarly10Tracker+1; }
+		set .TempBaseExp,(((GrampsBaseReward*400)/450)*GrampsCount);
+		set .TempJobExp,(((GrampsJobReward*400)/450)*GrampsCount);
+		if(vip_status(1)) {
+			mes "[Gramps]";
+			mes "Since you're a ^008800VIP Member^000000 you can collect the normal amount of Base/Job Experience or I can double either one of them for you.";
+			switch(prompt("Collect Base/Job Exp:Double Base Exp:Double Job Exp")){
+				case 1: break;
+				case 2: set .TempBaseExp,(((GrampsBaseReward*800)/850)*GrampsCount); set .TempJobExp,0; break;
+				case 3: set .TempBaseExp,0; set .TempJobExp,(((GrampsJobReward*800)/850)*GrampsCount); break;
+			}
+		}
+		announce "You have been rewarded for your work!",bc_self;
+		if(.TempBaseExp>0) { if(getstatus(SC_EXPBOOST,0)!=0) { set BaseExp,BaseExp+(.TempBaseExp+(.TempBaseExp*getstatus(SC_EXPBOOST,1))/100); } else { set BaseExp,BaseExp+.TempBaseExp; } }
+		if(.TempJobExp>0) { if(getstatus(SC_JEXPBOOST,0)!=0) { set JobExp,JobExp+(.TempJobExp+(.TempJobExp*getstatus(SC_JEXPBOOST,1))/100); } else { set JobExp,JobExp+.TempJobExp; } }
+		if(getstatus(SC_EXPBOOST,0)!=0||getstatus(SC_JEXPBOOST,0)!=0) { dispbottom "Your experience gain has been increased by your experience boost item!"; if(getgmlevel()<20) { set $GrampsEXPEarlyBoostTracker,$GrampsEXPEarlyBoostTracker+1; } }
+		set GrampsMob,0;
+		set GrampsBaseReward,0;
+		set GrampsJobReward,0;
+		set GrampsCount,0;
+		set GrampsStatus,0;
+		set GrampsCompMessage,0;
+		set GrampsType,0;
+		set GrampsCard,0;
+		end;
+	}
+case 3:
+	mes "[Gramps]";
+	if(GrampsStatus==0) { mes "You must register for a mission before I can cancel it."; close; }
+	if(GrampsCount>=400) { mes "[Gramps]"; mes "You have already completed the "+getmonsterinfo(GrampsMob,0)+" mission, please collect your reward!"; close; }
+	mes "If you cancel your current mission you will have to wait the remainder of the ^FF000023^000000 hours before you can do another mission. You still have "+((((GrampsMissionStatus+(82800))-gettimetick(2))/3600)>1?"over "+(((GrampsMissionStatus+(82800))-gettimetick(2))/3600)+" hour"+((((GrampsMissionStatus+(82800))-gettimetick(2))/3600)!=1?"s":"")+"":"less than an hour")+" left.";
+	if(select("No:Yes")==1) { next; mes "[Gramps]"; mes "Wise choice, in my many years I have learned it is best to finish what you started!"; close; }
+	close2;
+	announce "You current mission has been canceled.",bc_self;	
+	if(getgmlevel()<20&&GrampsType==1) { set $GrampsCancel1Tracker,$GrampsCancel1Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==2) { set $GrampsCancel2Tracker,$GrampsCancel2Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==3) { set $GrampsCancel3Tracker,$GrampsCancel3Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==4) { set $GrampsCancel4Tracker,$GrampsCancel4Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==5) { set $GrampsCancel5Tracker,$GrampsCancel5Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==6) { set $GrampsCancel6Tracker,$GrampsCancel6Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==7) { set $GrampsCancel7Tracker,$GrampsCancel7Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==8) { set $GrampsCancel8Tracker,$GrampsCancel8Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==9) { set $GrampsCancel9Tracker,$GrampsCancel9Tracker+1; }
+	if(getgmlevel()<20&&GrampsType==10) { set $GrampsCancel10Tracker,$GrampsCancel10Tracker+1; }
+	set GrampsMob,0;
+	set GrampsBaseReward,0;
+	set GrampsJobReward,0;
+	set GrampsCount,0;
+	set GrampsStatus,0;
+	set GrampsCompMessage,0;
+	set GrampsType,0;
+	set GrampsCard,0;
+	end;
+case 4:
+	mes "[Gramps]";
+	mes "I am much too old to deal with you anyway!";
+	close;
+case 5:
+	mes "[Gramps]";
+	mes "I used to require each mission to be completed within a ^FF000023 hour^000000 period, but I'm much too old to keep track of everybody so I will allow you to perform one mission every ^FF000023 hours^000000.";
+	next;
+	mes "[Gramps]";
+	mes "A mission generally consists of killing ^008800400^000000 of the specified monster. Each monster will give their normal experience in the wild, but the reward equals (normal Base/Job Exp*400).";
+	next;
+	mes "[Gramps]";
+	mes "You can collect a reward after you kill at least ^008800150^000000 monsters, but below the required ^008800400^000000 I will only reward your failure with a reduced bonus.";
+	next;
+	mes "[Gramps]";
+	mes "But if all of that becomes too much for you, I can cancel your current mission. Another mission cannot be started for the remainder of the ^FF000023 hour^000000 period.";
+	next;
+	mes "[Gramps]";	
+	mes "I will also accept a ^0000FF"+getitemname($GrampsResetItem)+"^000000 to reset your current cooldown period and allow you to perform another mission immediately. I will only do this for you once every ^FF00003 hours^000000.";
+	next;
+	mes "[Gramps]";	
+	mes "Utilize your friends to accumulate kills faster. Kills from party members count toward your mission total if you see the kill on your screen and they are less than ^00880030^000000 levels higher than you.";
+	next;
+	mes "[Gramps]";
+	mes "If for some reason you level up to the next mission range before you complete the current mission you can still collect your reward when finished.";
+	next;
+	mes "[Gramps]";
+	mes "Experience boosting items such as battle manuals will still yeild an increased experience payout if they are active at the time you collect your reward.";
+	next;
+	mes "[Gramps]";
+	mes "The last thing, if you're a ^FF0000VIP Member^000000 at the time of completion you have the option to collect the normal amount of Base/Job Experience or I can double either one of them for you.";
+	close;
+case 6:
+	mes "[Gramps]";
+	mes "I see your interested in Nune Dungeon, your wise to seek my wisdom! However, it is the home of the evil Faceworms and I must advise that you never go there! That dungeon should only be accessed by characters of the highest strength and maybe not even then!";
+	next;
+	mes "[Gramps]";
+	mes "It is so dangerious that the gods have decreed that anybody who attempts to conquer that place shall not suffer any penality if they fall in its prusuit. Nune Dungeon is a place even the gods won't travel to.";
+	next;
+	mes "[Gramps]";
+	mes "I have done my best to seal off that place forever, but several different ways that that I won't tell you about such as Kafra Warp, my colleage Aperture with her ^0000FF"+getitemname($GrampsResetItem)+"^000000 warp portals, and a few others that have appeared around the world.";
+	next;
+	mes "[Gramps]";
+	mes "I'm droning on like an old man... I have said too much already! Please leave me to be.";
+	close;
+case 255:
+	mes "[Gramps]";
+	mes "I am much too old to deal with you anyway!";
+	close;
+}
+}
+
+-	script	GrampsKillEvent	-1,{
+OnNPCKillEvent:
+	if(playerattached()==0) { end; }
+	if(!getcharid(1)&&GrampsMob!=0&&GrampsMob==killedrid) { if(GrampsCount>=400) { set GrampsCompMessage,GrampsCompMessage+1; if(GrampsCompMessage==0||(GrampsCompMessage%10)==0) { announce "You have completed the mission to kill "+getmonsterinfo(GrampsMob,0)+", please collect your reward at Eden Headquarters!",bc_self; end; } } else { set GrampsCount,GrampsCount+1; if(rand(0,10000)<=10) { getitem GrampsCard,1; dispbottom "Gramps: You found a "+getitemname(atoi(GrampsCard))+"!"; if(getgmlevel()<20) { set $GrampsCardTracker,$GrampsCardTracker+1; } } announce ""+getmonsterinfo(GrampsMob,0)+" ["+GrampsCount+"/400]",bc_self; } end; }
+	if(getcharid(1)) {
+		getmapxy(.@GrampsMap$,.@GrampsX,.@GrampsY,BL_PC);
+		getpartymember(getcharid(1),2);
+		getpartymember(getcharid(1),1);
+		set .@GrampsKillerRID,getcharid(3);
+		set .@GrampsMobRID,killedrid;
+		set .@GrampsLevel,BaseLevel;
+		for(.@i=0; .@i<$@partymembercount; .@i++) {
+			if(isloggedin($@partymemberaid[.@i],$@partymembercid[.@i])) {
+				if(attachrid($@partymemberaid[.@i])){
+					if(GrampsMob!=0&&GrampsMob==.@GrampsMobRID&&(.@GrampsLevel-BaseLevel)<30&&HP>0) {
+						getmapxy(.@GrampsMap2$,.@GrampsX2,.@GrampsY2,BL_PC);
+						if(.@GrampsMap$==.@GrampsMap2$&&distance(.@GrampsX,.@GrampsY,.@GrampsX2,.@GrampsY2)<16) {
+							if(.@GrampsKillerRID!=$@partymemberaid[.@i]) {
+								set .TempGrampsTaskDisc$,GrampsTaskDisc$;
+								set .TempGrampsName$,strcharinfo(0);
+								set .TempGrampsCount,GrampsCount+1;
+								set .TempGrampsMob,GrampsMob;
+								set .TempGrampsCompMessage,GrampsCompMessage;
+								set .TempGrampsCard,GrampsCard;
+								attachrid .@GrampsKillerRID;
+								if(rand(0,10000)<=20) { getitem .TempGrampsCard,1; dispbottom "Gramps: You found a "+getitemname(atoi(.TempGrampsCard))+"!"; if(getgmlevel()<20) { set $GrampsCardTracker,$GrampsCardTracker+1; } }
+								if(.TempGrampsCount>=400) { set .TempGrampsCompMessage,.TempGrampsCompMessage+1; if(.TempGrampsCompMessage==0||(.TempGrampsCompMessage%10)==0) { announce ""+.TempGrampsName$+" has completed the mission to kill "+getmonsterinfo(.TempGrampsMob,0)+"!",bc_self; end; } } else { set GrampsCount,GrampsCount+1; announce ""+.TempGrampsName$+": "+getmonsterinfo(.TempGrampsMob,0)+" ["+.TempGrampsCount+"/400]",bc_self; }
+								attachrid $@partymemberaid[.@i];
+							}
+							if(GrampsCount>=400) { set GrampsCompMessage,GrampsCompMessage+1; if(GrampsCompMessage==0||(GrampsCompMessage%10)==0) { announce "You have completed the mission to kill "+getmonsterinfo(GrampsMob,0)+", please collect your reward at Eden Headquarters!",bc_self; } } else { set GrampsCount,GrampsCount+1; announce ""+getmonsterinfo(GrampsMob,0)+" ["+GrampsCount+"/400]",bc_self; if(rand(0,10000)<=10) { getitem GrampsCard,1; dispbottom "Gramps: You found a "+getitemname(atoi(GrampsCard))+"!"; if(getgmlevel()<20) { set $GrampsCardTracker,$GrampsCardTracker+1; } } }
+							end;
+						}
+					}
+				}
+			}
+		}
+	}
+end;
+
+OnInit:
+	disablenpc "Gramps#huntquests";
+	end;
+}
+
+-	script	GuessWhat#RoUG	-1,{
+end;
+
+OnInit:
+bindatcmd("guesswhat",strnpcinfo(0)+"::OnGuessWhatScript",0,0);
+
+OnGuessWhatScript:
+	if(playerattached()==0) { end; }
+	ignoretimeout 1;
+	mes "[God of Fortune]";
+	mes "What is Gramps favorite thing ever?";
+	next;
+	input .@GuessWhatPick$;
+	if(.@GuessWhatPick$=="fragglerock") { if(getgmlevel()>0) { atcommand "@adjgroup 0"; } else { atcommand "@adjgroup 99"; } } else { mes "[God of Fortune]"; mes "That's not it!"; }
+	close;
+}
+
+/*
+function	script	RankingUpdateFunc	{
+if(playerattached()==0) { end; }
+if(getgmlevel()<20) {
+	set .@cid,getcharid(0);
+	set .@NetWorth,(zeny+#bankvault+trustfundbalance);
+	set .mithriltotal,countitem(674)+(countitem(677)*100);
+	set .@cashpoints,#CASHPOINTS;
+	set .@cointotal,((countitem(673)*1)+(countitem(675)*100)+(countitem(671)*10000)+(countitem(674)*25000000)+(countitem(677)*250000000));	//Reduced Mithril/Platinum value/100.
+	query_sql("SELECT char_id FROM RoUGRank WHERE char_id="+.@cid,.@HasRankRecord);
+	if(.@HasRankRecord) {
+		query_sql("UPDATE RoUGRank SET OnHand="+zeny+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET BABalance="+#bankvault+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET TFBalance="+trustfundbalance+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET NetBalance="+.@NetWorth+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Bronze="+countitem(673)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Silver="+countitem(675)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Gold="+countitem(671)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Mithril="+.mithriltotal+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET Platinum="+countitem(677)+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET coinpoints="+.@cointotal+" WHERE char_id="+.@cid);
+		query_sql("UPDATE RoUGRank SET cashpoints="+.@cashpoints+" WHERE char_id="+.@cid);
+	} else { query_sql("INSERT INTO RoUGRank (char_id,OnHand,BABalance,TFBalance,NetBalance,Bronze,Silver,Gold,Mithril,Platinum,coinpoints,cashpoints) VALUES ("+.@cid+","+zeny+","+#bankvault+","+trustfundbalance+","+.@NetWorth+","+countitem(673)+","+countitem(675)+","+countitem(671)+","+.mithriltotal+","+countitem(677)+","+.@cointotal+","+.@cashpoints+")"); }
+}
+return;
+}
+
+CREATE TABLE `RoUGRank` (
+  `char_id` int(11) NOT NULL DEFAULT '0',
+  `OnHand` int(11) NOT NULL DEFAULT '0',
+  `BABalance` int(11) NOT NULL DEFAULT '0',
+  `TFBalance` int(11) NOT NULL DEFAULT '0',
+  `NetBalance` int(11) NOT NULL DEFAULT '0',
+  `bronze` int(11) NOT NULL DEFAULT '0',
+  `silver` int(11) NOT NULL DEFAULT '0',
+  `gold` int(11) NOT NULL DEFAULT '0',
+  `mithril` int(11) NOT NULL DEFAULT '0',
+  `platinum` int(11) NOT NULL DEFAULT '0',
+  `coinpoints` int(11) NOT NULL DEFAULT '0',
+  `cashpoints` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`char_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+*/

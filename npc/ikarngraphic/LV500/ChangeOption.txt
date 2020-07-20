@@ -1,0 +1,166 @@
+//===== Current Version: =====================================
+//= 1.1 
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Exchange cards for points?.?
+//============================================================
+
+-	shop	enchantcot3_shop	-1,909:-1
+
+1@herbs,117,96,4	script	Move Option	10128,{
+	mes "[ Move Option ]";
+	mes "หวัดดี, "+strcharinfo(0)+"!";
+	mes "ข้าสามารถถอดหินออกจากคอสตูมได้";
+	mes "มีอะไรให้ข้ารับใช้ไหม ?";
+	mes "ใช้ไอเท็ม : ^FF0000TCG Card^000000 100 ea.";
+	next;
+	
+	if(#hatid1 != 0){
+	
+	
+	
+	menu " - ย้ายออฟลงไอเท็ม",HT2," - ออก",NoMes;
+	
+	}
+	
+	switch(select(" - ย้ายออฟชั่น^777777(ทั้งหมด)^000000: - ออก")) {
+	case 1:
+			goto EED;
+		end;
+		
+	case 2:
+		mes "[ Move Option ]";
+		mes "แล้วมาใหม่น่ะ!";
+		close;		
+	}
+
+ErrMes:
+mes "[ Move Option ]";
+mes "กรุณาสวมใส่ไอเท็มก่อน";
+end;	
+
+NoMes:
+mes "ไว้เจอกันใหม่";
+end;
+
+
+EED:
+	
+		mes "[ Move Option ]";
+		mes "กรุณาเลือกส่วน";
+		mes "ที่เจ้าต้องการ";
+	next;
+		setarray .@indices[1], EQI_COSTUME_HEAD_TOP,EQI_COSTUME_HEAD_MID,EQI_COSTUME_HEAD_LOW,EQI_COSTUME_GARMENT;
+		for( set .@i,1; .@i <= 4; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+			
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);	
+	set .@idcard,.@id;
+
+	set #hatid1,.@part;
+	set #hat1,.@idcard;
+	#card1t = getequipcardid(.@idcard,0);
+	#card2t = getequipcardid(.@idcard,1);
+	#card3t = getequipcardid(.@idcard,2);
+	#card4t = getequipcardid(.@idcard,3);
+	#ref = getequiprefinerycnt(.@idcard);
+	set #ropt1,getequiprandomoption(.@idcard,0,ROA_ID);
+	set #ropt2,getequiprandomoption(.@idcard,0,ROA_VALUE);
+	set #ropt3,getequiprandomoption(.@idcard,1,ROA_ID);
+	set #ropt4,getequiprandomoption(.@idcard,1,ROA_VALUE);
+	set #ropt5,getequiprandomoption(.@idcard,2,ROA_ID);
+	set #ropt6,getequiprandomoption(.@idcard,2,ROA_VALUE);
+	delitem .@part,1;	
+				
+		next;
+	mes "[ Move Option ]";
+	mes "ไอเท็ม : "+getitemname(.@part)+"";
+	mes "ถูก เก็บไว้แล้ว";
+	end;
+
+			
+HT2:			
+			
+	mes "[ Move Option ]";
+		mes "กรุณาเลือกส่วน";
+		mes "ที่เจ้าต้องการ";
+	next;
+		setarray .@indices[1], EQI_COSTUME_HEAD_TOP,EQI_COSTUME_HEAD_MID,EQI_COSTUME_HEAD_LOW,EQI_COSTUME_GARMENT;
+		for( set .@i,1; .@i <= 4; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}		
+			
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);	
+	set .@idcard,.@id;
+	
+	if(getequipid(.@id) == 0){	goto ErrMes;	end;	}
+	//if(getequipid(.@id) != #hat1){	goto ErrMes;	end;	}
+	
+	mes "[ Move Option ]";
+	mes "ไอเท็ม : "+getitemname(#hatid1)+"";
+	mes "ย้ายไป : "+getitemname(.@part)+"";
+	mes "ถูกต้องหรือไม่ ?";
+		
+	if (countitem(.@part) > 1 ) {
+	next;
+					mes "[ Move Option ]";
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}	
+				
+	if (countitem(7227) < 100 ) {
+	next;
+					mes "[ Move Option ]";
+					mes "ไม่มีไอเท็มที่ใช้ในการถอด";
+					end;
+				}			
+	next;
+	
+	menu "ถูกต้องแล้ว",-,"ไม่ใช่ไอเท็มนี้",NoMes;
+
+		specialeffect2 154;
+		delitem .@part,1;
+		next;
+		
+		delitem 7227,100;
+		
+		getitem2 .@part, 1, 1, #ref, 0, #card1t, #card2t, #card3t, #card4t;		
+		getitem #hatid1,1;		
+		equip .@part;
+		
+		mes "[ Move Option ]";
+		mes "ขอบคุณที่ใช้บริการ.";
+			
+	setrandomoption(.@part,0,#ropt1,#ropt2,0);
+	setrandomoption(.@part,1,#ropt3,#ropt4,0);
+	setrandomoption(.@part,2,#ropt5,#ropt6,0);
+	
+	set #hatid1,0;
+	set #hat1,0;
+	set #card1t,0;
+	set #card2t,0;
+	set #card3t,0;
+	set #card4t,0;
+	set #ref,0;
+	set #ropt1,0;
+	set #ropt2,0;
+	set #ropt3,0;
+	set #ropt4,0;
+	set #ropt5,0;
+	set #ropt6,0;
+	
+		end;
+
+OnInit:
+//	waitingroom "  Enchanter Class",0;
+end;
+}

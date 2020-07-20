@@ -17,7 +17,7 @@ struct s_buyingstore_item
 {
 	int price;
 	unsigned short amount;
-	uint32 nameid;
+	unsigned short nameid;
 };
 
 struct s_buyingstore
@@ -50,6 +50,7 @@ struct s_autotrader {
 		sit; ///< Is sitting?
 	char title[MESSAGE_SIZE]; ///< Store name
 	uint32 limit; ///< Maximum zeny to be spent (for buyingstore)
+	unsigned short vend_loot;		// Extended Vending system [Lilith]
 	uint16 count; ///< Number of item in store
 	struct s_autotrade_entry **entries; ///< Store details
 	struct map_session_data *sd;
@@ -60,7 +61,7 @@ int8 buyingstore_create(struct map_session_data* sd, int zenylimit, unsigned cha
 void buyingstore_close(struct map_session_data* sd);
 void buyingstore_open(struct map_session_data* sd, uint32 account_id);
 void buyingstore_trade(struct map_session_data* sd, uint32 account_id, unsigned int buyer_id, const struct PACKET_CZ_REQ_TRADE_BUYING_STORE_sub* itemlist, unsigned int count);
-bool buyingstore_search(struct map_session_data* sd, uint32 nameid);
+bool buyingstore_search(struct map_session_data* sd, unsigned short nameid);
 bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_store_search* s);
 DBMap *buyingstore_getdb(void);
 void do_final_buyingstore(void);

@@ -1,0 +1,43 @@
+maintown,46,42,6	script	Master Dungeon#DungeonCT	856,{
+
+// =========== RESET DAY =============
+/*if (DPday != gettime(5)){
+	mes "[ Dungeons Master ]";
+	mes "ยินดีต้อนรับสู่วันใหม่";
+	mes "พลังของเจ้าได้ฟื้นฟูแล้วเต็มที่";
+	mes "ข้าจะมอบพลังให้เจ้า";
+	next;
+	mes "[ Dungeons Master ]";
+	mes "ข้ารู้สึกได้ถึงพลังที่เอ่อล้น !";
+	mes "ไปลุยกันเลยดีกว่า";
+		specialeffect2 113;
+		specialeffect2 312;	
+		set DPday,gettime(5);
+		set DPeng,500;
+	end;	}
+
+// =========== Energy 0 =============
+if (DPeng <= 0){
+	mes "[ Dungeons Master ]";
+	mes "พลังของเจ้าหมดแล้วนิไว้พบกันใหม่";
+	mes "ในวันพรุ่งนี้แล้วกัน";
+	end;	}*/
+
+	mes "[ Dungeons Master ]";
+
+set .@gettimetick, gettimetick(2);
+		set .@instance_delay1, ( instance_delay_dunct345 - gettimetick(2) );
+		set .@instance_delay2, ( instance_delay_dunct700 - gettimetick(2) );
+		set .@instance_delay3, ( instance_delay_dunctel6 - gettimetick(2) );
+		set .@instance_delay4, ( instance_delay_dunctguild - gettimetick(2) );
+		set .@instance_delay5, ( instance_delay_dunctpor - gettimetick(2) );
+		set .@instance_delay6, ( instance_delay_dunctwitch - gettimetick(2) );
+	
+	if(.@instance_delay1 <= 0){ mes "Evil: ^28B463สามารถเข้าร่วมได้^000000"; } else { mes "Evil: "+.@instance_delay1+" วิ."; }
+	if(.@instance_delay2 <= 0){ mes "Dragon: ^28B463สามารถเข้าร่วมได้^000000"; } else { mes "Dragon: "+.@instance_delay2+" วิ."; }
+	if(.@instance_delay3 <= 0){ mes "The King: ^28B463สามารถเข้าร่วมได้^000000"; } else { mes "The King: "+.@instance_delay3+" วิ."; }
+	if(.@instance_delay4 <= 0){ mes "Bijou: ^28B463สามารถเข้าร่วมได้^000000"; } else { mes "Bijou: "+.@instance_delay4+" วิ."; }
+	if(.@instance_delay5 <= 0){ mes "Sarah: ^28B463สามารถเข้าร่วมได้^000000"; } else { mes "Sarah: "+.@instance_delay5+" วิ."; }
+	if(.@instance_delay6 <= 0){ mes "Brother: ^28B463สามารถเข้าร่วมได้^000000"; } else { mes "Brother: "+.@instance_delay6+" วิ."; }
+	end;
+}

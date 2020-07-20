@@ -1,0 +1,64 @@
+/*1@herbs,200,89,4	script	tyeyey	910,{
+
+	set .@part,EQI_COSTUME_GARMENT;
+	set .@ropt1,getequiprandomoption(.@part,0,ROA_ID);
+	set .@ropt2,getequiprandomoption(.@part,0,ROA_VALUE);
+	set .@ropt3,getequiprandomoption(.@part,0,ROA_PARAM);
+	
+	if(.@ropt1){
+	
+	mes ""+.@ropt1+"";
+	mes ""+.@ropt2+"";
+	mes ""+.@ropt3+"";
+	end;
+	
+	}	
+
+	setrandomoption(.@part,0,RDMOPT_VAR_AVOIDSUCCESSVALUE,5,0);
+	end;
+
+}*/
+
+//1@herbs,195,70,4	script	SearchMonster	910,{
+//input .@mob_id;
+//
+//	if (getmobdrops(.@mob_id)) {	// 'getmobdrops' returns 1 on success
+//		// immediately copy global temporary variables into scope variables,
+//		// since we don't know when 'getmobdrops' will get called again for
+//		// another mob, overwriting your global temporary variables
+//		.@count = $@MobDrop_count;
+//		copyarray .@item[0],$@MobDrop_item[0],.@count;
+//		copyarray .@rate[0],$@MobDrop_rate[0],.@count;
+//
+//		mes "^FF0000"+getmonsterinfo(.@mob_id,MOB_NAME) + "^000000 - " + .@count + " drops found:";
+//		for( .@i = 0; .@i < .@count; .@i++ ) {
+//			//mes "(^000088"+.@item[.@i] + "^000000)" + getitemname(.@item[.@i]) + " : " + .@rate[.@i]/100 + ((.@rate[.@i]%100 < 10) ? ".0":".") + .@rate[.@i]%100 + "%";
+//			mes "" + getitemname(.@item[.@i]) + " : " + .@rate[.@i]/100 + ((.@rate[.@i]%100 < 10) ? ".0":".") + .@rate[.@i]%100 + "%";
+//		}
+//	} else {
+//		mes "Unknown monster ID.";
+//	}
+//	close;
+//	
+//end;
+//}
+
+//bat_c03,74,114,4	script	Mail Item Test	910,{
+//
+//	.@charid = getcharid(0);
+//	.@sender$ = "Admin";
+//	.@title$ = "Welcome to 404 Error";
+//	.@body$ = "Hi! I'm a simple Angeling from the Prontera fields! Welcome to Ragnarok!";
+//	.@zeny = 0;
+//	setarray .@mailitem[0], 504, 505, 2220, 1214; // White Potion, Blue Potion, Hat, Dagger
+//	setarray .@mailamount[0], 10, 5, 1, 1; // 10 White Potions, 5 Blue Potions, 1 Hat, 1 Dagger
+//	setarray .@mailcard0[0], 0, 0, 4198, 4092; // Attach Maya Purple Card to the Hat, Attach Skeleton Worker Card to Dagger
+//	setarray .@mailcard1[0], 0, 0, 0, 4092; // Attach Skeleton Worker Card to Dagger
+//	setarray .@mailcard2[0], 0, 0, 0, 4092; // Attach Skeleton Worker Card to Dagger
+//	setarray .@mailcard3[0], 0, 0, 0, 0; // Empty last slot
+//	setarray .@mailrndopt_id0[0], 0, 0, RDMOPT_VAR_MAXHPPERCENT, RDMOPT_VAR_PLUSASPD; // Enchant the Dagger with increased HP option
+//	setarray .@mailrndopt_val0[0], 0, 0, 400, 193, 0; // Enchant the Dagger with increased HP option by 1000 points
+//	setarray .@mailrndopt_prm0[0], 0, 0, 0, 0, 0; // Enchant the Dagger with increased HP option - does not need any parameter
+//	mail .@charid, .@sender$, .@title$, .@body$, .@zeny, .@mailitem, .@mailamount, .@mailcard0, .@mailcard1, .@mailcard2, .@mailcard3, .@mailrndopt_id0, .@mailrndopt_val0, .@mailrndopt_prm0;
+//	end;
+//}

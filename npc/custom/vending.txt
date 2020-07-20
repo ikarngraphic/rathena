@@ -1,0 +1,23 @@
+
+-	script	NOVENDING#1	-1,{
+OnInit:
+setcell "maintown",74,100,101,137,cell_novending,1;	//No
+setcell "maintown",0,0,999,999,cell_novending,0;	//Yes
+end;
+}
+
+
+maintown,75,96,4	script	โซนตั้งร้าน#1	858,{
+end;
+}
+
+maintown,77,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#2	858
+maintown,79,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#9	858
+maintown,81,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#6	858
+maintown,83,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#7	858
+maintown,88,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#3	858
+maintown,90,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#8	858
+maintown,92,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#4	858
+maintown,94,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#5	858
+maintown,96,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#10	858
+maintown,98,96,4	duplicate(โซนตั้งร้าน#1)	โซนตั้งร้าน#11	858

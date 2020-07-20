@@ -1,0 +1,1758 @@
+//===== Current Version: =====================================
+//= 1.1 
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Exchange cards for points?.?
+//============================================================
+
+-	shop	costread_shop	-1,909:-1
+
+maintown,142,69,4	script	แลก Costume	10017,{
+	mes "[Costume Trader]";
+	mes "หวัดดี, "+strcharinfo(0)+"!";
+	mes "มีอะไรให้ข้ารับใช้ไหม ?";
+	next;
+	switch(select(" - รายละเอียด: - แลกคอสเป็นแต้มพอยท์: - ร้านค้า (^0055FF"+getd(.Points$)+"^000000): - ออก")) {
+	case 1:
+		mes "[Costume Trader]";
+		mes "ข้าจะให้เจ้า ^0055FF"+.Points[0]+" แต้ม"+((.Points[0] == 1)?"":"")+"^000000 ต่อใบ";
+		mes "สำหรับคอสทั่วไป";
+		mes "เจ้าสามารถเอาแต้มพอยท์";
+		mes "ไปซื้อของในร้านค้าของข้าได้.";
+		mes "ฟังดูน่าสนใจไหม ?";
+		close;
+	case 2:
+		mes "[Costume Trader]";
+		mes "กรุณาเลือกคอส";
+		mes "ที่เจ้าต้องการแลก.";
+		if (.Level) {
+			mes " ";
+			mes "ข้าต้องการจาก";
+			mes "มอนสเตอร์ที่เลเวล";
+			mes .Level+" หรือมากกว่า.";
+		}
+		deletearray @sold_nameid[0],getarraysize(@sold_nameid);
+		callshop "costread_shop",2;
+		npcshopattach "costread_shop";
+		end;
+	case 3:
+		mes "[Costume Trader]";
+		mes "เจ้ามี ^0055FF"+getd(.Points$)+"^000000 แต้ม"+((getd(.Points$) == 1)?".":".");
+		callshop "costread_shop",1;
+		npcshopattach "costread_shop";
+		end;
+	case 4:
+		mes "[Costume Trader]";
+		mes "แล้วมาใหม่น่ะ!";
+		close;		
+	}
+
+OnSellItem:
+	mes "คอสที่จะแลก:";
+	mes "-----------------------------------";
+	for(set .@i,0; .@i<getarraysize(@sold_nameid); set .@i,.@i+1)
+		if ((@sold_nameid[.@i] >= 50001 && @sold_nameid[.@i] <= 50291) || (@sold_nameid[.@i] >= 52001 && @sold_nameid[.@i] <= 52292) || 
+		(@sold_nameid[.@i] >= 54001 && @sold_nameid[.@i] <= 54241) || (@sold_nameid[.@i] >= 55001 && @sold_nameid[.@i] <= 55151) ||
+		(@sold_nameid[.@i] == 18741) ||
+		(@sold_nameid[.@i] == 18742) ||
+		(@sold_nameid[.@i] == 18743) ||
+		(@sold_nameid[.@i] == 18744) ||
+		(@sold_nameid[.@i] == 19158) ||
+		(@sold_nameid[.@i] == 19275) ||
+		(@sold_nameid[.@i] == 19288) ||
+		(@sold_nameid[.@i] == 19289) ||
+		(@sold_nameid[.@i] == 19290) ||
+		(@sold_nameid[.@i] == 19291) ||
+		(@sold_nameid[.@i] == 19292) ||
+		(@sold_nameid[.@i] == 19293) ||
+		(@sold_nameid[.@i] == 19294) ||
+		(@sold_nameid[.@i] == 19524) ||
+		(@sold_nameid[.@i] == 19525) ||
+		(@sold_nameid[.@i] == 19526) ||
+		(@sold_nameid[.@i] == 19527) ||
+		(@sold_nameid[.@i] == 19528) ||
+		(@sold_nameid[.@i] == 19529) ||
+		(@sold_nameid[.@i] == 19530) ||
+		(@sold_nameid[.@i] == 19531) ||
+		(@sold_nameid[.@i] == 19532) ||
+		(@sold_nameid[.@i] == 19533) ||
+		(@sold_nameid[.@i] == 19534) ||
+		(@sold_nameid[.@i] == 19535) ||
+		(@sold_nameid[.@i] == 19536) ||
+		(@sold_nameid[.@i] == 19537) ||
+		(@sold_nameid[.@i] == 19538) ||
+		(@sold_nameid[.@i] == 19539) ||
+		(@sold_nameid[.@i] == 19540) ||
+		(@sold_nameid[.@i] == 19541) ||
+		(@sold_nameid[.@i] == 19542) ||
+		(@sold_nameid[.@i] == 19543) ||
+		(@sold_nameid[.@i] == 19544) ||
+		(@sold_nameid[.@i] == 19545) ||
+		(@sold_nameid[.@i] == 19546) ||
+		(@sold_nameid[.@i] == 19547) ||
+		(@sold_nameid[.@i] == 19548) ||
+		(@sold_nameid[.@i] == 19549) ||
+		(@sold_nameid[.@i] == 19550) ||
+		(@sold_nameid[.@i] == 19551) ||
+		(@sold_nameid[.@i] == 19552) ||
+		(@sold_nameid[.@i] == 19553) ||
+		(@sold_nameid[.@i] == 19554) ||
+		(@sold_nameid[.@i] == 19555) ||
+		(@sold_nameid[.@i] == 19556) ||
+		(@sold_nameid[.@i] == 19557) ||
+		(@sold_nameid[.@i] == 19558) ||
+		(@sold_nameid[.@i] == 19559) ||
+		(@sold_nameid[.@i] == 19560) ||
+		(@sold_nameid[.@i] == 19561) ||
+		(@sold_nameid[.@i] == 19562) ||
+		(@sold_nameid[.@i] == 19563) ||
+		(@sold_nameid[.@i] == 19564) ||
+		(@sold_nameid[.@i] == 19565) ||
+		(@sold_nameid[.@i] == 19566) ||
+		(@sold_nameid[.@i] == 19567) ||
+		(@sold_nameid[.@i] == 19568) ||
+		(@sold_nameid[.@i] == 19569) ||
+		(@sold_nameid[.@i] == 19570) ||
+		(@sold_nameid[.@i] == 19571) ||
+		(@sold_nameid[.@i] == 19572) ||
+		(@sold_nameid[.@i] == 19573) ||
+		(@sold_nameid[.@i] == 19574) ||
+		(@sold_nameid[.@i] == 19575) ||
+		(@sold_nameid[.@i] == 19576) ||
+		(@sold_nameid[.@i] == 19577) ||
+		(@sold_nameid[.@i] == 19578) ||
+		(@sold_nameid[.@i] == 19579) ||
+		(@sold_nameid[.@i] == 19580) ||
+		(@sold_nameid[.@i] == 19581) ||
+		(@sold_nameid[.@i] == 19582) ||
+		(@sold_nameid[.@i] == 19583) ||
+		(@sold_nameid[.@i] == 19584) ||
+		(@sold_nameid[.@i] == 19585) ||
+		(@sold_nameid[.@i] == 19586) ||
+		(@sold_nameid[.@i] == 19587) ||
+		(@sold_nameid[.@i] == 19588) ||
+		(@sold_nameid[.@i] == 19589) ||
+		(@sold_nameid[.@i] == 19590) ||
+		(@sold_nameid[.@i] == 19591) ||
+		(@sold_nameid[.@i] == 19592) ||
+		(@sold_nameid[.@i] == 19593) ||
+		(@sold_nameid[.@i] == 19594) ||
+		(@sold_nameid[.@i] == 19595) ||
+		(@sold_nameid[.@i] == 19596) ||
+		(@sold_nameid[.@i] == 19597) ||
+		(@sold_nameid[.@i] == 19598) ||
+		(@sold_nameid[.@i] == 19599) ||
+		(@sold_nameid[.@i] == 19600) ||
+		(@sold_nameid[.@i] == 19601) ||
+		(@sold_nameid[.@i] == 19602) ||
+		(@sold_nameid[.@i] == 19603) ||
+		(@sold_nameid[.@i] == 19604) ||
+		(@sold_nameid[.@i] == 19605) ||
+		(@sold_nameid[.@i] == 19606) ||
+		(@sold_nameid[.@i] == 19607) ||
+		(@sold_nameid[.@i] == 19608) ||
+		(@sold_nameid[.@i] == 19609) ||
+		(@sold_nameid[.@i] == 19610) ||
+		(@sold_nameid[.@i] == 19611) ||
+		(@sold_nameid[.@i] == 19612) ||
+		(@sold_nameid[.@i] == 19613) ||
+		(@sold_nameid[.@i] == 19614) ||
+		(@sold_nameid[.@i] == 19615) ||
+		(@sold_nameid[.@i] == 19616) ||
+		(@sold_nameid[.@i] == 19617) ||
+		(@sold_nameid[.@i] == 19618) ||
+		(@sold_nameid[.@i] == 19619) ||
+		(@sold_nameid[.@i] == 19620) ||
+		(@sold_nameid[.@i] == 19621) ||
+		(@sold_nameid[.@i] == 19622) ||
+		(@sold_nameid[.@i] == 19623) ||
+		(@sold_nameid[.@i] == 19624) ||
+		(@sold_nameid[.@i] == 19625) ||
+		(@sold_nameid[.@i] == 19626) ||
+		(@sold_nameid[.@i] == 19627) ||
+		(@sold_nameid[.@i] == 19628) ||
+		(@sold_nameid[.@i] == 19629) ||
+		(@sold_nameid[.@i] == 19630) ||
+		(@sold_nameid[.@i] == 19631) ||
+		(@sold_nameid[.@i] == 19632) ||
+		(@sold_nameid[.@i] == 19633) ||
+		(@sold_nameid[.@i] == 19634) ||
+		(@sold_nameid[.@i] == 19635) ||
+		(@sold_nameid[.@i] == 19636) ||
+		(@sold_nameid[.@i] == 19637) ||
+		(@sold_nameid[.@i] == 19638) ||
+		(@sold_nameid[.@i] == 19639) ||
+		(@sold_nameid[.@i] == 19640) ||
+		(@sold_nameid[.@i] == 19641) ||
+		(@sold_nameid[.@i] == 19642) ||
+		(@sold_nameid[.@i] == 19643) ||
+		(@sold_nameid[.@i] == 19644) ||
+		(@sold_nameid[.@i] == 19645) ||
+		(@sold_nameid[.@i] == 19646) ||
+		(@sold_nameid[.@i] == 19647) ||
+		(@sold_nameid[.@i] == 19648) ||
+		(@sold_nameid[.@i] == 19649) ||
+		(@sold_nameid[.@i] == 19650) ||
+		(@sold_nameid[.@i] == 19651) ||
+		(@sold_nameid[.@i] == 19652) ||
+		(@sold_nameid[.@i] == 19653) ||
+		(@sold_nameid[.@i] == 19654) ||
+		(@sold_nameid[.@i] == 19655) ||
+		(@sold_nameid[.@i] == 19656) ||
+		(@sold_nameid[.@i] == 19657) ||
+		(@sold_nameid[.@i] == 19658) ||
+		(@sold_nameid[.@i] == 19659) ||
+		(@sold_nameid[.@i] == 19660) ||
+		(@sold_nameid[.@i] == 19661) ||
+		(@sold_nameid[.@i] == 19662) ||
+		(@sold_nameid[.@i] == 19663) ||
+		(@sold_nameid[.@i] == 19664) ||
+		(@sold_nameid[.@i] == 19665) ||
+		(@sold_nameid[.@i] == 19666) ||
+		(@sold_nameid[.@i] == 19667) ||
+		(@sold_nameid[.@i] == 19668) ||
+		(@sold_nameid[.@i] == 19669) ||
+		(@sold_nameid[.@i] == 19670) ||
+		(@sold_nameid[.@i] == 19671) ||
+		(@sold_nameid[.@i] == 19672) ||
+		(@sold_nameid[.@i] == 19673) ||
+		(@sold_nameid[.@i] == 19674) ||
+		(@sold_nameid[.@i] == 19675) ||
+		(@sold_nameid[.@i] == 19676) ||
+		(@sold_nameid[.@i] == 19677) ||
+		(@sold_nameid[.@i] == 19678) ||
+		(@sold_nameid[.@i] == 19679) ||
+		(@sold_nameid[.@i] == 19680) ||
+		(@sold_nameid[.@i] == 19681) ||
+		(@sold_nameid[.@i] == 19682) ||
+		(@sold_nameid[.@i] == 19683) ||
+		(@sold_nameid[.@i] == 19684) ||
+		(@sold_nameid[.@i] == 19685) ||
+		(@sold_nameid[.@i] == 19686) ||
+		(@sold_nameid[.@i] == 19687) ||
+		(@sold_nameid[.@i] == 19688) ||
+		(@sold_nameid[.@i] == 19689) ||
+		(@sold_nameid[.@i] == 19690) ||
+		(@sold_nameid[.@i] == 19691) ||
+		(@sold_nameid[.@i] == 19692) ||
+		(@sold_nameid[.@i] == 19693) ||
+		(@sold_nameid[.@i] == 19694) ||
+		(@sold_nameid[.@i] == 19695) ||
+		(@sold_nameid[.@i] == 19696) ||
+		(@sold_nameid[.@i] == 19697) ||
+		(@sold_nameid[.@i] == 19698) ||
+		(@sold_nameid[.@i] == 19699) ||
+		(@sold_nameid[.@i] == 19700) ||
+		(@sold_nameid[.@i] == 19701) ||
+		(@sold_nameid[.@i] == 19702) ||
+		(@sold_nameid[.@i] == 19703) ||
+		(@sold_nameid[.@i] == 19704) ||
+		(@sold_nameid[.@i] == 19705) ||
+		(@sold_nameid[.@i] == 19706) ||
+		(@sold_nameid[.@i] == 19707) ||
+		(@sold_nameid[.@i] == 19708) ||
+		(@sold_nameid[.@i] == 19709) ||
+		(@sold_nameid[.@i] == 19710) ||
+		(@sold_nameid[.@i] == 19711) ||
+		(@sold_nameid[.@i] == 19712) ||
+		(@sold_nameid[.@i] == 19713) ||
+		(@sold_nameid[.@i] == 19714) ||
+		(@sold_nameid[.@i] == 19715) ||
+		(@sold_nameid[.@i] == 19716) ||
+		(@sold_nameid[.@i] == 19717) ||
+		(@sold_nameid[.@i] == 19718) ||
+		(@sold_nameid[.@i] == 19719) ||
+		(@sold_nameid[.@i] == 19720) ||
+		(@sold_nameid[.@i] == 19721) ||
+		(@sold_nameid[.@i] == 19722) ||
+		(@sold_nameid[.@i] == 19723) ||
+		(@sold_nameid[.@i] == 19724) ||
+		(@sold_nameid[.@i] == 19725) ||
+		(@sold_nameid[.@i] == 19726) ||
+		(@sold_nameid[.@i] == 19727) ||
+		(@sold_nameid[.@i] == 19728) ||
+		(@sold_nameid[.@i] == 19729) ||
+		(@sold_nameid[.@i] == 19730) ||
+		(@sold_nameid[.@i] == 19731) ||
+		(@sold_nameid[.@i] == 19732) ||
+		(@sold_nameid[.@i] == 19733) ||
+		(@sold_nameid[.@i] == 19734) ||
+		(@sold_nameid[.@i] == 19735) ||
+		(@sold_nameid[.@i] == 19736) ||
+		(@sold_nameid[.@i] == 19737) ||
+		(@sold_nameid[.@i] == 19738) ||
+		(@sold_nameid[.@i] == 19739) ||
+		(@sold_nameid[.@i] == 19740) ||
+		(@sold_nameid[.@i] == 19741) ||
+		(@sold_nameid[.@i] == 19742) ||
+		(@sold_nameid[.@i] == 19743) ||
+		(@sold_nameid[.@i] == 19744) ||
+		(@sold_nameid[.@i] == 19745) ||
+		(@sold_nameid[.@i] == 19746) ||
+		(@sold_nameid[.@i] == 19747) ||
+		(@sold_nameid[.@i] == 19748) ||
+		(@sold_nameid[.@i] == 19749) ||
+		(@sold_nameid[.@i] == 19750) ||
+		(@sold_nameid[.@i] == 19751) ||
+		(@sold_nameid[.@i] == 19752) ||
+		(@sold_nameid[.@i] == 19753) ||
+		(@sold_nameid[.@i] == 19754) ||
+		(@sold_nameid[.@i] == 19755) ||
+		(@sold_nameid[.@i] == 19756) ||
+		(@sold_nameid[.@i] == 19757) ||
+		(@sold_nameid[.@i] == 19758) ||
+		(@sold_nameid[.@i] == 19759) ||
+		(@sold_nameid[.@i] == 19760) ||
+		(@sold_nameid[.@i] == 19761) ||
+		(@sold_nameid[.@i] == 19762) ||
+		(@sold_nameid[.@i] == 19763) ||
+		(@sold_nameid[.@i] == 19764) ||
+		(@sold_nameid[.@i] == 19765) ||
+		(@sold_nameid[.@i] == 19767) ||
+		(@sold_nameid[.@i] == 19768) ||
+		(@sold_nameid[.@i] == 19769) ||
+		(@sold_nameid[.@i] == 19770) ||
+		(@sold_nameid[.@i] == 19771) ||
+		(@sold_nameid[.@i] == 19772) ||
+		(@sold_nameid[.@i] == 19773) ||
+		(@sold_nameid[.@i] == 19774) ||
+		(@sold_nameid[.@i] == 19775) ||
+		(@sold_nameid[.@i] == 19776) ||
+		(@sold_nameid[.@i] == 19777) ||
+		(@sold_nameid[.@i] == 19778) ||
+		(@sold_nameid[.@i] == 19779) ||
+		(@sold_nameid[.@i] == 19780) ||
+		(@sold_nameid[.@i] == 19781) ||
+		(@sold_nameid[.@i] == 19782) ||
+		(@sold_nameid[.@i] == 19783) ||
+		(@sold_nameid[.@i] == 19784) ||
+		(@sold_nameid[.@i] == 19785) ||
+		(@sold_nameid[.@i] == 19786) ||
+		(@sold_nameid[.@i] == 19787) ||
+		(@sold_nameid[.@i] == 19788) ||
+		(@sold_nameid[.@i] == 19789) ||
+		(@sold_nameid[.@i] == 19790) ||
+		(@sold_nameid[.@i] == 19791) ||
+		(@sold_nameid[.@i] == 19792) ||
+		(@sold_nameid[.@i] == 19793) ||
+		(@sold_nameid[.@i] == 19794) ||
+		(@sold_nameid[.@i] == 19795) ||
+		(@sold_nameid[.@i] == 19796) ||
+		(@sold_nameid[.@i] == 19797) ||
+		(@sold_nameid[.@i] == 19798) ||
+		(@sold_nameid[.@i] == 19799) ||
+		(@sold_nameid[.@i] == 19800) ||
+		(@sold_nameid[.@i] == 19801) ||
+		(@sold_nameid[.@i] == 19802) ||
+		(@sold_nameid[.@i] == 19803) ||
+		(@sold_nameid[.@i] == 19804) ||
+		(@sold_nameid[.@i] == 19805) ||
+		(@sold_nameid[.@i] == 19806) ||
+		(@sold_nameid[.@i] == 19807) ||
+		(@sold_nameid[.@i] == 19808) ||
+		(@sold_nameid[.@i] == 19809) ||
+		(@sold_nameid[.@i] == 19810) ||
+		(@sold_nameid[.@i] == 19811) ||
+		(@sold_nameid[.@i] == 19812) ||
+		(@sold_nameid[.@i] == 19813) ||
+		(@sold_nameid[.@i] == 19814) ||
+		(@sold_nameid[.@i] == 19815) ||
+		(@sold_nameid[.@i] == 19816) ||
+		(@sold_nameid[.@i] == 19817) ||
+		(@sold_nameid[.@i] == 19818) ||
+		(@sold_nameid[.@i] == 19819) ||
+		(@sold_nameid[.@i] == 19820) ||
+		(@sold_nameid[.@i] == 19821) ||
+		(@sold_nameid[.@i] == 19822) ||
+		(@sold_nameid[.@i] == 19823) ||
+		(@sold_nameid[.@i] == 19824) ||
+		(@sold_nameid[.@i] == 19825) ||
+		(@sold_nameid[.@i] == 19826) ||
+		(@sold_nameid[.@i] == 19827) ||
+		(@sold_nameid[.@i] == 19828) ||
+		(@sold_nameid[.@i] == 19829) ||
+		(@sold_nameid[.@i] == 19830) ||
+		(@sold_nameid[.@i] == 19831) ||
+		(@sold_nameid[.@i] == 19832) ||
+		(@sold_nameid[.@i] == 19833) ||
+		(@sold_nameid[.@i] == 19834) ||
+		(@sold_nameid[.@i] == 19835) ||
+		(@sold_nameid[.@i] == 19836) ||
+		(@sold_nameid[.@i] == 19837) ||
+		(@sold_nameid[.@i] == 19838) ||
+		(@sold_nameid[.@i] == 19839) ||
+		(@sold_nameid[.@i] == 19840) ||
+		(@sold_nameid[.@i] == 19841) ||
+		(@sold_nameid[.@i] == 19842) ||
+		(@sold_nameid[.@i] == 19843) ||
+		(@sold_nameid[.@i] == 19844) ||
+		(@sold_nameid[.@i] == 19845) ||
+		(@sold_nameid[.@i] == 19846) ||
+		(@sold_nameid[.@i] == 19847) ||
+		(@sold_nameid[.@i] == 19848) ||
+		(@sold_nameid[.@i] == 19849) ||
+		(@sold_nameid[.@i] == 19850) ||
+		(@sold_nameid[.@i] == 19851) ||
+		(@sold_nameid[.@i] == 19852) ||
+		(@sold_nameid[.@i] == 19853) ||
+		(@sold_nameid[.@i] == 19854) ||
+		(@sold_nameid[.@i] == 19855) ||
+		(@sold_nameid[.@i] == 19856) ||
+		(@sold_nameid[.@i] == 19857) ||
+		(@sold_nameid[.@i] == 19858) ||
+		(@sold_nameid[.@i] == 19859) ||
+		(@sold_nameid[.@i] == 19860) ||
+		(@sold_nameid[.@i] == 19861) ||
+		(@sold_nameid[.@i] == 19862) ||
+		(@sold_nameid[.@i] == 19863) ||
+		(@sold_nameid[.@i] == 19864) ||
+		(@sold_nameid[.@i] == 19865) ||
+		(@sold_nameid[.@i] == 19866) ||
+		(@sold_nameid[.@i] == 19867) ||
+		(@sold_nameid[.@i] == 19868) ||
+		(@sold_nameid[.@i] == 19869) ||
+		(@sold_nameid[.@i] == 19870) ||
+		(@sold_nameid[.@i] == 19871) ||
+		(@sold_nameid[.@i] == 19872) ||
+		(@sold_nameid[.@i] == 19873) ||
+		(@sold_nameid[.@i] == 19874) ||
+		(@sold_nameid[.@i] == 19875) ||
+		(@sold_nameid[.@i] == 19876) ||
+		(@sold_nameid[.@i] == 19877) ||
+		(@sold_nameid[.@i] == 19878) ||
+		(@sold_nameid[.@i] == 19879) ||
+		(@sold_nameid[.@i] == 19880) ||
+		(@sold_nameid[.@i] == 19881) ||
+		(@sold_nameid[.@i] == 19882) ||
+		(@sold_nameid[.@i] == 19883) ||
+		(@sold_nameid[.@i] == 19884) ||
+		(@sold_nameid[.@i] == 19885) ||
+		(@sold_nameid[.@i] == 19886) ||
+		(@sold_nameid[.@i] == 19887) ||
+		(@sold_nameid[.@i] == 19888) ||
+		(@sold_nameid[.@i] == 19889) ||
+		(@sold_nameid[.@i] == 19890) ||
+		(@sold_nameid[.@i] == 19891) ||
+		(@sold_nameid[.@i] == 19892) ||
+		(@sold_nameid[.@i] == 19893) ||
+		(@sold_nameid[.@i] == 19894) ||
+		(@sold_nameid[.@i] == 19895) ||
+		(@sold_nameid[.@i] == 19896) ||
+		(@sold_nameid[.@i] == 19900) ||
+		(@sold_nameid[.@i] == 19901) ||
+		(@sold_nameid[.@i] == 19902) ||
+		(@sold_nameid[.@i] == 19903) ||
+		(@sold_nameid[.@i] == 19904) ||
+		(@sold_nameid[.@i] == 19905) ||
+		(@sold_nameid[.@i] == 19906) ||
+		(@sold_nameid[.@i] == 19907) ||
+		(@sold_nameid[.@i] == 19908) ||
+		(@sold_nameid[.@i] == 19909) ||
+		(@sold_nameid[.@i] == 19910) ||
+		(@sold_nameid[.@i] == 19911) ||
+		(@sold_nameid[.@i] == 19912) ||
+		(@sold_nameid[.@i] == 19913) ||
+		(@sold_nameid[.@i] == 19915) ||
+		(@sold_nameid[.@i] == 19916) ||
+		(@sold_nameid[.@i] == 19917) ||
+		(@sold_nameid[.@i] == 19918) ||
+		(@sold_nameid[.@i] == 19919) ||
+		(@sold_nameid[.@i] == 19920) ||
+		(@sold_nameid[.@i] == 19921) ||
+		(@sold_nameid[.@i] == 19922) ||
+		(@sold_nameid[.@i] == 19923) ||
+		(@sold_nameid[.@i] == 19924) ||
+		(@sold_nameid[.@i] == 19925) ||
+		(@sold_nameid[.@i] == 19926) ||
+		(@sold_nameid[.@i] == 19927) ||
+		(@sold_nameid[.@i] == 19928) ||
+		(@sold_nameid[.@i] == 19929) ||
+		(@sold_nameid[.@i] == 19930) ||
+		(@sold_nameid[.@i] == 19931) ||
+		(@sold_nameid[.@i] == 19932) ||
+		(@sold_nameid[.@i] == 19934) ||
+		(@sold_nameid[.@i] == 19935) ||
+		(@sold_nameid[.@i] == 19936) ||
+		(@sold_nameid[.@i] == 19937) ||
+		(@sold_nameid[.@i] == 19938) ||
+		(@sold_nameid[.@i] == 19939) ||
+		(@sold_nameid[.@i] == 19940) ||
+		(@sold_nameid[.@i] == 19941) ||
+		(@sold_nameid[.@i] == 19942) ||
+		(@sold_nameid[.@i] == 19943) ||
+		(@sold_nameid[.@i] == 19944) ||
+		(@sold_nameid[.@i] == 19945) ||
+		(@sold_nameid[.@i] == 19946) ||
+		(@sold_nameid[.@i] == 19947) ||
+		(@sold_nameid[.@i] == 19948) ||
+		(@sold_nameid[.@i] == 19949) ||
+		(@sold_nameid[.@i] == 19950) ||
+		(@sold_nameid[.@i] == 19951) ||
+		(@sold_nameid[.@i] == 19952) ||
+		(@sold_nameid[.@i] == 19953) ||
+		(@sold_nameid[.@i] == 19954) ||
+		(@sold_nameid[.@i] == 19955) ||
+		(@sold_nameid[.@i] == 19956) ||
+		(@sold_nameid[.@i] == 19957) ||
+		(@sold_nameid[.@i] == 19958) ||
+		(@sold_nameid[.@i] == 19959) ||
+		(@sold_nameid[.@i] == 19960) ||
+		(@sold_nameid[.@i] == 19975) ||
+		(@sold_nameid[.@i] == 19976) ||
+		(@sold_nameid[.@i] == 19977) ||
+		(@sold_nameid[.@i] == 19978) ||
+		(@sold_nameid[.@i] == 19979) ||
+		(@sold_nameid[.@i] == 19980) ||
+		(@sold_nameid[.@i] == 19981) ||
+		(@sold_nameid[.@i] == 19982) ||
+		(@sold_nameid[.@i] == 19983) ||
+		(@sold_nameid[.@i] == 19984) ||
+		(@sold_nameid[.@i] == 19985) ||
+		(@sold_nameid[.@i] == 19986) ||
+		(@sold_nameid[.@i] == 19987) ||
+		(@sold_nameid[.@i] == 19988) ||
+		(@sold_nameid[.@i] == 19989) ||
+		(@sold_nameid[.@i] == 19990) ||
+		(@sold_nameid[.@i] == 19991) ||
+		(@sold_nameid[.@i] == 19992) ||
+		(@sold_nameid[.@i] == 19993) ||
+		(@sold_nameid[.@i] == 19994) ||
+		(@sold_nameid[.@i] == 19996) ||
+		(@sold_nameid[.@i] == 19997) ||
+		(@sold_nameid[.@i] == 19998) ||
+		(@sold_nameid[.@i] == 19999) ||
+		(@sold_nameid[.@i] == 20000) ||
+		(@sold_nameid[.@i] == 20001) ||
+		(@sold_nameid[.@i] == 20002) ||
+		(@sold_nameid[.@i] == 20003) ||
+		(@sold_nameid[.@i] == 20004) ||
+		(@sold_nameid[.@i] == 20005) ||
+		(@sold_nameid[.@i] == 20006) ||
+		(@sold_nameid[.@i] == 20007) ||
+		(@sold_nameid[.@i] == 20008) ||
+		(@sold_nameid[.@i] == 20009) ||
+		(@sold_nameid[.@i] == 20010) ||
+		(@sold_nameid[.@i] == 20011) ||
+		(@sold_nameid[.@i] == 20012) ||
+		(@sold_nameid[.@i] == 20013) ||
+		(@sold_nameid[.@i] == 20014) ||
+		(@sold_nameid[.@i] == 20015) ||
+		(@sold_nameid[.@i] == 20016) ||
+		(@sold_nameid[.@i] == 20017) ||
+		(@sold_nameid[.@i] == 20019) ||
+		(@sold_nameid[.@i] == 20020) ||
+		(@sold_nameid[.@i] == 20021) ||
+		(@sold_nameid[.@i] == 20022) ||
+		(@sold_nameid[.@i] == 20023) ||
+		(@sold_nameid[.@i] == 20024) ||
+		(@sold_nameid[.@i] == 20025) ||
+		(@sold_nameid[.@i] == 20026) ||
+		(@sold_nameid[.@i] == 20027) ||
+		(@sold_nameid[.@i] == 20028) ||
+		(@sold_nameid[.@i] == 20029) ||
+		(@sold_nameid[.@i] == 20030) ||
+		(@sold_nameid[.@i] == 20031) ||
+		(@sold_nameid[.@i] == 20032) ||
+		(@sold_nameid[.@i] == 20033) ||
+		(@sold_nameid[.@i] == 20034) ||
+		(@sold_nameid[.@i] == 20035) ||
+		(@sold_nameid[.@i] == 20036) ||
+		(@sold_nameid[.@i] == 20037) ||
+		(@sold_nameid[.@i] == 20038) ||
+		(@sold_nameid[.@i] == 20039) ||
+		(@sold_nameid[.@i] == 20040) ||
+		(@sold_nameid[.@i] == 20041) ||
+		(@sold_nameid[.@i] == 20042) ||
+		(@sold_nameid[.@i] == 20043) ||
+		(@sold_nameid[.@i] == 20044) ||
+		(@sold_nameid[.@i] == 20045) ||
+		(@sold_nameid[.@i] == 20046) ||
+		(@sold_nameid[.@i] == 20047) ||
+		(@sold_nameid[.@i] == 20048) ||
+		(@sold_nameid[.@i] == 20049) ||
+		(@sold_nameid[.@i] == 20050) ||
+		(@sold_nameid[.@i] == 20051) ||
+		(@sold_nameid[.@i] == 20052) ||
+		(@sold_nameid[.@i] == 20053) ||
+		(@sold_nameid[.@i] == 20054) ||
+		(@sold_nameid[.@i] == 20055) ||
+		(@sold_nameid[.@i] == 20056) ||
+		(@sold_nameid[.@i] == 20057) ||
+		(@sold_nameid[.@i] == 20058) ||
+		(@sold_nameid[.@i] == 20059) ||
+		(@sold_nameid[.@i] == 20060) ||
+		(@sold_nameid[.@i] == 20061) ||
+		(@sold_nameid[.@i] == 20062) ||
+		(@sold_nameid[.@i] == 20063) ||
+		(@sold_nameid[.@i] == 20064) ||
+		(@sold_nameid[.@i] == 20065) ||
+		(@sold_nameid[.@i] == 20066) ||
+		(@sold_nameid[.@i] == 20067) ||
+		(@sold_nameid[.@i] == 20068) ||
+		(@sold_nameid[.@i] == 20069) ||
+		(@sold_nameid[.@i] == 20070) ||
+		(@sold_nameid[.@i] == 20071) ||
+		(@sold_nameid[.@i] == 20073) ||
+		(@sold_nameid[.@i] == 20074) ||
+		(@sold_nameid[.@i] == 20075) ||
+		(@sold_nameid[.@i] == 20076) ||
+		(@sold_nameid[.@i] == 20077) ||
+		(@sold_nameid[.@i] == 20078) ||
+		(@sold_nameid[.@i] == 20079) ||
+		(@sold_nameid[.@i] == 20080) ||
+		(@sold_nameid[.@i] == 20081) ||
+		(@sold_nameid[.@i] == 20082) ||
+		(@sold_nameid[.@i] == 20083) ||
+		(@sold_nameid[.@i] == 20084) ||
+		(@sold_nameid[.@i] == 20085) ||
+		(@sold_nameid[.@i] == 20086) ||
+		(@sold_nameid[.@i] == 20087) ||
+		(@sold_nameid[.@i] == 20088) ||
+		(@sold_nameid[.@i] == 20089) ||
+		(@sold_nameid[.@i] == 20090) ||
+		(@sold_nameid[.@i] == 20091) ||
+		(@sold_nameid[.@i] == 20092) ||
+		(@sold_nameid[.@i] == 20093) ||
+		(@sold_nameid[.@i] == 20094) ||
+		(@sold_nameid[.@i] == 20095) ||
+		(@sold_nameid[.@i] == 20096) ||
+		(@sold_nameid[.@i] == 20097) ||
+		(@sold_nameid[.@i] == 20098) ||
+		(@sold_nameid[.@i] == 20099) ||
+		(@sold_nameid[.@i] == 20100) ||
+		(@sold_nameid[.@i] == 20101) ||
+		(@sold_nameid[.@i] == 20102) ||
+		(@sold_nameid[.@i] == 20103) ||
+		(@sold_nameid[.@i] == 20104) ||
+		(@sold_nameid[.@i] == 20105) ||
+		(@sold_nameid[.@i] == 20106) ||
+		(@sold_nameid[.@i] == 20107) ||
+		(@sold_nameid[.@i] == 20108) ||
+		(@sold_nameid[.@i] == 20109) ||
+		(@sold_nameid[.@i] == 20110) ||
+		(@sold_nameid[.@i] == 20111) ||
+		(@sold_nameid[.@i] == 20112) ||
+		(@sold_nameid[.@i] == 20113) ||
+		(@sold_nameid[.@i] == 20114) ||
+		(@sold_nameid[.@i] == 20115) ||
+		(@sold_nameid[.@i] == 20116) ||
+		(@sold_nameid[.@i] == 20117) ||
+		(@sold_nameid[.@i] == 20118) ||
+		(@sold_nameid[.@i] == 20119) ||
+		(@sold_nameid[.@i] == 20120) ||
+		(@sold_nameid[.@i] == 20121) ||
+		(@sold_nameid[.@i] == 20122) ||
+		(@sold_nameid[.@i] == 20123) ||
+		(@sold_nameid[.@i] == 20124) ||
+		(@sold_nameid[.@i] == 20125) ||
+		(@sold_nameid[.@i] == 20126) ||
+		(@sold_nameid[.@i] == 20127) ||
+		(@sold_nameid[.@i] == 20128) ||
+		(@sold_nameid[.@i] == 20129) ||
+		(@sold_nameid[.@i] == 20130) ||
+		(@sold_nameid[.@i] == 20131) ||
+		(@sold_nameid[.@i] == 20132) ||
+		(@sold_nameid[.@i] == 20133) ||
+		(@sold_nameid[.@i] == 20134) ||
+		(@sold_nameid[.@i] == 20135) ||
+		(@sold_nameid[.@i] == 20136) ||
+		(@sold_nameid[.@i] == 20137) ||
+		(@sold_nameid[.@i] == 20138) ||
+		(@sold_nameid[.@i] == 20139) ||
+		(@sold_nameid[.@i] == 20140) ||
+		(@sold_nameid[.@i] == 20141) ||
+		(@sold_nameid[.@i] == 20142) ||
+		(@sold_nameid[.@i] == 20143) ||
+		(@sold_nameid[.@i] == 20144) ||
+		(@sold_nameid[.@i] == 20145) ||
+		(@sold_nameid[.@i] == 20146) ||
+		(@sold_nameid[.@i] == 20147) ||
+		(@sold_nameid[.@i] == 20148) ||
+		(@sold_nameid[.@i] == 20149) ||
+		(@sold_nameid[.@i] == 20150) ||
+		(@sold_nameid[.@i] == 20151) ||
+		(@sold_nameid[.@i] == 20152) ||
+		(@sold_nameid[.@i] == 20153) ||
+		(@sold_nameid[.@i] == 20154) ||
+		(@sold_nameid[.@i] == 20155) ||
+		(@sold_nameid[.@i] == 20156) ||
+		(@sold_nameid[.@i] == 20157) ||
+		(@sold_nameid[.@i] == 20158) ||
+		(@sold_nameid[.@i] == 20159) ||
+		(@sold_nameid[.@i] == 20160) ||
+		(@sold_nameid[.@i] == 20161) ||
+		(@sold_nameid[.@i] == 20162) ||
+		(@sold_nameid[.@i] == 20163) ||
+		(@sold_nameid[.@i] == 20164) ||
+		(@sold_nameid[.@i] == 20165) ||
+		(@sold_nameid[.@i] == 20166) ||
+		(@sold_nameid[.@i] == 20167) ||
+		(@sold_nameid[.@i] == 20168) ||
+		(@sold_nameid[.@i] == 20169) ||
+		(@sold_nameid[.@i] == 20170) ||
+		(@sold_nameid[.@i] == 20171) ||
+		(@sold_nameid[.@i] == 20172) ||
+		(@sold_nameid[.@i] == 20173) ||
+		(@sold_nameid[.@i] == 20174) ||
+		(@sold_nameid[.@i] == 20175) ||
+		(@sold_nameid[.@i] == 20176) ||
+		(@sold_nameid[.@i] == 20177) ||
+		(@sold_nameid[.@i] == 20178) ||
+		(@sold_nameid[.@i] == 20179) ||
+		(@sold_nameid[.@i] == 20180) ||
+		(@sold_nameid[.@i] == 20181) ||
+		(@sold_nameid[.@i] == 20182) ||
+		(@sold_nameid[.@i] == 20183) ||
+		(@sold_nameid[.@i] == 20184) ||
+		(@sold_nameid[.@i] == 20185) ||
+		(@sold_nameid[.@i] == 20186) ||
+		(@sold_nameid[.@i] == 20187) ||
+		(@sold_nameid[.@i] == 20188) ||
+		(@sold_nameid[.@i] == 20189) ||
+		(@sold_nameid[.@i] == 20190) ||
+		(@sold_nameid[.@i] == 20191) ||
+		(@sold_nameid[.@i] == 20192) ||
+		(@sold_nameid[.@i] == 20193) ||
+		(@sold_nameid[.@i] == 20194) ||
+		(@sold_nameid[.@i] == 20195) ||
+		(@sold_nameid[.@i] == 20196) ||
+		(@sold_nameid[.@i] == 20197) ||
+		(@sold_nameid[.@i] == 20198) ||
+		(@sold_nameid[.@i] == 20199) ||
+		(@sold_nameid[.@i] == 20200) ||
+		(@sold_nameid[.@i] == 20201) ||
+		(@sold_nameid[.@i] == 20202) ||
+		(@sold_nameid[.@i] == 20203) ||
+		(@sold_nameid[.@i] == 20204) ||
+		(@sold_nameid[.@i] == 20205) ||
+		(@sold_nameid[.@i] == 20206) ||
+		(@sold_nameid[.@i] == 20207) ||
+		(@sold_nameid[.@i] == 20208) ||
+		(@sold_nameid[.@i] == 20209) ||
+		(@sold_nameid[.@i] == 20210) ||
+		(@sold_nameid[.@i] == 20211) ||
+		(@sold_nameid[.@i] == 20212) ||
+		(@sold_nameid[.@i] == 20213) ||
+		(@sold_nameid[.@i] == 20214) ||
+		(@sold_nameid[.@i] == 20215) ||
+		(@sold_nameid[.@i] == 20216) ||
+		(@sold_nameid[.@i] == 20217) ||
+		(@sold_nameid[.@i] == 20218) ||
+		(@sold_nameid[.@i] == 20219) ||
+		(@sold_nameid[.@i] == 20220) ||
+		(@sold_nameid[.@i] == 20221) ||
+		(@sold_nameid[.@i] == 20222) ||
+		(@sold_nameid[.@i] == 20223) ||
+		(@sold_nameid[.@i] == 20224) ||
+		(@sold_nameid[.@i] == 20225) ||
+		(@sold_nameid[.@i] == 20226) ||
+		(@sold_nameid[.@i] == 20227) ||
+		(@sold_nameid[.@i] == 20228) ||
+		(@sold_nameid[.@i] == 20229) ||
+		(@sold_nameid[.@i] == 20230) ||
+		(@sold_nameid[.@i] == 20231) ||
+		(@sold_nameid[.@i] == 20232) ||
+		(@sold_nameid[.@i] == 20233) ||
+		(@sold_nameid[.@i] == 20234) ||
+		(@sold_nameid[.@i] == 20235) ||
+		(@sold_nameid[.@i] == 20236) ||
+		(@sold_nameid[.@i] == 20237) ||
+		(@sold_nameid[.@i] == 20238) ||
+		(@sold_nameid[.@i] == 20239) ||
+		(@sold_nameid[.@i] == 20241) ||
+		(@sold_nameid[.@i] == 20242) ||
+		(@sold_nameid[.@i] == 20243) ||
+		(@sold_nameid[.@i] == 20244) ||
+		(@sold_nameid[.@i] == 20245) ||
+		(@sold_nameid[.@i] == 20246) ||
+		(@sold_nameid[.@i] == 20247) ||
+		(@sold_nameid[.@i] == 20248) ||
+		(@sold_nameid[.@i] == 20249) ||
+		(@sold_nameid[.@i] == 20250) ||
+		(@sold_nameid[.@i] == 20251) ||
+		(@sold_nameid[.@i] == 20252) ||
+		(@sold_nameid[.@i] == 20253) ||
+		(@sold_nameid[.@i] == 20254) ||
+		(@sold_nameid[.@i] == 20255) ||
+		(@sold_nameid[.@i] == 20256) ||
+		(@sold_nameid[.@i] == 20257) ||
+		(@sold_nameid[.@i] == 20258) ||
+		(@sold_nameid[.@i] == 20259) ||
+		(@sold_nameid[.@i] == 20260) ||
+		(@sold_nameid[.@i] == 20261) ||
+		(@sold_nameid[.@i] == 20262) ||
+		(@sold_nameid[.@i] == 20263) ||
+		(@sold_nameid[.@i] == 20264) ||
+		(@sold_nameid[.@i] == 20265) ||
+		(@sold_nameid[.@i] == 20266) ||
+		(@sold_nameid[.@i] == 20267) ||
+		(@sold_nameid[.@i] == 20268) ||
+		(@sold_nameid[.@i] == 20269) ||
+		(@sold_nameid[.@i] == 20270) ||
+		(@sold_nameid[.@i] == 20271) ||
+		(@sold_nameid[.@i] == 20272) ||
+		(@sold_nameid[.@i] == 20273) ||
+		(@sold_nameid[.@i] == 20274) ||
+		(@sold_nameid[.@i] == 20275) ||
+		(@sold_nameid[.@i] == 20276) ||
+		(@sold_nameid[.@i] == 20277) ||
+		(@sold_nameid[.@i] == 20278) ||
+		(@sold_nameid[.@i] == 20279) ||
+		(@sold_nameid[.@i] == 20280) ||
+		(@sold_nameid[.@i] == 20281) ||
+		(@sold_nameid[.@i] == 20282) ||
+		(@sold_nameid[.@i] == 20283) ||
+		(@sold_nameid[.@i] == 20284) ||
+		(@sold_nameid[.@i] == 20285) ||
+		(@sold_nameid[.@i] == 20286) ||
+		(@sold_nameid[.@i] == 20287) ||
+		(@sold_nameid[.@i] == 20288) ||
+		(@sold_nameid[.@i] == 20289) ||
+		(@sold_nameid[.@i] == 20290) ||
+		(@sold_nameid[.@i] == 20291) ||
+		(@sold_nameid[.@i] == 20292) ||
+		(@sold_nameid[.@i] == 20293) ||
+		(@sold_nameid[.@i] == 20294) ||
+		(@sold_nameid[.@i] == 20295) ||
+		(@sold_nameid[.@i] == 20296) ||
+		(@sold_nameid[.@i] == 20297) ||
+		(@sold_nameid[.@i] == 20298) ||
+		(@sold_nameid[.@i] == 20299) ||
+		(@sold_nameid[.@i] == 20300) ||
+		(@sold_nameid[.@i] == 20301) ||
+		(@sold_nameid[.@i] == 20302) ||
+		(@sold_nameid[.@i] == 20303) ||
+		(@sold_nameid[.@i] == 20304) ||
+		(@sold_nameid[.@i] == 20305) ||
+		(@sold_nameid[.@i] == 20306) ||
+		(@sold_nameid[.@i] == 20307) ||
+		(@sold_nameid[.@i] == 20311) ||
+		(@sold_nameid[.@i] == 20312) ||
+		(@sold_nameid[.@i] == 20313) ||
+		(@sold_nameid[.@i] == 20314) ||
+		(@sold_nameid[.@i] == 20315) ||
+		(@sold_nameid[.@i] == 20316) ||
+		(@sold_nameid[.@i] == 20317) ||
+		(@sold_nameid[.@i] == 20318) ||
+		(@sold_nameid[.@i] == 20319) ||
+		(@sold_nameid[.@i] == 20320) ||
+		(@sold_nameid[.@i] == 20321) ||
+		(@sold_nameid[.@i] == 20322) ||
+		(@sold_nameid[.@i] == 20323) ||
+		(@sold_nameid[.@i] == 20324) ||
+		(@sold_nameid[.@i] == 20325) ||
+		(@sold_nameid[.@i] == 20326) ||
+		(@sold_nameid[.@i] == 20327) ||
+		(@sold_nameid[.@i] == 20328) ||
+		(@sold_nameid[.@i] == 20329) ||
+		(@sold_nameid[.@i] == 20330) ||
+		(@sold_nameid[.@i] == 20331) ||
+		(@sold_nameid[.@i] == 20332) ||
+		(@sold_nameid[.@i] == 20333) ||
+		(@sold_nameid[.@i] == 20334) ||
+		(@sold_nameid[.@i] == 20335) ||
+		(@sold_nameid[.@i] == 20338) ||
+		(@sold_nameid[.@i] == 20339) ||
+		(@sold_nameid[.@i] == 20340) ||
+		(@sold_nameid[.@i] == 20341) ||
+		(@sold_nameid[.@i] == 20342) ||
+		(@sold_nameid[.@i] == 20343) ||
+		(@sold_nameid[.@i] == 20344) ||
+		(@sold_nameid[.@i] == 20345) ||
+		(@sold_nameid[.@i] == 20346) ||
+		(@sold_nameid[.@i] == 20347) ||
+		(@sold_nameid[.@i] == 20348) ||
+		(@sold_nameid[.@i] == 20349) ||
+		(@sold_nameid[.@i] == 20350) ||
+		(@sold_nameid[.@i] == 20351) ||
+		(@sold_nameid[.@i] == 20352) ||
+		(@sold_nameid[.@i] == 20353) ||
+		(@sold_nameid[.@i] == 20354) ||
+		(@sold_nameid[.@i] == 20355) ||
+		(@sold_nameid[.@i] == 20356) ||
+		(@sold_nameid[.@i] == 20357) ||
+		(@sold_nameid[.@i] == 20358) ||
+		(@sold_nameid[.@i] == 20359) ||
+		(@sold_nameid[.@i] == 20360) ||
+		(@sold_nameid[.@i] == 20361) ||
+		(@sold_nameid[.@i] == 20362) ||
+		(@sold_nameid[.@i] == 20363) ||
+		(@sold_nameid[.@i] == 20364) ||
+		(@sold_nameid[.@i] == 20365) ||
+		(@sold_nameid[.@i] == 20366) ||
+		(@sold_nameid[.@i] == 20367) ||
+		(@sold_nameid[.@i] == 20368) ||
+		(@sold_nameid[.@i] == 20369) ||
+		(@sold_nameid[.@i] == 20370) ||
+		(@sold_nameid[.@i] == 20371) ||
+		(@sold_nameid[.@i] == 20372) ||
+		(@sold_nameid[.@i] == 20373) ||
+		(@sold_nameid[.@i] == 20374) ||
+		(@sold_nameid[.@i] == 20375) ||
+		(@sold_nameid[.@i] == 20376) ||
+		(@sold_nameid[.@i] == 20377) ||
+		(@sold_nameid[.@i] == 20378) ||
+		(@sold_nameid[.@i] == 20379) ||
+		(@sold_nameid[.@i] == 20380) ||
+		(@sold_nameid[.@i] == 20381) ||
+		(@sold_nameid[.@i] == 20382) ||
+		(@sold_nameid[.@i] == 20383) ||
+		(@sold_nameid[.@i] == 20384) ||
+		(@sold_nameid[.@i] == 20385) ||
+		(@sold_nameid[.@i] == 20386) ||
+		(@sold_nameid[.@i] == 20387) ||
+		(@sold_nameid[.@i] == 20388) ||
+		(@sold_nameid[.@i] == 20389) ||
+		(@sold_nameid[.@i] == 20390) ||
+		(@sold_nameid[.@i] == 20392) ||
+		(@sold_nameid[.@i] == 20393) ||
+		(@sold_nameid[.@i] == 20394) ||
+		(@sold_nameid[.@i] == 20395) ||
+		(@sold_nameid[.@i] == 20396) ||
+		(@sold_nameid[.@i] == 20397) ||
+		(@sold_nameid[.@i] == 20398) ||
+		(@sold_nameid[.@i] == 20399) ||
+		(@sold_nameid[.@i] == 20400) ||
+		(@sold_nameid[.@i] == 20401) ||
+		(@sold_nameid[.@i] == 20402) ||
+		(@sold_nameid[.@i] == 20403) ||
+		(@sold_nameid[.@i] == 20404) ||
+		(@sold_nameid[.@i] == 20405) ||
+		(@sold_nameid[.@i] == 20406) ||
+		(@sold_nameid[.@i] == 20407) ||
+		(@sold_nameid[.@i] == 20408) ||
+		(@sold_nameid[.@i] == 20409) ||
+		(@sold_nameid[.@i] == 20410) ||
+		(@sold_nameid[.@i] == 20411) ||
+		(@sold_nameid[.@i] == 20412) ||
+		(@sold_nameid[.@i] == 20413) ||
+		(@sold_nameid[.@i] == 20414) ||
+		(@sold_nameid[.@i] == 20415) ||
+		(@sold_nameid[.@i] == 20416) ||
+		(@sold_nameid[.@i] == 20417) ||
+		(@sold_nameid[.@i] == 20418) ||
+		(@sold_nameid[.@i] == 20419) ||
+		(@sold_nameid[.@i] == 20420) ||
+		(@sold_nameid[.@i] == 20421) ||
+		(@sold_nameid[.@i] == 20422) ||
+		(@sold_nameid[.@i] == 20423) ||
+		(@sold_nameid[.@i] == 20424) ||
+		(@sold_nameid[.@i] == 20425) ||
+		(@sold_nameid[.@i] == 20426) ||
+		(@sold_nameid[.@i] == 20427) ||
+		(@sold_nameid[.@i] == 20428) ||
+		(@sold_nameid[.@i] == 20429) ||
+		(@sold_nameid[.@i] == 20430) ||
+		(@sold_nameid[.@i] == 20431) ||
+		(@sold_nameid[.@i] == 20432) ||
+		(@sold_nameid[.@i] == 20433) ||
+		(@sold_nameid[.@i] == 20434) ||
+		(@sold_nameid[.@i] == 20435) ||
+		(@sold_nameid[.@i] == 20436) ||
+		(@sold_nameid[.@i] == 20437) ||
+		(@sold_nameid[.@i] == 20438) ||
+		(@sold_nameid[.@i] == 20439) ||
+		(@sold_nameid[.@i] == 20440) ||
+		(@sold_nameid[.@i] == 20441) ||
+		(@sold_nameid[.@i] == 20442) ||
+		(@sold_nameid[.@i] == 20443) ||
+		(@sold_nameid[.@i] == 20444) ||
+		(@sold_nameid[.@i] == 20445) ||
+		(@sold_nameid[.@i] == 20446) ||
+		(@sold_nameid[.@i] == 20447) ||
+		(@sold_nameid[.@i] == 20448) ||
+		(@sold_nameid[.@i] == 20449) ||
+		(@sold_nameid[.@i] == 20450) ||
+		(@sold_nameid[.@i] == 20451) ||
+		(@sold_nameid[.@i] == 20452) ||
+		(@sold_nameid[.@i] == 20453) ||
+		(@sold_nameid[.@i] == 20454) ||
+		(@sold_nameid[.@i] == 20455) ||
+		(@sold_nameid[.@i] == 20456) ||
+		(@sold_nameid[.@i] == 20457) ||
+		(@sold_nameid[.@i] == 20458) ||
+		(@sold_nameid[.@i] == 20459) ||
+		(@sold_nameid[.@i] == 20460) ||
+		(@sold_nameid[.@i] == 20461) ||
+		(@sold_nameid[.@i] == 20462) ||
+		(@sold_nameid[.@i] == 20463) ||
+		(@sold_nameid[.@i] == 20464) ||
+		(@sold_nameid[.@i] == 20465) ||
+		(@sold_nameid[.@i] == 20466) ||
+		(@sold_nameid[.@i] == 20467) ||
+		(@sold_nameid[.@i] == 20468) ||
+		(@sold_nameid[.@i] == 20469) ||
+		(@sold_nameid[.@i] == 20470) ||
+		(@sold_nameid[.@i] == 20471) ||
+		(@sold_nameid[.@i] == 20472) ||
+		(@sold_nameid[.@i] == 20473) ||
+		(@sold_nameid[.@i] == 20474) ||
+		(@sold_nameid[.@i] == 20475) ||
+		(@sold_nameid[.@i] == 20481) ||
+		(@sold_nameid[.@i] == 20482) ||
+		(@sold_nameid[.@i] == 20483) ||
+		(@sold_nameid[.@i] == 20484) ||
+		(@sold_nameid[.@i] == 20485) ||
+		(@sold_nameid[.@i] == 20486) ||
+		(@sold_nameid[.@i] == 20487) ||
+		(@sold_nameid[.@i] == 20488) ||
+		(@sold_nameid[.@i] == 20489) ||
+		(@sold_nameid[.@i] == 20490) ||
+		(@sold_nameid[.@i] == 20491) ||
+		(@sold_nameid[.@i] == 20492) ||
+		(@sold_nameid[.@i] == 20493) ||
+		(@sold_nameid[.@i] == 20494) ||
+		(@sold_nameid[.@i] == 20495) ||
+		(@sold_nameid[.@i] == 20496) ||
+		(@sold_nameid[.@i] == 20497) ||
+		(@sold_nameid[.@i] == 20498) ||
+		(@sold_nameid[.@i] == 20499) ||
+		(@sold_nameid[.@i] == 20502) ||
+		(@sold_nameid[.@i] == 20504) ||
+		(@sold_nameid[.@i] == 20507) ||
+		(@sold_nameid[.@i] == 20508) ||
+		(@sold_nameid[.@i] == 20509) ||
+		(@sold_nameid[.@i] == 20510) ||
+		(@sold_nameid[.@i] == 20511) ||
+		(@sold_nameid[.@i] == 20512) ||
+		(@sold_nameid[.@i] == 20513) ||
+		(@sold_nameid[.@i] == 20514) ||
+		(@sold_nameid[.@i] == 20515) ||
+		(@sold_nameid[.@i] == 20516) ||
+		(@sold_nameid[.@i] == 20517) ||
+		(@sold_nameid[.@i] == 20518) ||
+		(@sold_nameid[.@i] == 20519) ||
+		(@sold_nameid[.@i] == 20521) ||
+		(@sold_nameid[.@i] == 20522) ||
+		(@sold_nameid[.@i] == 20523) ||
+		(@sold_nameid[.@i] == 20524) ||
+		(@sold_nameid[.@i] == 20525) ||
+		(@sold_nameid[.@i] == 20526) ||
+		(@sold_nameid[.@i] == 20527) ||
+		(@sold_nameid[.@i] == 20528) ||
+		(@sold_nameid[.@i] == 20530) ||
+		(@sold_nameid[.@i] == 20761) ||
+		(@sold_nameid[.@i] == 20762) ||
+		(@sold_nameid[.@i] == 20763) ||
+		(@sold_nameid[.@i] == 20764) ||
+		(@sold_nameid[.@i] == 31027) ||
+		(@sold_nameid[.@i] == 31028) ||
+		(@sold_nameid[.@i] == 31029) ||
+		(@sold_nameid[.@i] == 31030) ||
+		(@sold_nameid[.@i] == 31031) ||
+		(@sold_nameid[.@i] == 31032) ||
+		(@sold_nameid[.@i] == 31033) ||
+		(@sold_nameid[.@i] == 31034) ||
+		(@sold_nameid[.@i] == 31035) ||
+		(@sold_nameid[.@i] == 31036) ||
+		(@sold_nameid[.@i] == 31037) ||
+		(@sold_nameid[.@i] == 31038) ||
+		(@sold_nameid[.@i] == 31039) ||
+		(@sold_nameid[.@i] == 31040) ||
+		(@sold_nameid[.@i] == 31041) ||
+		(@sold_nameid[.@i] == 31042) ||
+		(@sold_nameid[.@i] == 31043) ||
+		(@sold_nameid[.@i] == 31044) ||
+		(@sold_nameid[.@i] == 31045) ||
+		(@sold_nameid[.@i] == 31046) ||
+		(@sold_nameid[.@i] == 31047) ||
+		(@sold_nameid[.@i] == 31048) ||
+		(@sold_nameid[.@i] == 31049) ||
+		(@sold_nameid[.@i] == 31050) ||
+		(@sold_nameid[.@i] == 31051) ||
+		(@sold_nameid[.@i] == 31052) ||
+		(@sold_nameid[.@i] == 31053) ||
+		(@sold_nameid[.@i] == 31054) ||
+		(@sold_nameid[.@i] == 31055) ||
+		(@sold_nameid[.@i] == 31057) ||
+		(@sold_nameid[.@i] == 31058) ||
+		(@sold_nameid[.@i] == 31059) ||
+		(@sold_nameid[.@i] == 31060) ||
+		(@sold_nameid[.@i] == 31061) ||
+		(@sold_nameid[.@i] == 31062) ||
+		(@sold_nameid[.@i] == 31063) ||
+		(@sold_nameid[.@i] == 31064) ||
+		(@sold_nameid[.@i] == 31065) ||
+		(@sold_nameid[.@i] == 31066) ||
+		(@sold_nameid[.@i] == 31067) ||
+		(@sold_nameid[.@i] == 31068) ||
+		(@sold_nameid[.@i] == 31069) ||
+		(@sold_nameid[.@i] == 31070) ||
+		(@sold_nameid[.@i] == 31071) ||
+		(@sold_nameid[.@i] == 31072) ||
+		(@sold_nameid[.@i] == 31073) ||
+		(@sold_nameid[.@i] == 31074) ||
+		(@sold_nameid[.@i] == 31075) ||
+		(@sold_nameid[.@i] == 31076) ||
+		(@sold_nameid[.@i] == 31077) ||
+		(@sold_nameid[.@i] == 31078) ||
+		(@sold_nameid[.@i] == 31079) ||
+		(@sold_nameid[.@i] == 31080) ||
+		(@sold_nameid[.@i] == 31081) ||
+		(@sold_nameid[.@i] == 31082) ||
+		(@sold_nameid[.@i] == 31083) ||
+		(@sold_nameid[.@i] == 31084) ||
+		(@sold_nameid[.@i] == 31085) ||
+		(@sold_nameid[.@i] == 31086) ||
+		(@sold_nameid[.@i] == 31087) ||
+		(@sold_nameid[.@i] == 31088) ||
+		(@sold_nameid[.@i] == 31089) ||
+		(@sold_nameid[.@i] == 31090) ||
+		(@sold_nameid[.@i] == 31091) ||
+		(@sold_nameid[.@i] == 31092) ||
+		(@sold_nameid[.@i] == 31093) ||
+		(@sold_nameid[.@i] == 31094) ||
+		(@sold_nameid[.@i] == 31095) ||
+		(@sold_nameid[.@i] == 31096) ||
+		(@sold_nameid[.@i] == 31097) ||
+		(@sold_nameid[.@i] == 31098) ||
+		(@sold_nameid[.@i] == 31099) ||
+		(@sold_nameid[.@i] == 31100) ||
+		(@sold_nameid[.@i] == 31101) ||
+		(@sold_nameid[.@i] == 31102) ||
+		(@sold_nameid[.@i] == 31103) ||
+		(@sold_nameid[.@i] == 31104) ||
+		(@sold_nameid[.@i] == 31105) ||
+		(@sold_nameid[.@i] == 31106) ||
+		(@sold_nameid[.@i] == 31107) ||
+		(@sold_nameid[.@i] == 31113) ||
+		(@sold_nameid[.@i] == 31114) ||
+		(@sold_nameid[.@i] == 31115) ||
+		(@sold_nameid[.@i] == 31117) ||
+		(@sold_nameid[.@i] == 31118) ||
+		(@sold_nameid[.@i] == 31119) ||
+		(@sold_nameid[.@i] == 31120) ||
+		(@sold_nameid[.@i] == 31121) ||
+		(@sold_nameid[.@i] == 31122) ||
+		(@sold_nameid[.@i] == 31123) ||
+		(@sold_nameid[.@i] == 31124) ||
+		(@sold_nameid[.@i] == 31125) ||
+		(@sold_nameid[.@i] == 31126) ||
+		(@sold_nameid[.@i] == 31127) ||
+		(@sold_nameid[.@i] == 31128) ||
+		(@sold_nameid[.@i] == 31129) ||
+		(@sold_nameid[.@i] == 31130) ||
+		(@sold_nameid[.@i] == 31131) ||
+		(@sold_nameid[.@i] == 31132) ||
+		(@sold_nameid[.@i] == 31133) ||
+		(@sold_nameid[.@i] == 31134) ||
+		(@sold_nameid[.@i] == 31135) ||
+		(@sold_nameid[.@i] == 31136) ||
+		(@sold_nameid[.@i] == 31137) ||
+		(@sold_nameid[.@i] == 31138) ||
+		(@sold_nameid[.@i] == 31139) ||
+		(@sold_nameid[.@i] == 31142) ||
+		(@sold_nameid[.@i] == 31143) ||
+		(@sold_nameid[.@i] == 31144) ||
+		(@sold_nameid[.@i] == 31145) ||
+		(@sold_nameid[.@i] == 31146) ||
+		(@sold_nameid[.@i] == 31147) ||
+		(@sold_nameid[.@i] == 31148) ||
+		(@sold_nameid[.@i] == 31149) ||
+		(@sold_nameid[.@i] == 31150) ||
+		(@sold_nameid[.@i] == 31151) ||
+		(@sold_nameid[.@i] == 31152) ||
+		(@sold_nameid[.@i] == 31153) ||
+		(@sold_nameid[.@i] == 31154) ||
+		(@sold_nameid[.@i] == 31155) ||
+		(@sold_nameid[.@i] == 31156) ||
+		(@sold_nameid[.@i] == 31157) ||
+		(@sold_nameid[.@i] == 31158) ||
+		(@sold_nameid[.@i] == 31160) ||
+		(@sold_nameid[.@i] == 31161) ||
+		(@sold_nameid[.@i] == 31162) ||
+		(@sold_nameid[.@i] == 31163) ||
+		(@sold_nameid[.@i] == 31164) ||
+		(@sold_nameid[.@i] == 31165) ||
+		(@sold_nameid[.@i] == 31166) ||
+		(@sold_nameid[.@i] == 31167) ||
+		(@sold_nameid[.@i] == 31168) ||
+		(@sold_nameid[.@i] == 31169) ||
+		(@sold_nameid[.@i] == 31170) ||
+		(@sold_nameid[.@i] == 31171) ||
+		(@sold_nameid[.@i] == 31172) ||
+		(@sold_nameid[.@i] == 31173) ||
+		(@sold_nameid[.@i] == 31174) ||
+		(@sold_nameid[.@i] == 31175) ||
+		(@sold_nameid[.@i] == 31176) ||
+		(@sold_nameid[.@i] == 31177) ||
+		(@sold_nameid[.@i] == 31178) ||
+		(@sold_nameid[.@i] == 31179) ||
+		(@sold_nameid[.@i] == 31180) ||
+		(@sold_nameid[.@i] == 31181) ||
+		(@sold_nameid[.@i] == 31182) ||
+		(@sold_nameid[.@i] == 31183) ||
+		(@sold_nameid[.@i] == 31184) ||
+		(@sold_nameid[.@i] == 31185) ||
+		(@sold_nameid[.@i] == 31186) ||
+		(@sold_nameid[.@i] == 31187) ||
+		(@sold_nameid[.@i] == 31188) ||
+		(@sold_nameid[.@i] == 31189) ||
+		(@sold_nameid[.@i] == 31190) ||
+		(@sold_nameid[.@i] == 31191) ||
+		(@sold_nameid[.@i] == 31192) ||
+		(@sold_nameid[.@i] == 31193) ||
+		(@sold_nameid[.@i] == 31194) ||
+		(@sold_nameid[.@i] == 31195) ||
+		(@sold_nameid[.@i] == 31196) ||
+		(@sold_nameid[.@i] == 31197) ||
+		(@sold_nameid[.@i] == 31198) ||
+		(@sold_nameid[.@i] == 31199) ||
+		(@sold_nameid[.@i] == 31200) ||
+		(@sold_nameid[.@i] == 31201) ||
+		(@sold_nameid[.@i] == 31202) ||
+		(@sold_nameid[.@i] == 31203) ||
+		(@sold_nameid[.@i] == 31204) ||
+		(@sold_nameid[.@i] == 31205) ||
+		(@sold_nameid[.@i] == 31206) ||
+		(@sold_nameid[.@i] == 31207) ||
+		(@sold_nameid[.@i] == 31208) ||
+		(@sold_nameid[.@i] == 31209) ||
+		(@sold_nameid[.@i] == 31210) ||
+		(@sold_nameid[.@i] == 31211) ||
+		(@sold_nameid[.@i] == 31212) ||
+		(@sold_nameid[.@i] == 31213) ||
+		(@sold_nameid[.@i] == 31214) ||
+		(@sold_nameid[.@i] == 31215) ||
+		(@sold_nameid[.@i] == 31216) ||
+		(@sold_nameid[.@i] == 31217) ||
+		(@sold_nameid[.@i] == 31218) ||
+		(@sold_nameid[.@i] == 31219) ||
+		(@sold_nameid[.@i] == 31220) ||
+		(@sold_nameid[.@i] == 31221) ||
+		(@sold_nameid[.@i] == 31222) ||
+		(@sold_nameid[.@i] == 31223) ||
+		(@sold_nameid[.@i] == 31224) ||
+		(@sold_nameid[.@i] == 31225) ||
+		(@sold_nameid[.@i] == 31226) ||
+		(@sold_nameid[.@i] == 31227) ||
+		(@sold_nameid[.@i] == 31228) ||
+		(@sold_nameid[.@i] == 31229) ||
+		(@sold_nameid[.@i] == 31230) ||
+		(@sold_nameid[.@i] == 31231) ||
+		(@sold_nameid[.@i] == 31232) ||
+		(@sold_nameid[.@i] == 31233) ||
+		(@sold_nameid[.@i] == 31234) ||
+		(@sold_nameid[.@i] == 31235) ||
+		(@sold_nameid[.@i] == 31236) ||
+		(@sold_nameid[.@i] == 31237) ||
+		(@sold_nameid[.@i] == 31238) ||
+		(@sold_nameid[.@i] == 31239) ||
+		(@sold_nameid[.@i] == 31240) ||
+		(@sold_nameid[.@i] == 31241) ||
+		(@sold_nameid[.@i] == 31242) ||
+		(@sold_nameid[.@i] == 31243) ||
+		(@sold_nameid[.@i] == 31244) ||
+		(@sold_nameid[.@i] == 31245) ||
+		(@sold_nameid[.@i] == 31246) ||
+		(@sold_nameid[.@i] == 31247) ||
+		(@sold_nameid[.@i] == 31248) ||
+		(@sold_nameid[.@i] == 31249) ||
+		(@sold_nameid[.@i] == 31250) ||
+		(@sold_nameid[.@i] == 31251) ||
+		(@sold_nameid[.@i] == 31252) ||
+		(@sold_nameid[.@i] == 31253) ||
+		(@sold_nameid[.@i] == 31254) ||
+		(@sold_nameid[.@i] == 31255) ||
+		(@sold_nameid[.@i] == 31256) ||
+		(@sold_nameid[.@i] == 31257) ||
+		(@sold_nameid[.@i] == 31258) ||
+		(@sold_nameid[.@i] == 31259) ||
+		(@sold_nameid[.@i] == 31260) ||
+		(@sold_nameid[.@i] == 31261) ||
+		(@sold_nameid[.@i] == 31262) ||
+		(@sold_nameid[.@i] == 31263) ||
+		(@sold_nameid[.@i] == 31264) ||
+		(@sold_nameid[.@i] == 31265) ||
+		(@sold_nameid[.@i] == 31266) ||
+		(@sold_nameid[.@i] == 31267) ||
+		(@sold_nameid[.@i] == 31268) ||
+		(@sold_nameid[.@i] == 31269) ||
+		(@sold_nameid[.@i] == 31270) ||
+		(@sold_nameid[.@i] == 31271) ||
+		(@sold_nameid[.@i] == 31272) ||
+		(@sold_nameid[.@i] == 31273) ||
+		(@sold_nameid[.@i] == 31274) ||
+		(@sold_nameid[.@i] == 31275) ||
+		(@sold_nameid[.@i] == 31276) ||
+		(@sold_nameid[.@i] == 31277) ||
+		(@sold_nameid[.@i] == 31278) ||
+		(@sold_nameid[.@i] == 31279) ||
+		(@sold_nameid[.@i] == 31280) ||
+		(@sold_nameid[.@i] == 31281) ||
+		(@sold_nameid[.@i] == 31282) ||
+		(@sold_nameid[.@i] == 31283) ||
+		(@sold_nameid[.@i] == 31284) ||
+		(@sold_nameid[.@i] == 31285) ||
+		(@sold_nameid[.@i] == 31286) ||
+		(@sold_nameid[.@i] == 31287) ||
+		(@sold_nameid[.@i] == 31288) ||
+		(@sold_nameid[.@i] == 31289) ||
+		(@sold_nameid[.@i] == 31290) ||
+		(@sold_nameid[.@i] == 31291) ||
+		(@sold_nameid[.@i] == 31293) ||
+		(@sold_nameid[.@i] == 31294) ||
+		(@sold_nameid[.@i] == 31295) ||
+		(@sold_nameid[.@i] == 31296) ||
+		(@sold_nameid[.@i] == 31297) ||
+		(@sold_nameid[.@i] == 31298) ||
+		(@sold_nameid[.@i] == 31299) ||
+		(@sold_nameid[.@i] == 31300) ||
+		(@sold_nameid[.@i] == 31301) ||
+		(@sold_nameid[.@i] == 31302) ||
+		(@sold_nameid[.@i] == 31303) ||
+		(@sold_nameid[.@i] == 31304) ||
+		(@sold_nameid[.@i] == 31305) ||
+		(@sold_nameid[.@i] == 31306) ||
+		(@sold_nameid[.@i] == 31307) ||
+		(@sold_nameid[.@i] == 31308) ||
+		(@sold_nameid[.@i] == 31309) ||
+		(@sold_nameid[.@i] == 31310) ||
+		(@sold_nameid[.@i] == 31311) ||
+		(@sold_nameid[.@i] == 31312) ||
+		(@sold_nameid[.@i] == 31313) ||
+		(@sold_nameid[.@i] == 31314) ||
+		(@sold_nameid[.@i] == 31315) ||
+		(@sold_nameid[.@i] == 31316) ||
+		(@sold_nameid[.@i] == 31317) ||
+		(@sold_nameid[.@i] == 31318) ||
+		(@sold_nameid[.@i] == 31319) ||
+		(@sold_nameid[.@i] == 31320) ||
+		(@sold_nameid[.@i] == 31321) ||
+		(@sold_nameid[.@i] == 31322) ||
+		(@sold_nameid[.@i] == 31323) ||
+		(@sold_nameid[.@i] == 31324) ||
+		(@sold_nameid[.@i] == 31325) ||
+		(@sold_nameid[.@i] == 31326) ||
+		(@sold_nameid[.@i] == 31327) ||
+		(@sold_nameid[.@i] == 31328) ||
+		(@sold_nameid[.@i] == 31329) ||
+		(@sold_nameid[.@i] == 31330) ||
+		(@sold_nameid[.@i] == 31331) ||
+		(@sold_nameid[.@i] == 31332) ||
+		(@sold_nameid[.@i] == 31368) ||
+		(@sold_nameid[.@i] == 31369) ||
+		(@sold_nameid[.@i] == 31370) ||
+		(@sold_nameid[.@i] == 31371) ||
+		(@sold_nameid[.@i] == 31373) ||
+		(@sold_nameid[.@i] == 31374) ||
+		(@sold_nameid[.@i] == 31375) ||
+		(@sold_nameid[.@i] == 31376) ||
+		(@sold_nameid[.@i] == 31377) ||
+		(@sold_nameid[.@i] == 31378) ||
+		(@sold_nameid[.@i] == 31379) ||
+		(@sold_nameid[.@i] == 31380) ||
+		(@sold_nameid[.@i] == 31381) ||
+		(@sold_nameid[.@i] == 31382) ||
+		(@sold_nameid[.@i] == 31383) ||
+		(@sold_nameid[.@i] == 31384) ||
+		(@sold_nameid[.@i] == 31385) ||
+		(@sold_nameid[.@i] == 31387) ||
+		(@sold_nameid[.@i] == 31388) ||
+		(@sold_nameid[.@i] == 31389) ||
+		(@sold_nameid[.@i] == 31390) ||
+		(@sold_nameid[.@i] == 31391) ||
+		(@sold_nameid[.@i] == 31392) ||
+		(@sold_nameid[.@i] == 31393) ||
+		(@sold_nameid[.@i] == 31394) ||
+		(@sold_nameid[.@i] == 31395) ||
+		(@sold_nameid[.@i] == 31396) ||
+		(@sold_nameid[.@i] == 31397) ||
+		(@sold_nameid[.@i] == 31398) ||
+		(@sold_nameid[.@i] == 31399) ||
+		(@sold_nameid[.@i] == 31400) ||
+		(@sold_nameid[.@i] == 31401) ||
+		(@sold_nameid[.@i] == 31402) ||
+		(@sold_nameid[.@i] == 31403) ||
+		(@sold_nameid[.@i] == 31404) ||
+		(@sold_nameid[.@i] == 31405) ||
+		(@sold_nameid[.@i] == 31406) ||
+		(@sold_nameid[.@i] == 31407) ||
+		(@sold_nameid[.@i] == 31408) ||
+		(@sold_nameid[.@i] == 31409) ||
+		(@sold_nameid[.@i] == 31410) ||
+		(@sold_nameid[.@i] == 31411) ||
+		(@sold_nameid[.@i] == 31412) ||
+		(@sold_nameid[.@i] == 31413) ||
+		(@sold_nameid[.@i] == 31414) ||
+		(@sold_nameid[.@i] == 31415) ||
+		(@sold_nameid[.@i] == 31416) ||
+		(@sold_nameid[.@i] == 31417) ||
+		(@sold_nameid[.@i] == 31418) ||
+		(@sold_nameid[.@i] == 31420) ||
+		(@sold_nameid[.@i] == 31432) ||
+		(@sold_nameid[.@i] == 31433) ||
+		(@sold_nameid[.@i] == 31434) ||
+		(@sold_nameid[.@i] == 31435) ||
+		(@sold_nameid[.@i] == 31436) ||
+		(@sold_nameid[.@i] == 31437) ||
+		(@sold_nameid[.@i] == 31438) ||
+		(@sold_nameid[.@i] == 31439) ||
+		(@sold_nameid[.@i] == 31440) ||
+		(@sold_nameid[.@i] == 31441) ||
+		(@sold_nameid[.@i] == 31442) ||
+		(@sold_nameid[.@i] == 31443) ||
+		(@sold_nameid[.@i] == 31444) ||
+		(@sold_nameid[.@i] == 31445) ||
+		(@sold_nameid[.@i] == 31446) ||
+		(@sold_nameid[.@i] == 31447) ||
+		(@sold_nameid[.@i] == 31448) ||
+		(@sold_nameid[.@i] == 31449) ||
+		(@sold_nameid[.@i] == 31450) ||
+		(@sold_nameid[.@i] == 31451) ||
+		(@sold_nameid[.@i] == 31452) ||
+		(@sold_nameid[.@i] == 31453) ||
+		(@sold_nameid[.@i] == 31455) ||
+		(@sold_nameid[.@i] == 31456) ||
+		(@sold_nameid[.@i] == 31457) ||
+		(@sold_nameid[.@i] == 31459) ||
+		(@sold_nameid[.@i] == 31460) ||
+		(@sold_nameid[.@i] == 31463) ||
+		(@sold_nameid[.@i] == 31464) ||
+		(@sold_nameid[.@i] == 31465) ||
+		(@sold_nameid[.@i] == 31466) ||
+		(@sold_nameid[.@i] == 31467) ||
+		(@sold_nameid[.@i] == 31468) ||
+		(@sold_nameid[.@i] == 31470) ||
+		(@sold_nameid[.@i] == 31471) ||
+		(@sold_nameid[.@i] == 31472) ||
+		(@sold_nameid[.@i] == 31473) ||
+		(@sold_nameid[.@i] == 31474) ||
+		(@sold_nameid[.@i] == 31475) ||
+		(@sold_nameid[.@i] == 31476) ||
+		(@sold_nameid[.@i] == 31478) ||
+		(@sold_nameid[.@i] == 31479) ||
+		(@sold_nameid[.@i] == 31480) ||
+		(@sold_nameid[.@i] == 31481) ||
+		(@sold_nameid[.@i] == 31482) ||
+		(@sold_nameid[.@i] == 31483) ||
+		(@sold_nameid[.@i] == 31484) ||
+		(@sold_nameid[.@i] == 31485) ||
+		(@sold_nameid[.@i] == 31486) ||
+		(@sold_nameid[.@i] == 31487) ||
+		(@sold_nameid[.@i] == 31488) ||
+		(@sold_nameid[.@i] == 31489) ||
+		(@sold_nameid[.@i] == 31490) ||
+		(@sold_nameid[.@i] == 31491) ||
+		(@sold_nameid[.@i] == 31492) ||
+		(@sold_nameid[.@i] == 31493) ||
+		(@sold_nameid[.@i] == 31494) ||
+		(@sold_nameid[.@i] == 31495) ||
+		(@sold_nameid[.@i] == 31496) ||
+		(@sold_nameid[.@i] == 31497) ||
+		(@sold_nameid[.@i] == 31498) ||
+		(@sold_nameid[.@i] == 31499) ||
+		(@sold_nameid[.@i] == 31504) ||
+		(@sold_nameid[.@i] == 31505) ||
+		(@sold_nameid[.@i] == 31506) ||
+		(@sold_nameid[.@i] == 31507) ||
+		(@sold_nameid[.@i] == 31508) ||
+		(@sold_nameid[.@i] == 31509) ||
+		(@sold_nameid[.@i] == 31510) ||
+		(@sold_nameid[.@i] == 31511) ||
+		(@sold_nameid[.@i] == 31512) ||
+		(@sold_nameid[.@i] == 31513) ||
+		(@sold_nameid[.@i] == 31514) ||
+		(@sold_nameid[.@i] == 31515) ||
+		(@sold_nameid[.@i] == 31516) ||
+		(@sold_nameid[.@i] == 31517) ||
+		(@sold_nameid[.@i] == 31518) ||
+		(@sold_nameid[.@i] == 31519) ||
+		(@sold_nameid[.@i] == 31520) ||
+		(@sold_nameid[.@i] == 31521) ||
+		(@sold_nameid[.@i] == 31522) ||
+		(@sold_nameid[.@i] == 31523) ||
+		(@sold_nameid[.@i] == 31524) ||
+		(@sold_nameid[.@i] == 31529) ||
+		(@sold_nameid[.@i] == 31530) ||
+		(@sold_nameid[.@i] == 31531) ||
+		(@sold_nameid[.@i] == 31532) ||
+		(@sold_nameid[.@i] == 31533) ||
+		(@sold_nameid[.@i] == 31537) ||
+		(@sold_nameid[.@i] == 31539) ||
+		(@sold_nameid[.@i] == 31540) ||
+		(@sold_nameid[.@i] == 31541) ||
+		(@sold_nameid[.@i] == 31543) ||
+		(@sold_nameid[.@i] == 31544) ||
+		(@sold_nameid[.@i] == 31545) ||
+		(@sold_nameid[.@i] == 31546) ||
+		(@sold_nameid[.@i] == 31547) ||
+		(@sold_nameid[.@i] == 31569) ||
+		(@sold_nameid[.@i] == 31570) ||
+		(@sold_nameid[.@i] == 31571) ||
+		(@sold_nameid[.@i] == 31572) ||
+		(@sold_nameid[.@i] == 31573) ||
+		(@sold_nameid[.@i] == 31574) ||
+		(@sold_nameid[.@i] == 31575) ||
+		(@sold_nameid[.@i] == 31580) ||
+		(@sold_nameid[.@i] == 40116) ||
+		(@sold_nameid[.@i] == 31589) ||
+		(@sold_nameid[.@i] == 31606) ||
+		(@sold_nameid[.@i] == 31562) ||
+		(@sold_nameid[.@i] == 31563) ||
+		(@sold_nameid[.@i] == 31564) ||
+		(@sold_nameid[.@i] == 31565) ||
+		(@sold_nameid[.@i] == 31566) ||
+		(@sold_nameid[.@i] == 31567) ||
+		(@sold_nameid[.@i] == 31538) ||
+		(@sold_nameid[.@i] == 31593) ||
+		(@sold_nameid[.@i] == 31594) ||
+		(@sold_nameid[.@i] == 31595) ||
+		(@sold_nameid[.@i] == 31596) ||
+		(@sold_nameid[.@i] == 40118) ||
+		(@sold_nameid[.@i] == 40117) ||
+		(@sold_nameid[.@i] == 31597) ||
+		(@sold_nameid[.@i] == 31598) ||
+		(@sold_nameid[.@i] == 31599) ||
+		(@sold_nameid[.@i] == 31600) ||
+		(@sold_nameid[.@i] == 31601) ||
+		(@sold_nameid[.@i] == 40119) ||
+		(@sold_nameid[.@i] == 40120) ||
+		(@sold_nameid[.@i] == 31592) ||
+		(@sold_nameid[.@i] == 31584) ||
+		(@sold_nameid[.@i] == 31585) ||
+		(@sold_nameid[.@i] == 31586) ||
+		(@sold_nameid[.@i] == 31587) ||
+		(@sold_nameid[.@i] == 31386) ||
+		(@sold_nameid[.@i] == 20018) ||
+		(@sold_nameid[.@i] == 31582) ||
+		(@sold_nameid[.@i] == 31583) ||
+		(@sold_nameid[.@i] == 31608) ||
+		(@sold_nameid[.@i] == 31609) ||
+		(@sold_nameid[.@i] == 31610) ||
+		(@sold_nameid[.@i] == 31611) ||
+		(@sold_nameid[.@i] == 31612) ||
+		(@sold_nameid[.@i] == 31614) ||
+		(@sold_nameid[.@i] == 31615) ||
+		(@sold_nameid[.@i] == 20538) ||
+		(@sold_nameid[.@i] == 31536) ||
+		(@sold_nameid[.@i] == 31581) ||
+		(@sold_nameid[.@i] == 31568) ||
+		(@sold_nameid[.@i] == 20535) ||
+		(@sold_nameid[.@i] == 20548) ||
+		(@sold_nameid[.@i] == 31684) ||
+		(@sold_nameid[.@i] == 31685) ||
+		(@sold_nameid[.@i] == 31686) ||
+		(@sold_nameid[.@i] == 31687) ||
+		(@sold_nameid[.@i] == 31688) ||
+		(@sold_nameid[.@i] == 31672) ||
+		(@sold_nameid[.@i] == 31673) ||
+		(@sold_nameid[.@i] == 31674) ||
+		(@sold_nameid[.@i] == 31661) ||
+		(@sold_nameid[.@i] == 31662) ||
+		(@sold_nameid[.@i] == 20547) ||
+		(@sold_nameid[.@i] == 31628) ||
+		(@sold_nameid[.@i] == 31664) ||
+		(@sold_nameid[.@i] == 31667) ||
+		(@sold_nameid[.@i] == 31671) ||
+		(@sold_nameid[.@i] == 21202) ||
+		(@sold_nameid[.@i] == 20546) ||
+		(@sold_nameid[.@i] == 20955) ||
+		(@sold_nameid[.@i] == 31588) ||
+		(@sold_nameid[.@i] == 31625) ||
+		(@sold_nameid[.@i] == 19433) ||
+		(@sold_nameid[.@i] == 20240)) {
+			if (.Level) {
+				query_sql("SELECT `LV` FROM `mob_db` WHERE `DropCardid` = "+@sold_nameid[.@i],.@lv);
+				if (.@lv < .Level) {
+					dispbottom getitemname(@sold_nameid[.@i])+" ต่ำกว่าเลเวลขั้นต่ำ.";
+					continue;
+				}
+			}
+			set .@card_id[getarraysize(.@card_id)], @sold_nameid[.@i];
+			set .@card_amt[getarraysize(.@card_amt)], @sold_quantity[.@i];
+			if (@sold_nameid[.@i] != 4301 && @sold_nameid[.@i] != 4302 && @sold_nameid[.@i] != 4303 && @sold_nameid[.@i] != 4304 && @sold_nameid[.@i] != 4305 && @sold_nameid[.@i] != 4306 && @sold_nameid[.@i] != 4307)
+				set .@Oct, compare(.OCT$,""+@sold_nameid[.@i]);
+			mes ((.@Oct)?"  ^000000":"  ^777777")+@sold_quantity[.@i]+"x "+getitemname(@sold_nameid[.@i])+"^000000";
+			set .@card_total, .@card_total+(@sold_quantity[.@i]*((.@Oct)?.Points[1]:.Points[0]));
+		}
+	deletearray @sold_nameid[0], getarraysize(@sold_nameid);
+	deletearray @sold_quantity[0], getarraysize(@sold_quantity);
+	if (!.@card_id) {
+		mes "  ^777777(ไม่มีคอส)^000000";
+		close;
+	}
+	mes " ";
+	mes "---------- รวมทั้งหมด: ^0055FF"+.@card_total+" แต้ม.^000000 -------";
+	next;
+	if(select(" > ^0055FFแลกเปลี่ยน...^000000: > ^777777ยกเลิก^000000") == 2) {
+		mes "[Costume Trader]";
+		mes "โอ้, ได้เลย...";
+		close;
+	}
+	for(set .@i,0; .@i<getarraysize(.@card_id); set .@i,.@i+1)
+		delitem .@card_id[.@i],.@card_amt[.@i];
+	setd .Points$, getd(.Points$)+.@card_total;
+	mes "[Costume Trader]";
+	mes "เรียบร้อย!";
+	close;
+
+OnBuyItem:
+	for(set .@i,0; .@i<getarraysize(@bought_nameid); set .@i,.@i+1)
+		for(set .@j,0; .@j<getarraysize(.TC_Shop); set .@j,.@j+2)
+			if (@bought_nameid[.@i] == .TC_Shop[.@j]) {
+				set .@cost, .@cost+(.TC_Shop[.@j+1]*@bought_quantity[.@i]);
+				break;
+			}
+	if (.@cost > getd(.Points$)) {
+		mes "[Costume Trader]";
+		mes "เจ้ามีแต้มพอยท์ไม่พอ.";
+	}
+	else {
+		mes "รายการสินค้า:";
+		mes "-----------------------------------";
+		for(set .@i,0; .@i<getarraysize(@bought_nameid); set .@i,.@i+1) {
+			getitem @bought_nameid[.@i], @bought_quantity[.@i];
+			mes "  ^777777"+@bought_quantity[.@i]+"x "+getitemname(@bought_nameid[.@i])+"^000000";
+		}
+		mes " ";
+		mes "---------- รวมทั้งหมด: ^0055FF"+.@cost+" แต้ม.^000000 -------";
+		setd .Points$, getd(.Points$)-.@cost;
+	}
+	deletearray @bought_nameid[0], getarraysize(@bought_nameid);
+	deletearray @bought_quantity[0], getarraysize(@bought_quantity);
+	close;
+
+OnInit:
+//	waitingroom "Costume แลกของ",0;
+	set .Level,0;   		// เลเวลมอนสเตอร์ขั้นต่ำในการแลกคอส.
+	set .Points$,"#Costume_Points";	// ตัวแปรพอยท์.
+	setarray .TC_Shop[0],		// ร้านขายของ: <รหัสไอเท็ม>,<ราคาพอยท์>
+	 41003,2,12103,5,6232,600,6228,600,6239,1500,6238,1500,58999,5000;
+	setarray .Points[0],1,1;	// แต้มพอยท์ต่อ <คอสทั่วไป>,<คอสเก่า>
+	set .OCT$,			// รหัสคอสเก่า.
+		"18741,18742,18743,18744,19158,19275,19288,19289,19290,19291,19292,19293,"+
+		"19294,19524,19525,19526,19527,19528,19529,19530,19531,19532,19533,19534,"+
+		"19535,19536,19537,19538,19539,19540,19541,19542,19543,19544,19545,19546,"+
+		"19547,19548,19549,19550,19551,19552,19553,19554,19555,19556,19557,19558,"+
+		"19559,19560,19561,19562,19563,19564,19565,19566,19567,19568,19569,19570,"+
+		"19571,19572,19573,19574,19575,19576,19577,19578,19579,19580,19581,19582,"+
+		"19583,19584,19585,19586,19587,19588,19589,19590,19591,19592,19593,19594,"+
+		"19595,19596,19597,19598,19599,19600,19601,19602,19603,19604,19605,19606,"+
+		"19607,19608,19609,19610,19611,19612,19613,19614,19615,19616,19617,19618,"+
+		"19619,19620,19621,19622,19623,19624,19625,19626,19627,19628,"+
+		"19629,19630,19631,19632,19633,19634,19635,19636,19637,19638,19639,19640,"+
+		"19641,19642,19643,19644,19645,19646,19647,19648,19649,19650,19651,19652,"+
+		"19653,19654,19655,19656,19657,19658,19659,19660,19661,19662,19663,19664,"+
+		"19665,19666,19667,19668,19669,19670,19671,19672,19673,19674,19675,19676,"+
+		"19677,19678,19679,19680,19681,19682,19683,19684,19685,19686,19687,19688,"+
+		"19689,19690,19691,19692,19693,19694,19695,19696,19697,19698,19699,19700,"+
+		"19701,19702,19703,19704,19705,19706,19707,19708,19709,19710,19711,19712,"+
+		"19713,19714,19715,19716,19717,19718,19719,19720,19721,19722,19723,19724,"+
+		"19725,19726,19727,19728,19729,19730,19731,19732,19733,19734,19735,19736,"+
+		"19737,"+
+		"19738,19739,19740,19741,19742,19743,19744,19745,19746,19747,19748,19749,"+
+		"19750,19751,19752,19753,19754,19755,19756,19757,19758,19759,19760,19761,"+
+		"19762,19763,19764,19765,19767,19768,19769,19770,19771,19772,19773,19774,"+
+		"19775,19776,19777,19778,19779,19780,19781,19782,19783,19784,19785,19786,"+
+		"19787,19788,19789,19790,19791,19792,19793,19794,19795,19796,19797,19798,"+
+		"19799,19800,19801,19802,19803,19804,19805,19806,19807,19808,19809,19810,"+
+		"19811,19812,19813,19814,19815,19816,19817,19818,19819,19820,19821,19822,"+
+		"19823,19824,19825,19826,19827,19828,19829,19830,19831,19832,19833,19834,"+
+		"19835,19836,19837,19838,19839,19840,19841,19842,19843,19844,19845,19846,"+
+		"19847,19848,19849,19850,19851,19852,19853,19854,19855,19856,"+
+		"19857,19858,19859,19860,19861,19862,19863,19864,19865,19866,19867,19868,"+
+		"19869,19870,19871,19872,19873,19874,19875,19876,19877,19878,19879,19880,"+
+		"19881,19882,19883,19884,19885,19886,19887,19888,19889,19890,19891,19892,"+
+		"19893,19894,19895,19896,19900,19901,19902,19903,19904,19905,19906,19907,"+
+		"19908,19909,19910,19911,19912,19913,19915,19916,19917,19918,19919,19920,"+
+		"19921,19922,19923,19924,19925,19926,19927,19928,19929,19930,19931,19932,"+
+		"19934,19935,19936,19937,19938,19939,19940,19941,19942,19943,19944,19945,"+
+		"19946,19947,19948,19949,19950,19951,19952,19953,19954,19955,19956,19957,"+
+		"19958,19959,19960,19975,19976,19977,19978,19979,19980,19981,19982,19983,"+
+		"19984,19985,19986,19987,19988,19989,19990,19991,19992,19993,"+
+		"19994,19996,19997,19998,19999,20000,20001,20002,20003,20004,20005,20006,"+
+		"20007,20008,20009,20010,20011,20012,20013,20014,20015,20016,20017,20019,"+
+		"20020,20021,20022,20023,20024,20025,20026,20027,20028,20029,20030,20031,"+
+		"20032,20033,20034,20035,20036,20037,20038,20039,20040,20041,20042,20043,"+
+		"20044,20045,20046,20047,20048,20049,20050,20051,20052,20053,20054,20055,"+
+		"20056,20057,20058,20059,20060,20061,20062,20063,20064,20065,20066,20067,"+
+		"20068,20069,20070,20071,20073,20074,20075,20076,20077,20078,20079,20080,"+
+		"20081,20082,20083,20084,20085,20086,20087,20088,20089,20090,20091,20092,"+
+		"20093,20094,20095,20096,20097,20098,20099,20100,20101,20102,20103,20104,"+
+		"20105,20106,20107,20108,20109,20110,20111,20112,20113,20114,"+
+		"20115,20116,20117,20118,20119,20120,20121,20122,20123,20124,20125,20126,"+
+		"20127,20128,20129,20130,20131,20132,20133,20134,20135,20136,20137,20138,"+
+		"20139,20140,20141,20142,20143,20144,20145,20146,20147,20148,20149,20150,"+
+		"20151,20152,20153,20154,20155,20156,20157,20158,20159,20160,20161,20162,"+
+		"20163,20164,20165,20166,20167,20168,20169,20170,20171,20172,20173,20174,"+
+		"20175,20176,20177,20178,20179,20180,20181,20182,20183,20184,20185,20186,"+
+		"20187,20188,20189,20190,20191,20192,20193,20194,20195,20196,20197,20198,"+
+		"20199,20200,20201,20202,20203,20204,20205,20206,20207,20208,20209,20210,"+
+		"20211,20212,20213,20214,20215,20216,20217,20218,20219,20220,20221,20222,"+
+		"20223,20224,20225,20226,20227,20228,20229,20230,20231,20232,"+
+		"20233,20234,20235,20236,20237,20238,20239,20241,20242,20243,20244,20245,"+
+		"20246,20247,20248,20249,20250,20251,20252,20253,20254,20255,20256,20257,"+
+		"20258,20259,20260,20261,20262,20263,20264,20265,20266,20267,20268,20269,"+
+		"20270,20271,20272,20273,20274,20275,20276,20277,20278,20279,20280,20281,"+
+		"20282,20283,20284,20285,20286,20287,20288,20289,20290,20291,20292,20293,"+
+		"20294,20295,20296,20297,20298,20299,20300,20301,20302,20303,20304,20305,"+
+		"20306,20307,20311,20312,20313,20314,20315,20316,20317,20318,20319,20320,"+
+		"20321,20322,20323,20324,20325,20326,20327,20328,20329,20330,20331,20332,"+
+		"20333,20334,20335,20338,20339,20340,20341,20342,20343,20344,20345,20346,"+
+		"20347,20348,20349,20350,20351,20352,20353,20354,20355,20356,"+
+		"20357,20358,20359,20360,20361,20362,20363,20364,20365,20366,20367,20368,"+
+		"20369,20370,20371,20372,20373,20374,20375,20376,20377,20378,20379,20380,"+
+		"20381,20382,20383,20384,20385,20386,20387,20388,20389,20390,20392,20393,"+
+		"20394,20395,20396,20397,20398,20399,20400,20401,20402,20403,20404,20405,"+
+		"20406,20407,20408,20409,20410,20411,20412,20413,20414,20415,20416,20417,"+
+		"20418,20419,20420,20421,20422,20423,20424,20425,20426,20427,20428,20429,"+
+		"20430,20431,20432,20433,20434,20435,20436,20437,20438,20439,20440,20441,"+
+		"20442,20443,20444,20445,20446,20447,20448,20449,20450,20451,20452,20453,"+
+		"20454,20455,20456,20457,20458,20459,20460,20461,20462,20463,20464,20465,"+
+		"20466,20467,20468,20469,20470,20471,20472,20473,20474,20475,"+
+		"20481,20482,20483,20484,20485,20486,20487,20488,20489,20490,20491,20492,"+
+		"20493,20494,20495,20496,20497,20498,20499,20502,20504,20507,20508,20509,"+
+		"20510,20511,20512,20513,20514,20515,20516,20517,20518,20519,20521,20522,"+
+		"20523,20524,20525,20526,20527,20528,20530,20761,20762,20763,20764,31027,"+
+		"31028,31029,31030,31031,31032,31033,31034,31035,31036,31037,31038,31039,"+
+		"31040,31041,31042,31043,31044,31045,31046,31047,31048,31049,31050,31051,"+
+		"31052,31053,31054,31055,31057,31058,31059,31060,31061,31062,31063,31064,"+
+		"31065,31066,31067,31068,31069,31070,31071,31072,31073,31074,31075,31076,"+
+		"31077,31078,31079,31080,31081,31082,31083,31084,31085,31086,31087,31088,"+
+		"31089,31090,31091,31092,31093,31094,31095,31096,31097,31098,"+
+		"31099,31100,31101,31102,31103,31104,31105,31106,31107,31113,31114,31115,"+
+		"31117,31118,31119,31120,31121,31122,31123,31124,31125,31126,31127,31128,"+
+		"31129,31130,31131,31132,31133,31134,31135,31136,31137,31138,31139,31142,"+
+		"31143,31144,31145,31146,31147,31148,31149,31150,31151,31152,31153,31154,"+
+		"31155,31156,31157,31158,31160,31161,31162,31163,31164,31165,31166,31167,"+
+		"31168,31169,31170,31171,31172,31173,31174,31175,31176,31177,31178,31179,"+
+		"31180,31181,31182,31183,31184,31185,31186,31187,31188,31189,31190,31191,"+
+		"31192,31193,31194,31195,31196,31197,31198,31199,31200,31201,31202,31203,"+
+		"31204,31205,31206,31207,31208,31209,31210,31211,31212,31213,31214,31215,"+
+		"31216,31217,31218,31219,31220,31221,31222,31223,31224,31225,"+
+		"31226,31227,31228,31229,31230,31231,31232,31233,31234,31235,31236,31237,"+
+		"31238,31239,31240,31241,31242,31243,31244,31245,31246,31247,31248,31249,"+
+		"31250,31251,31252,31253,31254,31255,31256,31257,31258,31259,31260,31261,"+
+		"31262,31263,31264,31265,31266,31267,31268,31269,31270,31271,31272,31273,"+
+		"31274,31275,31276,31277,31278,31279,31280,31281,31282,31283,31284,31285,"+
+		"31286,31287,31288,31289,31290,31291,31293,31294,31295,31296,31297,31298,"+
+		"31299,31300,31301,31302,31303,31304,31305,31306,31307,31308,31309,31310,"+
+		"31311,31312,31313,31314,31315,31316,31317,31318,31319,31320,31321,31322,"+
+		"31323,31324,31325,31326,31327,31328,31329,31330,31331,31332,31368,31369,"+
+		"31370,31371,31373,31374,31375,31376,31377,31378,31379,31380,"+
+		"31381,31382,31383,31384,31385,31387,31388,31389,31390,31391,31392,31393,"+
+		"31394,31395,31396,31397,31398,31399,31400,31401,31402,31403,31404,31405,"+
+		"31406,31407,31408,31409,31410,31411,31412,31413,31414,31415,31416,31417,"+
+		"31418,31420,31432,31433,31434,31435,31436,31437,31438,31439,31440,31441,"+
+		"31442,31443,31444,31445,31446,31447,31448,31449,31450,31451,31452,31453,"+
+		"31455,31456,31457,31459,31460,31463,31464,31465,31466,31467,31468,31470,"+
+		"31471,31472,31473,31474,31475,31476,31478,31479,31480,31481,31482,31483,"+
+		"31484,31485,31486,31487,31488,31489,31490,31491,31492,31493,31494,31495,"+
+		"31496,31497,31498,31499,31504,31505,31506,31507,31508,31509,31510,31511,"+
+		"31512,31513,31514,31515,31516,31517,31518,31519,31520,31521,"+
+		"31522,31523,31524,31529,31530,31531,31532,31533,31537,31539,31540,31541,"+
+		"31543,31544,31545,31546,31547,31569,31570,31571,31572,31573,31574,31575,"+
+		"31580,40116,31589,31606,31562,31563,31564,31565,31566,31567,31538,31593,"+
+		"31594,31595,31596,40118,40117,31597,31598,31599,31600,31601,40119,40120,"+
+		"31592,31584,31585,31586,31587,31386,20018,31582,31583,31608,31609,31610,"+
+		"31611,31612,31614,31615,20538,31536,31581,31568,20535,20548,31684,31685,"+
+		"31686,31687,31688,31672,31673,31674,31661,31662,20547,31628,31664,31667,"+
+		"31671,21202,20546,20955,31588,31625,19433,20240";
+	
+	npcshopdelitem "costread_shop",909;
+	for(set .@i,0; .@i<getarraysize(.TC_Shop); set .@i,.@i+2)
+		npcshopadditem "costread_shop",.TC_Shop[.@i],.TC_Shop[.@i+1];
+	end;
+}

@@ -1,0 +1,237 @@
+-	shop	GC_CG6	-1,6438:1,6439:1,49502:1,59013:1,49525:1,19497:1,19499:1,20816:1,40230:1,40238:1,40239:1,40242:1,40258:1,40259:1,41105:1,41106:1,41107:1,41108:1,41109:1,41110:1,41111:1,41112:1,41113:1,41114:1,41138:1,41141:1,41147:1;
+
+maintown,66,134,4	script	Gacha Cash(Ragcan)#6	562,{
+		set .name$,"[ Gacha Cash ]";
+		set .@itemea,200;
+mes .name$;
+mes "สวัสดีครับ ยินดีให้บริการครับ";
+mes "ใช้ ^2CDEB8Cash^000000 : "+.@itemea+" Cash.";
+mes "สุ่มจำนวน ^FF000010 FREE 1^000000 รอบ";
+mes "ใช้ ^2CDEB8Cash^000000 : "+.@itemea*10+" Cash.";
+mes "คุณมี : ^DE2C52"+#CASHPOINTS+"^000000 Cash.";
+//mes "กรุณาเลือกเมนูที่ท่านต้องการครับ";
+//cutin "jpn_anni04",2;
+next;
+menu " - สุ่มไอเท็ม 1 ครั้ง",L_YES," - สุ่ม ^FF000010 FREE 1^000000",L10_YES," - ดูของรางวัล",L_SEE," - ยกเลิก",L_EX;
+
+L_YES:
+	close2;
+	cutin "jpn_anni04",255;
+	if (#CASHPOINTS < .@itemea){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	set #CASHPOINTS, #CASHPOINTS - .@itemea;
+	set $jackpotcash,$jackpotcash + (.@itemea/10*1);
+	
+//	specialeffect2 408;
+	progressbar "0x007000", 1;
+	
+// ====================== JACKPOT CASH =====================
+set .@randjp, rand(1000);
+
+	if (getcharid(3) == $ljp){ set $ljp,0; goto ljp; }
+
+	if (.@randjp == 1000){
+	
+ljp:	
+	set #cashpoints,#cashpoints + $jackpotcash;
+	announce "[ Jackpot ] : '"+strcharinfo(0)+"' ได้รับ "+$jackpotcash+" Cash! ระบบจะทำการรีเซทแคช",8;
+	dispbottom "[Cash] : "+#cashpoints+" Points.",0xA1EA18;
+	set $jackpotcash,0;
+	
+	}
+// ====================== JACKPOT CASH =====================
+
+set .@rand, rand(200);
+//if(getgmlevel() == 99){ set .@rand,rand(195,200); }
+	if (.@rand >= 0 && .@rand < 180){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],6438,6439,49502;
+				}
+
+	if (.@rand >= 180 && .@rand < 190){
+		set .@eff,18;
+		set .@acc,0;
+		setarray .@item[0],6438,6439,49502,59013,49525;	}
+
+	if (.@rand >= 190 && .@rand < 198){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],59013,49525;
+	}
+	
+	if (.@rand >= 198 && .@rand < 200){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],19497,19499,20816,40230,40238,40239,40242,40258,40259,41105,41106,41107,41108,41109,41110,41111,41112,41113,41114,41138,41141,41147;
+	}
+
+set .@get, .@item[rand(getarraysize(.@item))];
+
+//Option Item Event
+getitem .@get,1;
+//getitem 49556,1;
+specialeffect2 .@eff;
+
+//getitem .@get,1;
+//specialeffect2 .@eff;
+//if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19497){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19499){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 20816){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40230){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40238){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40239){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40242){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40258){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40259){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41105){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41106){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41107){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41108){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41109){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41110){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41111){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41112){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41113){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41114){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41138){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41141){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41147){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 47030){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 47034){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 47058){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+end;
+
+//======================================================================================================================
+L10_YES:
+	close2;
+	cutin "jpn_anni04",255;
+	if (#CASHPOINTS < (.@itemea*10)){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	set #CASHPOINTS, #CASHPOINTS - (.@itemea*10);
+	progressbar "0x007000", 1;
+	set $jackpotcash,$jackpotcash - (.@itemea/10*1);
+
+	set .loop,11;	
+
+SPINAGAIN:
+
+if(.loop > 0){
+
+	set $jackpotcash,$jackpotcash + (.@itemea/10*1);
+	
+// ====================== JACKPOT CASH =====================
+set .@randjp, rand(1000);
+
+	if (getcharid(3) == $ljp){ set $ljp,0; goto ljp2; }
+	
+	if (.@randjp == 1000){
+	
+ljp2:	
+	set #cashpoints,#cashpoints + $jackpotcash;
+	announce "[ Jackpot ] : '"+strcharinfo(0)+"' ได้รับ "+$jackpotcash+" Cash! ระบบจะทำการรีเซทแคช",8;
+	dispbottom "[Cash] : "+#cashpoints+" Points.",0xA1EA18;
+	set $jackpotcash,0;
+	
+	}
+
+set .@rand, rand(200);
+set .@acc,0;
+
+//if(getgmlevel() == 99){ set .@rand,rand(195,200); }
+	if (.@rand >= 0 && .@rand < 180){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],6438,6439,49502;
+				}
+
+	if (.@rand >= 180 && .@rand < 190){
+		set .@eff,18;
+		set .@acc,0;
+		setarray .@item[0],6438,6439,49502,59013,49525;	}
+
+	if (.@rand >= 190 && .@rand < 198){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],59013,49525;
+	}
+	
+	if (.@rand >= 198 && .@rand < 200){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],19497,19499,20816,40230,40238,40239,40242,40258,40259,41105,41106,41107,41108,41109,41110,41111,41112,41113,41114,41138,41141,41147;
+	}
+
+
+set .@get, .@item[rand(getarraysize(.@item))];
+
+//Option Item Event
+getitem .@get,1;
+//getitem 49556,1;
+specialeffect2 .@eff;
+
+//getitem .@get,1;
+//specialeffect2 .@eff;
+//if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19497){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19499){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 20816){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40230){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40238){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40239){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40242){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40258){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 40259){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41105){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41106){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41107){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41108){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41109){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41110){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41111){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41112){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41113){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41114){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41138){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41141){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 41147){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 47030){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 47034){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 47058){ announce "[ Gacha(Ragcan) ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+
+set .loop,.loop - 1;
+goto SPINAGAIN;
+
+end;
+
+} else {
+
+end; }
+//========================================================================================================================
+
+L_SEE:
+	cutin "jpn_anni04",255;
+	callfunc "Shop_HQPC","GC_CG6",1;
+
+L_EX:
+cutin "jpn_anni04",255;
+end;
+
+OnBuyItem:
+end;
+
+OnInit: 
+waitingroom "   **Ragcan**",0;
+end;
+}
+
+

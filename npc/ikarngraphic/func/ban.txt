@@ -1,0 +1,91 @@
+-	script	admin	-1,{
+end;
+OnWhisperGlobal:
+	if(getgmlevel() < 75) end;
+	if (@whispervar0$!="ban") { end; }
+	dispbottom "โปรดเลือก Menu ที่ท่านต้องการ";
+	switch(select("-Ban/UnBan ผ่าน Char Name:-Ban/UnBan ผ่าน Account ID:-Ban/UnBan ทั้ง IP ( กำหนดเป็น Account ID ):-จบการใช้งาน")) {
+	case 1:
+	dispbottom "โปรดเลือก Menu Ban หรือ Unban กำหนดเป็น ชื่อตัวละคร";
+	menu "Ban ^FF0000ผ่าน Char Name^000000",-,"UnBan ^FF0000ผ่าน Char Name^000000",unb1;
+	input .@charname$;
+	query_sql "SELECT `account_id` FROM `char`  WHERE `name` = '"+ escape_sql(.@charname$) +"'",.@account_id;
+	if ( !.@account_id ) {
+		dispbottom "ไม่มีชื่อตัวละครนี้ใน Server ของคุณ";
+		end;
+	}
+	atcommand "@kick "+.@charname$;
+	query_sql "UPDATE `login` SET `state` = '5' WHERE `account_id` = " +.@account_id+ "";
+	dispbottom "ทำการ Ban ตัวละคร "+.@charname$+" เรียบร้อยแล้ว";
+	close;
+	end;
+	unb1:
+	input .@charname$;
+	query_sql "SELECT `account_id` FROM `char`  WHERE `name` = '"+ escape_sql(.@charname$) +"'",.@account_id;
+	if ( !.@account_id ) {
+		dispbottom "ไม่มีชื่อตัวละครนี้ใน Server ของคุณ";
+		end;
+	}
+	query_sql "UPDATE `login` SET `state` = '0' WHERE `account_id` = " +.@account_id+ "";
+	dispbottom "ทำการ UnBan ตัวละคร "+.@charname$+" เรียบร้อยแล้ว";
+	close;
+	end;
+
+	case 2:
+	dispbottom "โปรดเลือก Menu Ban หรือ Unban กำหนดเป็น Account ID";
+	menu "Ban ^FF0000ผ่าน Account ID^000000",-,"UnBan ^FF0000ผ่าน Account ID^000000",unb2;
+	input .@account_id2;
+	query_sql "SELECT `account_id` FROM `login`  WHERE `account_id` = '"+ .@account_id2 +"'",.@aid2;
+	if ( !.@aid2 ) {
+		dispbottom "ไม่มี Account ID นี้ใน Server ของคุณ";
+		end;
+	}
+	query_sql "UPDATE `login` SET `state` = '5' WHERE `account_id` = " +.@aid2+ "";
+	dispbottom "ทำการ Ban Account ID "+.@aid2+" เรียบร้อยแล้ว";
+	close;
+	end;
+	unb2:
+	input .@account_id2;
+	query_sql "SELECT `account_id` FROM `login`  WHERE `account_id` = '"+ .@account_id2 +"'",.@aid2;
+	if ( !.@aid2 ) {
+		dispbottom "ไม่มี Account ID นี้ใน Server ของคุณ";
+		end;
+	}
+	query_sql "UPDATE `login` SET `state` = '0' WHERE `account_id` = " +.@aid2+ "";
+	dispbottom "ทำการ UnBan Account ID "+.@aid2+" เรียบร้อยแล้ว";
+	close;
+	end;
+
+	case 3:
+	dispbottom "โปรดเลือก Menu Ban หรือ Unban กำหนดเป็น IP แต่ใส่เป็น Account ID";
+	menu "Ban ^FF0000ทั้ง IP^000000",-,"UnBan ^FF0000ทั้ง IP^000000",unb3;
+	input .@account_id3;
+	query_sql "SELECT `account_id` FROM `login`  WHERE `account_id` = '"+ .@account_id3 +"'",.@aid;
+	if ( !.@aid ) {
+		dispbottom "ไม่มี Account ID นี้ใน Server ของคุณ";
+		end;
+	}
+	query_sql "SELECT `last_ip` FROM `login`  WHERE `account_id` = '"+ .@aid +"'", @ipaddress$;
+	query_sql "UPDATE `login` SET `state` = '5' WHERE `last_ip` = '" +@ipaddress$+ "'";
+	dispbottom "ทำการ Ban IP Address "+@ipaddress$+" เรียบร้อยแล้ว";
+	close;
+	end;
+	unb3:
+	input .@account_id3;
+	query_sql "SELECT `account_id` FROM `login`  WHERE `account_id` = '"+ .@account_id3 +"'",.@aid;
+	if ( !.@aid ) {
+		dispbottom "ไม่มี Account ID นี้ใน Server ของคุณ";
+		end;
+	}
+	query_sql "SELECT `last_ip` FROM `login`  WHERE `account_id` = '"+ .@aid +"'", @ipaddress$;
+	query_sql "UPDATE `login` SET `state` = '0' WHERE `last_ip` = '" +@ipaddress$+ "'";
+	dispbottom "ทำการ UnBan IP Address "+@ipaddress$+" เรียบร้อยแล้ว";
+	end;
+
+	case 4:
+	dispbottom "Closed BanAdvance Center";
+	end;
+	}
+close;
+end;
+}

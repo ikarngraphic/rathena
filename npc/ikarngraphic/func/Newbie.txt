@@ -1,0 +1,29 @@
+maintown,90,47,4	script	แจกไอเท็ม	639,{
+
+if(newbie == 0){
+
+	getitem 37001,1;
+	getitem 37002,1;
+	getitem 37003,1;
+	getitem 37004,1;
+	getitem 37005,1;
+	equip 37001;
+	equip 37002;
+	equip 37003;
+	equip 37004;
+	equip 37005;
+	set newbie,1;
+	dispbottom "แจกไอเท็ม : ได้รับไอเท็มเรียบร้อยแล้วครับ !!";
+	end;
+	
+} else {
+
+	dispbottom "แจกไอเท็ม : 1 ID สามารถรับได้ 1 ครั้งเท่านั้นครับ";
+	end;
+	
+}
+
+OnInit:	
+//	waitingroom "  รับของผู้เล่นใหม่",0;
+end;
+}

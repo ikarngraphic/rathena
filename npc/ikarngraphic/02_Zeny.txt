@@ -1,0 +1,138 @@
+-	shop	GC_ZG	-1,31121:1,31377:1,20500:1,19787:1,19840:1,20091:1,19630:1,19551:1,19550:1,969:1,12679:1,14618:1,14620:1,14619:1,14621:1,14616:1,14617:1,12411:1,12412:1,12221:1;
+
+function	script	Shop_HQPC	{	npcshopattach getarg(0),1;	close2;	cutin "",255;	callshop getarg(0),getarg(1);	end;	}
+
+maintown,42,147,4	script	Gacha Zeny	562,{
+		set .name$,"[ Gacha Zeny ]";
+		set .@itemea,2000000;
+mes .name$;
+mes "สวัสดีครับ ยินดีให้บริการครับ";
+mes "ใช้ ^2CDEB8Zeny^000000 : "+.@itemea+" z.";
+mes "กรุณาเลือกเมนูที่ท่านต้องการครับ";
+//cutin "jpn_anni04",2;
+next;
+menu " - สุ่มไอเท็ม 1 ครั้ง",L_YES," - สุ่ม ^FF000010 FREE 1^000000",L10_YES," - ดูของรางวัล",L_SEE," - ยกเลิก",L_EX;
+
+L_YES:
+	close2;
+	cutin "jpn_anni04",255;
+	if (Zeny < .@itemea){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	set Zeny, Zeny - .@itemea;
+
+//	specialeffect2 408;
+	progressbar "0x007000", 1;
+
+set .@rand, rand(200);
+	if (.@rand >= 0 && .@rand < 190){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],12679,14618,14620,14619,14621,14616,14617,12411,12412,12221;
+				}
+
+	if (.@rand >= 190 && .@rand < 192){
+		set .@eff,18;
+		set .@acc,0;
+		setarray .@item[0],969;	}
+
+	if (.@rand >= 192 && .@rand < 200){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],19787,19840,20091,19630,19551,19550;
+	}
+
+
+set .@get, .@item[rand(getarraysize(.@item))];
+getitem .@get,1;
+specialeffect2 .@eff;
+if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+end;
+
+//=============================================================================================================
+
+L10_YES:
+	close2;
+	cutin "jpn_anni04",255;
+	if (Zeny < (.@itemea*10)){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	set Zeny, Zeny - (.@itemea*10);
+
+//	specialeffect2 408;
+	progressbar "0x007000", 1;
+	
+	set .loop,11;	
+
+SPINAGAIN:
+
+if(.loop > 0){	
+
+set .@rand, rand(200);
+	if (.@rand >= 0 && .@rand < 190){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],12679,14618,14620,14619,14621,14616,14617,12411,12412,12221;
+				}
+
+	if (.@rand >= 190 && .@rand < 192){
+		set .@eff,18;
+		set .@acc,0;
+		setarray .@item[0],969;	}
+
+	if (.@rand >= 192 && .@rand < 200){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],19787,19840,20091,19630,19551,19550,20500,31121,31377;
+	}
+
+
+set .@get, .@item[rand(getarraysize(.@item))];
+getitem .@get,1;
+specialeffect2 .@eff;
+//if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19787){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19840){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 20091){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19630){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19551){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 19550){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+
+if (.@get == 20500){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 31121){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+if (.@get == 31377){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+
+set .loop,.loop - 1;
+goto SPINAGAIN;
+
+end;
+
+} else {
+
+end; }
+
+//=============================================================================================================
+
+L_SEE:
+	cutin "jpn_anni04",255;
+	callfunc "Shop_HQPC","GC_ZG",1;
+
+L_EX:
+cutin "jpn_anni04",255;
+end;
+
+OnBuyItem:
+end;
+
+OnInit: 
+waitingroom "     กาชาเซนี่",0;
+end;
+}
+
+

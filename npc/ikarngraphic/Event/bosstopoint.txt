@@ -1,0 +1,52 @@
+maintown,135,79,4	script	รับซื้อของบอส	665,{
+
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "สวัสดีค่ะ ยินดีซื้อขยะจากบอสค่ะ";
+	mes "คุณมีไอเท็มชิ้นไหนหรอคะ";
+	mes "ของจากบอสมีมูลค่า 300 Free Cash";
+	mes "ทุกชิ้นนะคะ";
+	cutin "paycana_a",2;
+	next;
+	switch(select("- "+getitemname(5053)+" ["+countitem(5053)+"]","- "+getitemname(5123)+" ["+countitem(5123)+"]","- "+getitemname(2256)+" ["+countitem(2256)+"]","- "+getitemname(5019)+" ["+countitem(5019)+"]","- "+getitemname(2268)+" ["+countitem(2268)+"]","- "+getitemname(2246)+" ["+countitem(2246)+"]","- "+getitemname(5007)+" ["+countitem(5007)+"]","- "+getitemname(2249)+" ["+countitem(2249)+"]","- "+getitemname(5002)+" ["+countitem(5002)+"]","- ยกเลิก")) {
+case 1:	set .@item,5053;	goto TRED;
+case 2:	set .@item,5123;	goto TRED;
+case 3:	set .@item,2256;	goto TRED;
+case 4:	set .@item,5019;	goto TRED;
+case 5:	set .@item,2268;	goto TRED;
+case 6:	set .@item,2246;	goto TRED;
+case 7:	set .@item,5007;	goto TRED;
+case 8:	set .@item,2249;	goto TRED;
+case 9:	set .@item,5002;	goto TRED;
+case 10:	cutin "paycana_a",255;	end;
+	}
+
+TRED:
+	if(countitem(.@item) < 1){
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "คุณไม่มีไอเท็มชิ้นนี้นิคะ";
+	cutin "paycana_a",255;
+ 	end; }
+
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "ยืนยันการขาย";
+	mes "ตกลงขายนะคะ";
+	next;
+	menu "- ตกลง",-,"- ยกเลิก",CL;
+	set .count,countitem(.@item) * 300;
+	delitem .@item,countitem(.@item);
+	set #FREECASH ,#FREECASH + .count;
+	dispbottom ""+strnpcinfo(1)+": ได้รับ Cash "+.count+" Points,คุณมี Cash ทั้งหมด "+#FREECASH+" Points.";
+	cutin "paycana_a",255;
+	end;
+
+
+CL:
+	mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+	mes "แล้วพบกันใหม่ค่ะ";
+	cutin "paycana_a",255;
+ 	end;
+
+OnInit:
+waitingroom "  รับซื้อขยะบอส",0;
+end;
+}

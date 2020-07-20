@@ -210,8 +210,8 @@ struct s_addeffectonskill {
 
 ///Struct of add drop item/group rate
 struct s_add_drop {
-	uint32 nameid; ///Item ID
-	unsigned short group; ///Group ID
+	unsigned short nameid, ///Item ID
+		group; ///Group ID
 	int rate; ///Rate, 1 ~ 10000, -1 ~ -100000
 	short race; ///Target Race, bitwise value of 1<<x. if < 0 means Monster ID
 	unsigned short class_; ///Target Class, bitwise value of 1<<x
@@ -298,7 +298,7 @@ struct map_session_data {
 		unsigned int callshop : 1; // flag to indicate that a script used callshop; on a shop
 		short pmap; // Previous map on Map Change
 		unsigned short autoloot;
-		uint32 autolootid[AUTOLOOTITEM_SIZE]; // [Zephyrus]
+		unsigned short autolootid[AUTOLOOTITEM_SIZE]; // [Zephyrus]
 		unsigned short autoloottype;
 		unsigned int autolooting : 1; //performance-saver, autolooting state for @alootid
 		unsigned int autobonus; //flag to indicate if an autobonus is activated. [Inkfish]
@@ -318,6 +318,7 @@ struct map_session_data {
 		bool mail_writing; // Whether the player is currently writing a mail in RODEX or not
 		bool cashshop_open;
 		bool sale_open;
+		unsigned int lapine_ui : 3; // Lapine Synthesis/Upgrade UI is opened
 		unsigned int block_action : 10;
 	} state;
 	struct {
@@ -405,7 +406,7 @@ struct map_session_data {
 	t_tick equipswitch_tick; // Equip switch
 
 	struct s_item_delay {
-		uint32 nameid;
+		unsigned short nameid;
 		t_tick tick;
 	} item_delay[MAX_ITEMDELAYS]; // [Paradox924X]
 
@@ -530,7 +531,7 @@ struct map_session_data {
 	int matk_rate;
 	int critical_rate,hit_rate,flee_rate,flee2_rate,def_rate,def2_rate,mdef_rate,mdef2_rate;
 
-	uint32 itemid;
+	int itemid;
 	short itemindex;	//Used item's index in sd->inventory [Skotlex]
 
 	uint16 catch_target_class; // pet catching, stores a pet class to catch [zzo]
@@ -627,7 +628,7 @@ struct map_session_data {
 	// Mail System [Zephyrus]
 	struct s_mail {
 		struct {
-			uint32 nameid;
+			unsigned short nameid;
 			int index, amount;
 		} item[MAIL_MAX_ITEM];
 		int zeny;
@@ -762,11 +763,18 @@ struct map_session_data {
 		bool claimPrize;
 		t_tick tick;
 	} roulette;
+	
+	/**
+	* Extended Vending system [Lilith]
+	**/
+	unsigned short vend_loot;
+	int vend_lvl;
 
 	int instance_id;
 	e_instance_mode instance_mode; ///< Mode of instance player last leaves from (used for instance destruction button)
 
 	short setlook_head_top, setlook_head_mid, setlook_head_bottom, setlook_robe; ///< Stores 'setlook' script command values.
+	unsigned int last_lapine_box;
 
 #if PACKETVER >= 20150513
 	uint32* hatEffectIDs;
@@ -922,10 +930,10 @@ extern struct s_job_info job_info[CLASS_COUNT];
 #define pc_isidle_party(sd)   ( (sd)->chatID || (sd)->state.vending || (sd)->state.buyingstore || DIFF_TICK(last_tick, (sd)->idletime) >= battle_config.idle_no_share )
 #define pc_isidle_hom(sd)     ( (sd)->hd && ( (sd)->chatID || (sd)->state.vending || (sd)->state.buyingstore || DIFF_TICK(last_tick, (sd)->idletime_hom) >= battle_config.hom_idle_no_share ) )
 #define pc_istrading(sd)      ( (sd)->npc_id || (sd)->state.vending || (sd)->state.buyingstore || (sd)->state.trading )
-#define pc_cant_act(sd)       ( (sd)->npc_id || (sd)->state.vending || (sd)->state.buyingstore || (sd)->chatID || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag || (sd)->state.prevend )
+#define pc_cant_act(sd)       ( (sd)->npc_id || (sd)->state.vending || (sd)->state.buyingstore || (sd)->chatID || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag || (sd)->state.prevend || (sd)->state.lapine_ui )
 
 /* equals pc_cant_act except it doesn't check for chat rooms or npcs */
-#define pc_cant_act2(sd)       ( (sd)->state.vending || (sd)->state.buyingstore || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag || (sd)->state.prevend )
+#define pc_cant_act2(sd)       ( (sd)->state.vending || (sd)->state.buyingstore || ((sd)->sc.opt1 && (sd)->sc.opt1 != OPT1_BURNING) || (sd)->state.trading || (sd)->state.storage_flag || (sd)->state.prevend || (sd)->state.lapine_ui )
 
 #define pc_setdir(sd,b,h)     ( (sd)->ud.dir = (b) ,(sd)->head_dir = (h) )
 #define pc_setchatid(sd,n)    ( (sd)->chatID = n )
@@ -1031,7 +1039,7 @@ short pc_maxaspd(struct map_session_data *sd);
 #endif
 
 struct s_attendance_reward {
-	uint32 item_id;
+	uint16 item_id;
 	uint16 amount;
 };
 
@@ -1094,7 +1102,7 @@ int pc_get_skillcooldown(struct map_session_data *sd, uint16 skill_id, uint16 sk
 uint8 pc_checkskill(struct map_session_data *sd,uint16 skill_id);
 uint8 pc_checkskill_summoner(map_session_data *sd, e_summoner_power_type type);
 short pc_checkequip(struct map_session_data *sd,int pos,bool checkall=false);
-bool pc_checkequip2(struct map_session_data *sd, uint32 nameid, int min, int max);
+bool pc_checkequip2(struct map_session_data *sd, unsigned short nameid, int min, int max);
 
 void pc_scdata_received(struct map_session_data *sd);
 void pc_check_expiration(struct map_session_data *sd);
@@ -1121,9 +1129,9 @@ void pc_setsavepoint(struct map_session_data *sd, short mapindex,int x,int y);
 char pc_randomwarp(struct map_session_data *sd,clr_type type);
 bool pc_memo(struct map_session_data* sd, int pos);
 
-char pc_checkadditem(struct map_session_data *sd, uint32 nameid, int amount);
+char pc_checkadditem(struct map_session_data *sd, unsigned short nameid, int amount);
 uint8 pc_inventoryblank(struct map_session_data *sd);
-short pc_search_inventory(struct map_session_data *sd, uint32 nameid);
+short pc_search_inventory(struct map_session_data *sd, unsigned short nameid);
 char pc_payzeny(struct map_session_data *sd, int zeny, enum e_log_pick_type type, struct map_session_data *tsd);
 enum e_additem_result pc_additem(struct map_session_data *sd, struct item *item, int amount, e_log_pick_type log_type);
 char pc_getzeny(struct map_session_data *sd, int zeny, enum e_log_pick_type type, struct map_session_data *tsd);
@@ -1147,7 +1155,7 @@ int pc_cartitem_amount(struct map_session_data *sd,int idx,int amount);
 bool pc_takeitem(struct map_session_data *sd,struct flooritem_data *fitem);
 bool pc_dropitem(struct map_session_data *sd,int n,int amount);
 
-bool pc_isequipped(struct map_session_data *sd, uint32 nameid);
+bool pc_isequipped(struct map_session_data *sd, unsigned short nameid);
 enum adopt_responses pc_try_adopt(struct map_session_data *p1_sd, struct map_session_data *p2_sd, struct map_session_data *b_sd);
 bool pc_adoption(struct map_session_data *p1_sd, struct map_session_data *p2_sd, struct map_session_data *b_sd);
 
@@ -1227,7 +1235,7 @@ int pc_dead(struct map_session_data *sd,struct block_list *src);
 void pc_revive(struct map_session_data *sd,unsigned int hp, unsigned int sp);
 bool pc_revive_item(struct map_session_data *sd);
 void pc_heal(struct map_session_data *sd,unsigned int hp,unsigned int sp, int type);
-int pc_itemheal(struct map_session_data *sd, uint32 itemid, int hp,int sp);
+int pc_itemheal(struct map_session_data *sd,int itemid, int hp,int sp);
 int pc_percentheal(struct map_session_data *sd,int,int);
 bool pc_jobchange(struct map_session_data *sd, int job, char upper);
 void pc_setoption(struct map_session_data *,int);
@@ -1349,7 +1357,7 @@ void pc_inventory_rental_add(struct map_session_data *sd, unsigned int seconds);
 
 int pc_read_motd(void); // [Valaris]
 int pc_disguise(struct map_session_data *sd, int class_);
-bool pc_isautolooting(struct map_session_data *sd, uint32 nameid);
+bool pc_isautolooting(struct map_session_data *sd, unsigned short nameid);
 
 void pc_overheat(struct map_session_data *sd, int16 heat);
 
@@ -1383,7 +1391,7 @@ void pc_bonus_script_clear(struct map_session_data *sd, uint16 flag);
 
 void pc_cell_basilica(struct map_session_data *sd);
 
-short pc_get_itemgroup_bonus(struct map_session_data* sd, uint32 nameid);
+short pc_get_itemgroup_bonus(struct map_session_data* sd, unsigned short nameid);
 short pc_get_itemgroup_bonus_group(struct map_session_data* sd, uint16 group_id);
 
 bool pc_is_same_equip_index(enum equip_index eqi, short *equip_index, short index);

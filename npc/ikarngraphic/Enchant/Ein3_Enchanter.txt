@@ -1,0 +1,353 @@
+//===== rAthena Script =======================================
+//= Vicious Mind Weapon Random Option Enchanter
+//===== By ===================================================
+//= llchrisll
+//===== Version ==============================================
+//= 1.0 - Initial Version
+//===== Tested With ==========================================
+//= rAthena 03/26/2018 Revision
+//= GIT Hash: 333f0dddc8353663eacba0423751988c9bc38e34
+//===== Description ==========================================
+//= This script handles the random options for the Vicious Mind Weapons
+//  until rAthena changes the way the Random Option Database is handled.
+//= Instead of defining every possible random option for each option slot
+//  this enchanter will be used.
+//===== Comments =============================================
+//= ...
+/* db/import/mob_db.txt:
+// Sky Fortress Instance Mobs
+// Original by Alayne, Drops updated by [llchrisll] based on Nova Ro Wiki,
+// since divine-pride.net also doesn't have every Weapon Drop listed.
+
+*/
+//===== Credits ==============================================
+//= NovaRo for their Information regarding the possible Options.
+//============================================================
+
+
+maintown,133,145,4	script	เสริมพลัง Einbroc 3	10211,{
+mes .n$;
+mes "สวัสดีท่าน, "+strcharinfo(0)+"!";
+mes "มีอะไรให้ข้าช่วยมั้ย ?";
+mes "ใช้ : ^000099Weapon Modification Permit^000000";
+mes "  (ในการเสริมพลัง)";
+mes "และใช้ ^FF000010^000000 Cash";
+mes "  (ในการลบพลัง)";
+next;
+menu "- เสริมพลังอุปกรณ์",MN1,"- ลบออฟไอเท็ม",MN2,"- ยกเลิกการทำงาน",EX1;
+
+//====================================
+	MN1:
+//====================================
+mes .n$;
+mes "ก่อนที่เราจะเริ่มการเสริมพลัง ข้าขอแนะนำให้ท่านควรจะสวมอุปกรณ์ที่ต้องการเสียก่อน";
+mes "นอกจากนั้น คุณสมบัติที่จะเพิ่มเข้ามา ข้าไม่รับประกันนะว่าท่านจะได้รูปแบบไหน!";
+next;
+mes .n$;
+mes "มาเริ่มกันเลย ขอข้าดูอุปกรณ์ของท่านหน่อยนะ";
+next;
+set .@part,EQI_HAND_R; // Save equip location
+mes .n$;
+
+if(!getequipid(.@part)) {
+	mes "ท่านไม่ได้สวมใส่อุปกรณ์อยู่นี่!";
+	end;
+}
+
+if(countitem(getequipid(.@part)) > 1) {
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+
+switch(getequipid(.@part)) {
+	case 1867:
+	case 2058:
+	case 13346:
+	case 16099:
+	case 18190:
+	case 21054:
+	case 26162:
+	case 26215:
+	case 28045:
+	case 28140:
+	case 28635:
+	case 28771:
+	case 28772:
+	case 32026:
+	case 32110:
+	case 32303:
+	case 32352:
+	case 65006:
+	break;
+	
+	default:
+	mes "เอ่อ. ขอโทษด้วย ข้าสามารถเสริมพลังได้เฉพาะอุปกรณ์ Ein-Weapon เท่านั้น";
+	end;
+}
+
+
+mes "อุปกรณ์ที่สวมใส่: "+getitemname(getequipid(.@part));
+set .@ropt1,getequiprandomoption(.@part,0,ROA_ID);
+set .@ropt2,getequiprandomoption(.@part,1,ROA_ID);
+set .@ropt3,getequiprandomoption(.@part,2,ROA_ID);
+if(.@ropt1 || .@ropt2 || .@ropt3) {
+	mes " ";
+	mes "ขอภัย อุปกรณ์นี้ผ่านการเสริมพลังมาแล้ว";
+	mes "กรุณาเลือกอุปกรณ์ชิ้นอื่น";
+	end;
+}
+
+next;
+menu " - Physical",PS1," - Magical",MG1," - Exit",EX1;
+
+	PS1:
+		set .@Type$,"P1";
+		set .@Type2$,"P2";
+		set .@Type3$,"P3";
+		set .itemdel,9514;
+		goto encpass;
+
+	MG1:
+		set .@Type$,"M1";
+		set .@Type2$,"M2";
+		set .@Type3$,"M3";
+		set .itemdel,9529;
+		goto encpass;
+
+	EX1:
+		mes .n$;
+		mes "ไว้เจอกันใหม่";
+		end;
+
+
+	encpass:
+
+	if(countitem(.itemdel) < 1){
+					mes .n$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					mes "ใช้ : ^000099" + getitemname(.itemdel) + "^000000";
+					end;
+				}
+	
+	//delitem
+	delitem .itemdel,1;	//จำนวนชิ้น
+
+// Randomize each Option Slot:
+// Random Option 1
+set .@Opt1,rand(getarraysize(getd(".RandOpt1_"+.@Type$)));
+if(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]") != getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"))
+	set .@Opt1_V,rand(getd(".RandOpt1_"+.@Type$+"_MinV["+.@Opt1+"]"),getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]"));
+else 
+	set .@Opt1_V,getd(".RandOpt1_"+.@Type$+"_MaxV["+.@Opt1+"]");
+	
+// Random Option 2
+set .@Opt2,rand(getarraysize(getd(".RandOpt1_"+.@Type2$)));
+if(getd(".RandOpt1_"+.@Type2$+"_MinV["+.@Opt2+"]") != getd(".RandOpt1_"+.@Type2$+"_MaxV["+.@Opt2+"]"))
+	set .@Opt2_V,rand(getd(".RandOpt1_"+.@Type2$+"_MinV["+.@Opt2+"]"),getd(".RandOpt1_"+.@Type2$+"_MaxV["+.@Opt2+"]"));
+else 
+	set .@Opt2_V,getd(".RandOpt1_"+.@Type2$+"_MaxV["+.@Opt2+"]");
+
+// Random Option 3
+set .@Opt3,rand(getarraysize(getd(".RandOpt1_"+.@Type3$)));
+if(getd(".RandOpt1_"+.@Type3$+"_MinV["+.@Opt3+"]") != getd(".RandOpt1_"+.@Type3$+"_MaxV["+.@Opt3+"]"))
+	set .@Opt3_V,rand(getd(".RandOpt1_"+.@Type3$+"_MinV["+.@Opt3+"]"),getd(".RandOpt1_"+.@Type3$+"_MaxV["+.@Opt3+"]"));
+else 
+	set .@Opt3_V,getd(".RandOpt1_"+.@Type3$+"_MaxV["+.@Opt3+"]");
+	
+// Apply options to equipped weapon
+setrandomoption(.@part,0,getd(".RandOpt1_"+.@Type$+"["+.@Opt1+"]"),.@Opt1_V,0);
+setrandomoption(.@part,1,getd(".RandOpt1_"+.@Type2$+"["+.@Opt2+"]"),.@Opt2_V,0);
+setrandomoption(.@part,2,getd(".RandOpt1_"+.@Type3$+"["+.@Opt3+"]"),.@Opt3_V,0);
+next;
+mes .n$;
+mes "การเสริมพลังให้แก่ \""+getitemname(getequipid(.@part))+"\" เสร็จสมบูรณ์";
+end;
+
+OnInit:
+set .n$,"[ OS Enchanter ]";
+// ========= Random Option Slot 1 ========= 
+// - Physical
+setarray .RandOpt1_P1[0],RDMOPT_VAR_ATTPOWER,
+					    RDMOPT_VAR_ATKPERCENT;
+						
+// - Magical
+setarray .RandOpt1_M1[0],RDMOPT_VAR_ATTMPOWER,
+						RDMOPT_VAR_MAGICATKPERCENT;
+					  
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P1_MinV[0],5,1;
+setarray .RandOpt1_P1_MaxV[0],45,10;
+setarray .RandOpt1_M1_MinV[0],5,1;
+setarray .RandOpt1_M1_MaxV[0],45,10;
+
+// ========= Random Option Slot 2 ========= 
+// - Physical
+setarray .RandOpt1_P2[0],RDMOPT_VAR_HITSUCCESSVALUE,	// Damage to Neutral Race
+					    RDMOPT_VAR_PLUSASPD,
+					    RDMOPT_VAR_AVOIDSUCCESSVALUE,
+					    RDMOPT_VAR_PLUSASPD,
+					    RDMOPT_VAR_CRITICALSUCCESSVALUE,
+					    RDMOPT_DAMAGE_CRI_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_WATER_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_GROUND_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_FIRE_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_WIND_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_POISON_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_SAINT_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_DARKNESS_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_TELEKINESIS_TARGET,
+					    RDMOPT_DAMAGE_PROPERTY_UNDEAD_TARGET,
+					    RDMOPT_DEC_SPELL_DELAY_TIME;
+						
+// - Magical
+setarray .RandOpt1_M2[0],RDMOPT_HEAL_MODIFY_PERCENT,	// Damage to Neutral Race
+					    RDMOPT_VAR_PLUSASPD,
+					    RDMOPT_VAR_AVOIDSUCCESSVALUE,
+					    RDMOPT_MDAMAGE_PROPERTY_NOTHING_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_WATER_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_GROUND_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_FIRE_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_WIND_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_POISON_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_SAINT_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_DARKNESS_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_TELEKINESIS_TARGET,
+					    RDMOPT_MDAMAGE_PROPERTY_UNDEAD_TARGET,
+					    RDMOPT_DEC_SPELL_CAST_TIME;
+						
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P2_MinV[0],5,7,1,3,5,3,3,3,3,3,3,3,3,3,3,5;
+setarray .RandOpt1_P2_MaxV[0],35,35,2,10,20,20,20,20,20,20,20,20,20,20,20,10;
+setarray .RandOpt1_M2_MinV[0],3,7,3,3,3,3,3,3,3,3,3,3,5;
+setarray .RandOpt1_M2_MaxV[0],25,35,20,20,20,20,20,20,20,20,20,20,10;
+
+// ========= Random Option Slot 3 ========= 
+// - Physical
+setarray .RandOpt1_P3[0],RDMOPT_RACE_DAMAGE_NOTHING,	// Damage to Neutral Race
+					    RDMOPT_RACE_DAMAGE_UNDEAD,
+					    RDMOPT_RACE_DAMAGE_ANIMAL,
+					    RDMOPT_RACE_DAMAGE_PLANT,
+					    RDMOPT_RACE_DAMAGE_INSECT,
+					    RDMOPT_RACE_DAMAGE_FISHS,
+					    RDMOPT_RACE_DAMAGE_DEVIL,
+					    RDMOPT_RACE_DAMAGE_HUMAN,
+					    RDMOPT_RACE_DAMAGE_ANGEL,
+					    RDMOPT_RACE_DAMAGE_DRAGON,
+					    RDMOPT_CLASS_DAMAGE_NORMAL_TARGET,
+					    RDMOPT_CLASS_DAMAGE_BOSS_TARGET,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_NOTHING,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_UNDEAD,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_ANIMAL,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_PLANT,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_INSECT,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_FISHS,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_DEVIL,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_HUMAN,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_ANGEL,
+					    RDMOPT_RACE_IGNORE_DEF_PERCENT_DRAGON,
+					    RDMOPT_CLASS_IGNORE_DEF_PERCENT_NORMAL;
+						
+// - Magical
+setarray .RandOpt1_M3[0],RDMOPT_HEAL_MODIFY_PERCENT,// Damage to Neutral Race
+					   RDMOPT_RACE_MDAMAGE_NOTHING,
+					   RDMOPT_RACE_MDAMAGE_UNDEAD,
+					   RDMOPT_RACE_MDAMAGE_ANIMAL,
+					   RDMOPT_RACE_MDAMAGE_PLANT,
+					   RDMOPT_RACE_MDAMAGE_INSECT,
+					   RDMOPT_RACE_MDAMAGE_FISHS,
+					   RDMOPT_RACE_MDAMAGE_DEVIL,
+					   RDMOPT_RACE_MDAMAGE_HUMAN,
+					   RDMOPT_RACE_MDAMAGE_ANGEL,
+					   RDMOPT_RACE_MDAMAGE_DRAGON,
+					   RDMOPT_CLASS_MDAMAGE_NORMAL,
+					   RDMOPT_CLASS_MDAMAGE_BOSS,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_NOTHING,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_UNDEAD,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_ANIMAL,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_PLANT,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_INSECT,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_FISHS,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_DEVIL,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_HUMAN,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_ANGEL,
+					   RDMOPT_RACE_IGNORE_MDEF_PERCENT_DRAGON,
+					   RDMOPT_CLASS_IGNORE_MDEF_PERCENT_NORMAL,
+					   RDMOPT_DEC_SPELL_CAST_TIME;
+// - Values
+// Note: When MinV and MaxV are the same, rand() will not be used!
+setarray .RandOpt1_P3_MinV[0],3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3;
+setarray .RandOpt1_P3_MaxV[0],20,20,20,20,20,20,20,20,20,20,18,18,25,25,25,25,25,25,25,25,25,25,18;
+setarray .RandOpt1_M3_MinV[0],7,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,5;
+setarray .RandOpt1_M3_MaxV[0],25,20,20,20,20,20,20,20,20,20,20,18,18,25,25,25,25,25,25,25,25,25,25,18,10;
+end;
+
+//====================================
+	MN2:
+//====================================
+mes .n$;
+mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+mes "ต้องใช้ ^FF000010 Cash^000000 ในการลบ";
+mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_HAND_R;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 10){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+	progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 10;
+	
+	set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+end;
+}

@@ -1,0 +1,301 @@
+-	script	BookingBoss	-1,{
+OnNPCKillEvent:
+setarray .mobid[0],
+1038,
+1039,
+1046,
+1059,
+1086,
+1087,
+1096,
+1112,
+1115,
+1120,
+1147,
+1150,
+1157,
+1159,
+1190,
+1251,
+1252,
+1272,
+1312,
+1373,
+1388,
+1389,
+1418,
+1492,
+1511,
+1582,
+1583,
+1623,
+1630,
+1658,
+1685,
+1688,
+1708,
+1719,
+1734,
+1751,
+1768,
+1779,
+1785,
+1832,
+1871,
+1873,
+1885,
+2022,
+2068,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+2087,
+1647,
+1874,
+1957,
+1646,
+1956,
+1650,
+1648,
+1917;
+
+if (killedrid == 1038){ set #bossid1038,#bossid1038 + 1; set .@mob_id,"1038";  }
+if (killedrid == 1039){ set #bossid1039,#bossid1039 + 1; set .@mob_id,"1039";  }
+if (killedrid == 1046){ set #bossid1046,#bossid1046 + 1; set .@mob_id,"1046";  }
+if (killedrid == 1059){ set #bossid1059,#bossid1059 + 1; set .@mob_id,"1059";  }
+if (killedrid == 1086){ set #bossid1086,#bossid1086 + 1; set .@mob_id,"1086";  }
+if (killedrid == 1087){ set #bossid1087,#bossid1087 + 1; set .@mob_id,"1087";  }
+if (killedrid == 1096){ set #bossid1096,#bossid1096 + 1; set .@mob_id,"1096";  }
+if (killedrid == 1112){ set #bossid1112,#bossid1112 + 1; set .@mob_id,"1112";  }
+if (killedrid == 1115){ set #bossid1115,#bossid1115 + 1; set .@mob_id,"1115";  }
+if (killedrid == 1120){ set #bossid1120,#bossid1120 + 1; set .@mob_id,"1120";  }
+if (killedrid == 1147){ set #bossid1147,#bossid1147 + 1; set .@mob_id,"1147";  }
+if (killedrid == 1150){ set #bossid1150,#bossid1150 + 1; set .@mob_id,"1150";  }
+if (killedrid == 1157){ set #bossid1157,#bossid1157 + 1; set .@mob_id,"1157";  }
+if (killedrid == 1159){ set #bossid1159,#bossid1159 + 1; set .@mob_id,"1159";  }
+if (killedrid == 1190){ set #bossid1190,#bossid1190 + 1; set .@mob_id,"1190";  }
+if (killedrid == 1251){ set #bossid1251,#bossid1251 + 1; set .@mob_id,"1251";  }
+if (killedrid == 1252){ set #bossid1252,#bossid1252 + 1; set .@mob_id,"1252";  }
+if (killedrid == 1272){ set #bossid1272,#bossid1272 + 1; set .@mob_id,"1272";  }
+if (killedrid == 1312){ set #bossid1312,#bossid1312 + 1; set .@mob_id,"1312";  }
+if (killedrid == 1373){ set #bossid1373,#bossid1373 + 1; set .@mob_id,"1373";  }
+if (killedrid == 1388){ set #bossid1388,#bossid1388 + 1; set .@mob_id,"1388";  }
+if (killedrid == 1389){ set #bossid1389,#bossid1389 + 1; set .@mob_id,"1389";  }
+if (killedrid == 1418){ set #bossid1418,#bossid1418 + 1; set .@mob_id,"1418";  }
+if (killedrid == 1492){ set #bossid1492,#bossid1492 + 1; set .@mob_id,"1492";  }
+if (killedrid == 1511){ set #bossid1511,#bossid1511 + 1; set .@mob_id,"1511";  }
+if (killedrid == 1582){ set #bossid1582,#bossid1582 + 1; set .@mob_id,"1582";  }
+if (killedrid == 1583){ set #bossid1583,#bossid1583 + 1; set .@mob_id,"1583";  }
+if (killedrid == 1623){ set #bossid1623,#bossid1623 + 1; set .@mob_id,"1623";  }
+if (killedrid == 1630){ set #bossid1630,#bossid1630 + 1; set .@mob_id,"1630";  }
+if (killedrid == 1658){ set #bossid1658,#bossid1658 + 1; set .@mob_id,"1658";  }
+if (killedrid == 1685){ set #bossid1685,#bossid1685 + 1; set .@mob_id,"1685";  }
+if (killedrid == 1688){ set #bossid1688,#bossid1688 + 1; set .@mob_id,"1688";  }
+if (killedrid == 1708){ set #bossid1708,#bossid1708 + 1; set .@mob_id,"1708";  }
+if (killedrid == 1719){ set #bossid1719,#bossid1719 + 1; set .@mob_id,"1719";  }
+if (killedrid == 1734){ set #bossid1734,#bossid1734 + 1; set .@mob_id,"1734";  }
+if (killedrid == 1751){ set #bossid1751,#bossid1751 + 1; set .@mob_id,"1751";  }
+if (killedrid == 1768){ set #bossid1768,#bossid1768 + 1; set .@mob_id,"1768";  }
+if (killedrid == 1779){ set #bossid1779,#bossid1779 + 1; set .@mob_id,"1779";  }
+if (killedrid == 1785){ set #bossid1785,#bossid1785 + 1; set .@mob_id,"1785";  }
+if (killedrid == 1832){ set #bossid1832,#bossid1832 + 1; set .@mob_id,"1832";  }
+if (killedrid == 1871){ set #bossid1871,#bossid1871 + 1; set .@mob_id,"1871";  }
+if (killedrid == 1873){ set #bossid1874,#bossid1874 + 1; set .@mob_id,"1874";  }
+if (killedrid == 1885){ set #bossid1885,#bossid1885 + 1; set .@mob_id,"1885";  }
+if (killedrid == 2022){ set #bossid2022,#bossid2022 + 1; set .@mob_id,"2022";  }
+if (killedrid == 2068){ set #bossid2068,#bossid2068 + 1; set .@mob_id,"2068";  }
+if (killedrid == 2087){ set #bossid2087,#bossid2087 + 1; set .@mob_id,"2087";  }
+if (killedrid == 1647){ set #bossid1647,#bossid1647 + 1; set .@mob_id,"1647";  }
+if (killedrid == 1874){ set #bossid1874,#bossid1874 + 1; set .@mob_id,"1874";  }
+if (killedrid == 1957){ set #bossid1957,#bossid1957 + 1; set .@mob_id,"1957";  }
+if (killedrid == 1646){ set #bossid1646,#bossid1646 + 1; set .@mob_id,"1646";  }
+if (killedrid == 1956){ set #bossid1956,#bossid1956 + 1; set .@mob_id,"1956";  }
+if (killedrid == 1650){ set #bossid1650,#bossid1650 + 1; set .@mob_id,"1650";  }
+if (killedrid == 1648){ set #bossid1648,#bossid1648 + 1; set .@mob_id,"1648";  }
+if (killedrid == 1917){ set #bossid1917,#bossid1917 + 1; set .@mob_id,"1917";  }
+
+	set .@name$,"#bossid"+.@mob_id+"";
+	//dispbottom "[ Boss Booking ]: คุณมีแต้ม "+getmonsterinfo(.@mob_id,MOB_NAME) + " ทั้งหมด : "+.@point$+" แต้ม.";
+	end;
+}
+
+
+-	shop	bbk_shop1	-1,41501:800,41502:800,41503:800,41504:800,41505:800,41506:800,41507:800,41508:800,41509:800,41510:800,41511:800,41512:800,41513:800,41514:800,41515:800,41516:800,41517:800,41518:800,41519:800,41520:800,41521:800,41522:800,41523:800,41524:800,41525:800,41526:800,41527:800,41528:800,41529:800,41530:800,41531:800,41532:800,41533:800,41534:800,41535:800,41536:800,41537:800,41538:800,41539:800,41540:800,41541:800,41542:800,41543:800,41544:800,41545:800,41546:800,41547:800,41549:800,41550:800,41551:800,41552:800,41553:800,41554:800;
+
+
+maintown,129,112,4	script	นักสะสมของเก่า::bbk_shop	574,{
+
+	mes "[ Boss Collection ]";
+	mes " ";
+	mes "แลกเครื่องประดับบอส";
+	mes "จากการล่าบอส";
+	mes "ทุกๆ ^FF0000800^000000 ตัว";
+	close2;
+	callshop "bbk_shop1", 1;
+	npcshopattach "bbk_shop1";
+	end;
+	
+	
+OnBuyItem:
+	
+	disable_items;
+	if(@bought_nameid == 41501){ set .@mob_id,1038; set .@pointsbbk,#bossid1038;			 if(#bossid1038 < 800){ goto nopoint; }				 set #bossid1038,#bossid1038 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41502){ set .@mob_id,1039; set .@pointsbbk,#bossid1039;			 if(#bossid1039 < 800){ goto nopoint; }				 set #bossid1039,#bossid1039 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41503){ set .@mob_id,1046; set .@pointsbbk,#bossid1046;			 if(#bossid1046 < 800){ goto nopoint; }				 set #bossid1046,#bossid1046 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41504){ set .@mob_id,1059; set .@pointsbbk,#bossid1059;			 if(#bossid1059 < 800){ goto nopoint; }				 set #bossid1059,#bossid1059 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41505){ set .@mob_id,1086; set .@pointsbbk,#bossid1086;			 if(#bossid1086 < 800){ goto nopoint; }				 set #bossid1086,#bossid1086 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41506){ set .@mob_id,1087; set .@pointsbbk,#bossid1087;			 if(#bossid1087 < 800){ goto nopoint; }				 set #bossid1087,#bossid1087 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41507){ set .@mob_id,1096; set .@pointsbbk,#bossid1096;			 if(#bossid1096 < 800){ goto nopoint; }				 set #bossid1096,#bossid1096 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41508){ set .@mob_id,1112; set .@pointsbbk,#bossid1112;			 if(#bossid1112 < 800){ goto nopoint; }				 set #bossid1112,#bossid1112 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41509){ set .@mob_id,1115; set .@pointsbbk,#bossid1115;			 if(#bossid1115 < 800){ goto nopoint; }				 set #bossid1115,#bossid1115 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41510){ set .@mob_id,1120; set .@pointsbbk,#bossid1120;			 if(#bossid1120 < 800){ goto nopoint; }				 set #bossid1120,#bossid1120 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41511){ set .@mob_id,1147; set .@pointsbbk,#bossid1147;			 if(#bossid1147 < 800){ goto nopoint; }				 set #bossid1147,#bossid1147 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41512){ set .@mob_id,1150; set .@pointsbbk,#bossid1150;			 if(#bossid1150 < 800){ goto nopoint; }				 set #bossid1150,#bossid1150 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41513){ set .@mob_id,1157; set .@pointsbbk,#bossid1157;			 if(#bossid1157 < 800){ goto nopoint; }				 set #bossid1157,#bossid1157 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41514){ set .@mob_id,1159; set .@pointsbbk,#bossid1159;			 if(#bossid1159 < 800){ goto nopoint; }				 set #bossid1159,#bossid1159 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41515){ set .@mob_id,1190; set .@pointsbbk,#bossid1190;			 if(#bossid1190 < 800){ goto nopoint; }				 set #bossid1190,#bossid1190 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41516){ set .@mob_id,1251; set .@pointsbbk,#bossid1251;			 if(#bossid1251 < 800){ goto nopoint; }				 set #bossid1251,#bossid1251 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41517){ set .@mob_id,1252; set .@pointsbbk,#bossid1252;			 if(#bossid1252 < 800){ goto nopoint; }				 set #bossid1252,#bossid1252 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41518){ set .@mob_id,1272; set .@pointsbbk,#bossid1272;			 if(#bossid1272 < 800){ goto nopoint; }				 set #bossid1272,#bossid1272 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41519){ set .@mob_id,1312; set .@pointsbbk,#bossid1312;			 if(#bossid1312 < 800){ goto nopoint; }				 set #bossid1312,#bossid1312 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41520){ set .@mob_id,1373; set .@pointsbbk,#bossid1373;			 if(#bossid1373 < 800){ goto nopoint; }				 set #bossid1373,#bossid1373 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41521){ set .@mob_id,1388; set .@pointsbbk,#bossid1388;			 if(#bossid1388 < 800){ goto nopoint; }				 set #bossid1388,#bossid1388 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41522){ set .@mob_id,1389; set .@pointsbbk,#bossid1389;			 if(#bossid1389 < 800){ goto nopoint; }				 set #bossid1389,#bossid1389 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41523){ set .@mob_id,1418; set .@pointsbbk,#bossid1418;			 if(#bossid1418 < 800){ goto nopoint; }				 set #bossid1418,#bossid1418 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41524){ set .@mob_id,1492; set .@pointsbbk,#bossid1492;			 if(#bossid1492 < 800){ goto nopoint; }				 set #bossid1492,#bossid1492 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41525){ set .@mob_id,1511; set .@pointsbbk,#bossid1511;			 if(#bossid1511 < 800){ goto nopoint; }				 set #bossid1511,#bossid1511 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41526){ set .@mob_id,1582; set .@pointsbbk,#bossid1582;			 if(#bossid1582 < 800){ goto nopoint; }				 set #bossid1582,#bossid1582 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41527){ set .@mob_id,1583; set .@pointsbbk,#bossid1583;			 if(#bossid1583 < 800){ goto nopoint; }				 set #bossid1583,#bossid1583 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41528){ set .@mob_id,1623; set .@pointsbbk,#bossid1623;			 if(#bossid1623 < 800){ goto nopoint; }				 set #bossid1623,#bossid1623 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41529){ set .@mob_id,1630; set .@pointsbbk,#bossid1630;			 if(#bossid1630 < 800){ goto nopoint; }				 set #bossid1630,#bossid1630 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41530){ set .@mob_id,1658; set .@pointsbbk,#bossid1658;			 if(#bossid1658 < 800){ goto nopoint; }				 set #bossid1658,#bossid1658 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41531){ set .@mob_id,1685; set .@pointsbbk,#bossid1685;			 if(#bossid1685 < 800){ goto nopoint; }				 set #bossid1685,#bossid1685 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41532){ set .@mob_id,1688; set .@pointsbbk,#bossid1688;			 if(#bossid1688 < 800){ goto nopoint; }				 set #bossid1688,#bossid1688 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41533){ set .@mob_id,1708; set .@pointsbbk,#bossid1708;			 if(#bossid1708 < 800){ goto nopoint; }				 set #bossid1708,#bossid1708 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41534){ set .@mob_id,1719; set .@pointsbbk,#bossid1719;			 if(#bossid1719 < 800){ goto nopoint; }				 set #bossid1719,#bossid1719 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41535){ set .@mob_id,1734; set .@pointsbbk,#bossid1734;			 if(#bossid1734 < 800){ goto nopoint; }				 set #bossid1734,#bossid1734 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41536){ set .@mob_id,1751; set .@pointsbbk,#bossid1751;			 if(#bossid1751 < 800){ goto nopoint; }				 set #bossid1751,#bossid1751 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41537){ set .@mob_id,1768; set .@pointsbbk,#bossid1768;			 if(#bossid1768 < 800){ goto nopoint; }				 set #bossid1768,#bossid1768 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41538){ set .@mob_id,1779; set .@pointsbbk,#bossid1779;			 if(#bossid1779 < 800){ goto nopoint; }				 set #bossid1779,#bossid1779 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41539){ set .@mob_id,1785; set .@pointsbbk,#bossid1785;			 if(#bossid1785 < 800){ goto nopoint; }				 set #bossid1785,#bossid1785 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41540){ set .@mob_id,1832; set .@pointsbbk,#bossid1832;			 if(#bossid1832 < 800){ goto nopoint; }				 set #bossid1832,#bossid1832 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41541){ set .@mob_id,1871; set .@pointsbbk,#bossid1871;			 if(#bossid1871 < 800){ goto nopoint; }				 set #bossid1871,#bossid1871 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41542){ set .@mob_id,1874; set .@pointsbbk,#bossid1874;			 if(#bossid1874 < 800){ goto nopoint; }				 set #bossid1874,#bossid1874 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41543){ set .@mob_id,1885; set .@pointsbbk,#bossid1885;			 if(#bossid1885 < 800){ goto nopoint; }				 set #bossid1885,#bossid1885 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41544){ set .@mob_id,2022; set .@pointsbbk,#bossid2022;			 if(#bossid2022 < 800){ goto nopoint; }				 set #bossid2022,#bossid2022 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41545){ set .@mob_id,2068; set .@pointsbbk,#bossid2068;			 if(#bossid2068 < 800){ goto nopoint; }				 set #bossid2068,#bossid2068 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41546){ set .@mob_id,2087; set .@pointsbbk,#bossid2087;			 if(#bossid2087 < 800){ goto nopoint; }				 set #bossid2087,#bossid2087 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41547){ set .@mob_id,1647; set .@pointsbbk,#bossid1647;			 if(#bossid1647 < 800){ goto nopoint; }				 set #bossid1647,#bossid1647 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41549){ set .@mob_id,1957; set .@pointsbbk,#bossid1957;			 if(#bossid1957 < 800){ goto nopoint; }				 set #bossid1957,#bossid1957 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41550){ set .@mob_id,1646; set .@pointsbbk,#bossid1646;			 if(#bossid1646 < 800){ goto nopoint; }				 set #bossid1646,#bossid1646 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41551){ set .@mob_id,1956; set .@pointsbbk,#bossid1956;			 if(#bossid1956 < 800){ goto nopoint; }				 set #bossid1956,#bossid1956 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41552){ set .@mob_id,1650; set .@pointsbbk,#bossid1650;			 if(#bossid1650 < 800){ goto nopoint; }				 set #bossid1650,#bossid1650 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41553){ set .@mob_id,1648; set .@pointsbbk,#bossid1648;			 if(#bossid1648 < 800){ goto nopoint; }				 set #bossid1648,#bossid1648 - 800;   getitem @bought_nameid,1; }
+	if(@bought_nameid == 41554){ set .@mob_id,1917; set .@pointsbbk,#bossid1917;			 if(#bossid1917 < 800){ goto nopoint; }				 set #bossid1917,#bossid1917 - 800;   getitem @bought_nameid,1; }
+	end;
+	
+// =========================================================================================================================================================================================================================
+
+	nopoint:
+	if(.@pointsbbk < 0){ mes "Ban";	end; }
+	dispbottom "[ Boss Ring ]: คุณล่า "+getmonsterinfo(.@mob_id,MOB_NAME) + " ทั้งหมด >> "+.@pointsbbk+" << ตัว, ไม่สามารถแลกเปลี่ยนได้";
+
+// =========================================================================================================================================================================================================================
+
+}
+
+-	script	#AllBossPoints	-1,{
+
+OnInit:
+	bindatcmd "bossrings",strnpcinfo(3)+"::OnWa",99,99;
+	end;
+	
+OnWa:
+		set #bossid1038,#bossid1038 + 90000;
+        set #bossid1039,#bossid1039 + 90000;
+        set #bossid1046,#bossid1046 + 90000;
+        set #bossid1059,#bossid1059 + 90000;
+        set #bossid1086,#bossid1086 + 90000;
+        set #bossid1087,#bossid1087 + 90000;
+        set #bossid1096,#bossid1096 + 90000;
+        set #bossid1112,#bossid1112 + 90000;
+        set #bossid1115,#bossid1115 + 90000;
+        set #bossid1120,#bossid1120 + 90000;
+        set #bossid1147,#bossid1147 + 90000;
+        set #bossid1150,#bossid1150 + 90000;
+        set #bossid1157,#bossid1157 + 90000;
+        set #bossid1159,#bossid1159 + 90000;
+        set #bossid1190,#bossid1190 + 90000;
+        set #bossid1251,#bossid1251 + 90000;
+        set #bossid1252,#bossid1252 + 90000;
+        set #bossid1272,#bossid1272 + 90000;
+        set #bossid1312,#bossid1312 + 90000;
+        set #bossid1373,#bossid1373 + 90000;
+        set #bossid1388,#bossid1388 + 90000;
+        set #bossid1389,#bossid1389 + 90000;
+        set #bossid1418,#bossid1418 + 90000;
+        set #bossid1492,#bossid1492 + 90000;
+        set #bossid1511,#bossid1511 + 90000;
+        set #bossid1582,#bossid1582 + 90000;
+        set #bossid1583,#bossid1583 + 90000;
+        set #bossid1623,#bossid1623 + 90000;
+        set #bossid1630,#bossid1630 + 90000;
+        set #bossid1658,#bossid1658 + 90000;
+        set #bossid1685,#bossid1685 + 90000;
+        set #bossid1688,#bossid1688 + 90000;
+        set #bossid1708,#bossid1708 + 90000;
+        set #bossid1719,#bossid1719 + 90000;
+        set #bossid1734,#bossid1734 + 90000;
+        set #bossid1751,#bossid1751 + 90000;
+        set #bossid1768,#bossid1768 + 90000;
+        set #bossid1779,#bossid1779 + 90000;
+        set #bossid1785,#bossid1785 + 90000;
+        set #bossid1832,#bossid1832 + 90000;
+        set #bossid1871,#bossid1871 + 90000;
+        set #bossid1885,#bossid1885 + 90000;
+        set #bossid2022,#bossid2022 + 90000;
+        set #bossid2068,#bossid2068 + 90000;
+        set #bossid2087,#bossid2087 + 90000;
+        set #bossid1647,#bossid1647 + 90000;
+        set #bossid1874,#bossid1874 + 90000;
+        set #bossid1957,#bossid1957 + 90000;
+        set #bossid1646,#bossid1646 + 90000;
+        set #bossid1956,#bossid1956 + 90000;
+        set #bossid1650,#bossid1650 + 90000;
+        set #bossid1648,#bossid1648 + 90000;
+        set #bossid1917,#bossid1917 + 90000;
+			dispbottom "[Command] : สามารถหา NPC แลกแหวนได้เลย",0xA1EA18;
+		end;
+}
+

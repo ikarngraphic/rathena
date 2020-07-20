@@ -1,0 +1,68 @@
+//==============================================
+// - Script By : M-Ro Online
+// - Script City : Thailand 
+// - Script Support Server : Hercules & rAthena
+//==============================================
+-	script	PlayBoxTimer	-1,{
+OnClock0015:
+OnClock0115:
+OnClock0215:
+OnClock0315:
+OnClock0415:
+OnClock0515:
+OnClock0615:
+OnClock0715:
+OnClock0815:
+OnClock0915:
+OnClock1015:
+OnClock1115:
+OnClock1215:
+OnClock1315:
+OnClock1415:
+OnClock1515:
+OnClock1615:
+OnClock1715:
+OnClock1815:
+OnClock1915:
+OnClock2015:
+OnClock2115:
+OnClock2215:
+OnClock2315:
+set $@PB_Count,0;
+set $@randmisbox,rand(80,100);
+announce "[The Box] : ขณะนี้ Treasure Box ได้เกิดขึ้นจำนวน "+$@randmisbox+" ตัวมีเวลาในการกำจัด 5 นาที !!",0;
+monster "maintown",0,0,"Treasure Box",21351,$@randmisbox,"PlayBoxTimer::OnBox";
+initnpctimer;
+end;
+
+OnBox:
+getitem 49505,rand(10);
+getitem 41023,25;
+
+set $@PB_Count,$@PB_Count+1;
+announce "[The Box] : ตัวที่ [ "+$@PB_Count+"/"+$@randmisbox+" ] ถูกพบโดยคุณ [ "+strcharinfo(0)+" ]",0;
+end;
+
+OnTimer60000:
+if($@PB_Count==30){ stopnpctimer; set $@PB_Count,0; }
+announce "[The Box] : มีเวลาในการกำจัดอีก 4 นาที",0;
+end;
+OnTimer120000:
+if($@PB_Count==30){ stopnpctimer; set $@PB_Count,0; }
+announce "[The Box] : มีเวลาในการกำจัดอีก 3 นาที",0;
+end;
+OnTimer180000:
+if($@PB_Count==30){ stopnpctimer; set $@PB_Count,0; }
+announce "[The Box] : มีเวลาในการกำจัดอีก 2 นาที",0;
+end;
+OnTimer260000:
+if($@PB_Count==30){ stopnpctimer; set $@PB_Count,0; }
+announce "[The Box] : มีเวลาในการกำจัดอีก 1 นาที",0;
+end;
+OnTimer300000:
+announce "[The Box] : หมดเวลากิจกรรมแล้ว",0;
+stopnpctimer;
+set $@PB_Count,0;
+killmonster "maintown","PlayBoxTimer::OnBox";
+end;
+}

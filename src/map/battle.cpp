@@ -1888,14 +1888,14 @@ int64 battle_addmastery(struct map_session_data *sd,struct block_list *target,in
 		target->type == BL_MOB && //This bonus doesn't work against players.
 		(battle_check_undead(status->race,status->def_ele) || status->race == RC_DEMON) )
 		damage += (skill*(int)(3+(sd->status.base_level+1)*0.05));	// submitted by orn
-	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLAYER_DORAM || status->race == RC_PLANT || status->race == RC_FISH) )
+	if( (skill = pc_checkskill(sd, RA_RANGERMAIN)) > 0 && (status->race == RC_BRUTE || status->race == RC_PLANT || status->race == RC_FISH) )
 		damage += (skill * 5);
 	if( (skill = pc_checkskill(sd,NC_RESEARCHFE)) > 0 && (status->def_ele == ELE_FIRE || status->def_ele == ELE_EARTH) )
 		damage += (skill * 10);
 
 	damage += (15 * pc_checkskill(sd, NC_MADOLICENCE)); // Attack bonus is granted even without the Madogear
 
-	if((skill = pc_checkskill(sd,HT_BEASTBANE)) > 0 && (status->race == RC_INSECT || status->race == RC_BRUTE || status->race == RC_PLAYER_DORAM) ) {
+	if((skill = pc_checkskill(sd,HT_BEASTBANE)) > 0 && (status->race == RC_BRUTE || status->race == RC_INSECT) ) {
 		damage += (skill * 4);
 		if (sd->sc.data[SC_SPIRIT] && sd->sc.data[SC_SPIRIT]->val2 == SL_HUNTER)
 			damage += sd->status.str;
@@ -2361,6 +2361,70 @@ static int battle_skill_damage(struct block_list *src, struct block_list *target
 		return 0;
 	skill_id = skill_dummy2skill_id(skill_id);
 	return battle_skill_damage_skill(src, target, skill_id) + battle_skill_damage_map(src, target, skill_id);
+}
+
+static inline int battle_calc_damage_adjustment_sub(struct s_global_damage_rate *rates, bool use_mapflag, int flag) {
+	if (flag&BF_SKILL) {
+		if (flag&BF_WEAPON)
+			return use_mapflag ? rates->rate[DMGRATE_WEAPON] : battle_config.atk_weapon_damage_rate;
+		if (flag&BF_MAGIC)
+			return use_mapflag ? rates->rate[DMGRATE_MAGIC] : battle_config.atk_magic_damage_rate;
+		if (flag&BF_MISC)
+			return use_mapflag ? rates->rate[DMGRATE_MISC] : battle_config.atk_misc_damage_rate;
+	}
+	else {
+		if (flag&BF_SHORT)
+			return use_mapflag ? rates->rate[DMGRATE_SHORT] : battle_config.atk_short_damage_rate;
+		if (flag&BF_LONG)
+			return use_mapflag ? rates->rate[DMGRATE_LONG] : battle_config.atk_long_damage_rate;
+	}
+	return 100;
+}
+
+/** Calculates Global Damage adjustments
+ * @author [Cydh]
+ * @param src block_list that will be checked
+ * @param bl enemy
+ * @param flag damage flag
+ * @param damage
+ **/
+static int64 battle_calc_damage_adjustment(struct block_list *src, int64 damage, int flag) {
+	unsigned int atk_maps = 0;
+	int rate = 100;
+	uint16 attacker = 0;
+	bool map_atk_rate, map_pvp, map_gvg, map_bg;
+	struct map_data *mapd;
+
+	nullpo_ret(src);
+
+	mapd = map_getmapdata(src->m);
+
+	if (!damage || !mapd)
+		return damage;
+
+	map_atk_rate = mapd->flag[MF_ATK_RATE] > 0;
+	attacker = map_atk_rate ? mapd->atk_rate.rate[DMGRATE_BL] : battle_config.atk_damage_attacker;
+
+	// Wrong attacker
+	if (!(attacker&src->type))
+		return damage;
+
+	atk_maps = battle_config.atk_adjustment_map;
+	map_pvp = map_flag_vs(src->m);
+	map_gvg = map_flag_gvg2(src->m);
+	map_bg = mapd->flag[MF_BATTLEGROUND] > 0;
+
+	//Checking mapflag
+	if ((atk_maps & 1 && (!map_pvp && !map_gvg && !map_bg && !map_atk_rate && !!mapd->flag[MF_RESTRICTED])) ||
+		(atk_maps & 2 && map_pvp) ||
+		(atk_maps & 4 && map_gvg) ||
+		(atk_maps & 8 && map_bg) ||
+		(atk_maps & 16 && map_atk_rate) ||
+		(atk_maps & (mapd->zone) && mapd->flag[MF_RESTRICTED]))
+	{
+		rate = battle_calc_damage_adjustment_sub(&mapd->atk_rate, map_atk_rate, flag);
+	}
+	return apply_rate(damage, rate);
 }
 
 /**
@@ -4017,7 +4081,7 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 			break;
 		case GS_BULLSEYE:
 			//Only works well against brute/demihumans non bosses.
-			if((tstatus->race == RC_BRUTE || tstatus->race == RC_DEMIHUMAN || tstatus->race == RC_PLAYER_HUMAN || tstatus->race == RC_PLAYER_DORAM) && !status_has_mode(tstatus,MD_STATUS_IMMUNE))
+			if((tstatus->race == RC_BRUTE || tstatus->race == RC_DEMIHUMAN || tstatus->race == RC_PLAYER) && !status_has_mode(tstatus,MD_STATUS_IMMUNE))
 				skillratio += 400;
 			break;
 		case GS_TRACKING:
@@ -5076,7 +5140,7 @@ static void battle_calc_defense_reduction(struct Damage* wd, struct block_list *
 			(skill=pc_checkskill(tsd,AL_DP)) > 0 )
 			vit_def += skill*(int)(3 +(tsd->status.base_level+1)*0.04);   // submitted by orn
 		if( src->type == BL_MOB && (skill=pc_checkskill(tsd,RA_RANGERMAIN))>0 &&
-			(sstatus->race == RC_BRUTE || sstatus->race == RC_PLAYER_DORAM || sstatus->race == RC_FISH || sstatus->race == RC_PLANT) )
+			(sstatus->race == RC_BRUTE || sstatus->race == RC_FISH || sstatus->race == RC_PLANT) )
 			vit_def += skill*5;
 		if( src->type == BL_MOB && (skill = pc_checkskill(tsd, NC_RESEARCHFE)) > 0 &&
 			(sstatus->def_ele == ELE_FIRE || sstatus->def_ele == ELE_EARTH) )
@@ -5364,6 +5428,8 @@ static void battle_calc_attack_gvg_bg(struct Damage* wd, struct block_list *src,
 				wd->damage=battle_calc_gvg_damage(src,target,wd->damage,skill_id,wd->flag);
 			else if( mapdata->flag[MF_BATTLEGROUND] )
 				wd->damage=battle_calc_bg_damage(src,target,wd->damage,skill_id,wd->flag);
+			if (battle_config.atk_adjustment_map)
+				wd->damage = battle_calc_damage_adjustment(src, wd->damage, wd->flag); // Global damage adjustment [Cydh]
 		}
 		else if(!wd->damage) {
 			wd->damage2 = battle_calc_damage(src,target,wd,wd->damage2,skill_id,skill_lv);
@@ -5371,6 +5437,8 @@ static void battle_calc_attack_gvg_bg(struct Damage* wd, struct block_list *src,
 				wd->damage2 = battle_calc_gvg_damage(src,target,wd->damage2,skill_id,wd->flag);
 			else if( mapdata->flag[MF_BATTLEGROUND] )
 				wd->damage2 = battle_calc_bg_damage(src,target,wd->damage2,skill_id,wd->flag);
+			if (battle_config.atk_adjustment_map)
+				wd->damage2 = battle_calc_damage_adjustment(src, wd->damage2, wd->flag); // Global damage adjustment [Cydh]
 		}
 		else {
 			int64 d1 = wd->damage + wd->damage2,d2 = wd->damage2;
@@ -5379,6 +5447,8 @@ static void battle_calc_attack_gvg_bg(struct Damage* wd, struct block_list *src,
 				wd->damage = battle_calc_gvg_damage(src,target,wd->damage,skill_id,wd->flag);
 			else if( mapdata->flag[MF_BATTLEGROUND] )
 				wd->damage = battle_calc_bg_damage(src,target,wd->damage,skill_id,wd->flag);
+			if (battle_config.atk_adjustment_map)
+				wd->damage = battle_calc_damage_adjustment(src, wd->damage, wd->flag); // Global damage adjustment [Cydh]
 			wd->damage2 = (int64)d2*100/d1 * wd->damage/100;
 			if(wd->damage > 1 && wd->damage2 < 1) wd->damage2 = 1;
 			wd->damage-=wd->damage2;
@@ -6774,6 +6844,9 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 		ad.damage = battle_calc_gvg_damage(src,target,ad.damage,skill_id,ad.flag);
 	else if (mapdata->flag[MF_BATTLEGROUND])
 		ad.damage = battle_calc_bg_damage(src,target,ad.damage,skill_id,ad.flag);
+	
+	if (battle_config.atk_adjustment_map)
+		ad.damage = battle_calc_damage_adjustment(src, ad.damage, ad.flag); // Global damage adjustment [Cydh]
 
 	// Skill damage adjustment
 	if ((skill_damage = battle_skill_damage(src,target,skill_id)) != 0)
@@ -7138,6 +7211,9 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 		md.damage = battle_calc_gvg_damage(src,target,md.damage,skill_id,md.flag);
 	else if(mapdata->flag[MF_BATTLEGROUND])
 		md.damage = battle_calc_bg_damage(src,target,md.damage,skill_id,md.flag);
+	
+	if (battle_config.atk_adjustment_map)
+		md.damage = battle_calc_damage_adjustment(src, md.damage, md.flag); // Global damage adjustment [Cydh]
 
 	// Skill damage adjustment
 	if ((skill_damage = battle_skill_damage(src,target,skill_id)) != 0)
@@ -8782,8 +8858,17 @@ static const struct _battle_data {
 	{ "cashshop_show_points",               &battle_config.cashshop_show_points,            0,      0,      1,              },
 	{ "mail_show_status",                   &battle_config.mail_show_status,                0,      0,      2,              },
 	{ "client_limit_unit_lv",               &battle_config.client_limit_unit_lv,            0,      0,      BL_ALL,         },
+	// Global Damage adjustment. [Cydh]
+	{ "atk_adjustment_map",                 &battle_config.atk_adjustment_map,              4082,   0,      4095,           },
+	{ "atk_damage_attacker",                &battle_config.atk_damage_attacker,             BL_PC,  BL_PC,  BL_ALL,         },
+	{ "atk_short_attack_damage_rate",       &battle_config.atk_short_damage_rate,           100,    1,      UINT16_MAX,     },
+	{ "atk_long_attack_damage_rate",        &battle_config.atk_long_damage_rate,            100,    1,      UINT16_MAX,     },
+	{ "atk_weapon_attack_damage_rate",      &battle_config.atk_weapon_damage_rate,          100,    1,      UINT16_MAX,     },
+	{ "atk_magic_attack_damage_rate",       &battle_config.atk_magic_damage_rate,           100,    1,      UINT16_MAX,     },
+	{ "atk_misc_attack_damage_rate",        &battle_config.atk_misc_damage_rate,            100,    1,      UINT16_MAX,     },
 	{ "land_protector_behavior",            &battle_config.land_protector_behavior,         0,      0,      1,              },
 	{ "npc_emotion_behavior",               &battle_config.npc_emotion_behavior,            0,      0,      1,              },
+	{ "droprate_mapflag",                   &battle_config.droprate_mapflag,                0,      0,      1,              },
 // BattleGround Settings
 	{ "bg_update_interval",                 &battle_config.bg_update_interval,              1000,   100,    INT_MAX,        },
 	{ "bg_short_attack_damage_rate",        &battle_config.bg_short_damage_rate,            80,     0,      INT_MAX,        },
@@ -8927,8 +9012,7 @@ static const struct _battle_data {
 	{ "switch_remove_edp",                  &battle_config.switch_remove_edp,               2,      0,      3,              },
 	{ "feature.homunculus_autofeed",        &battle_config.feature_homunculus_autofeed,     1,      0,      1,              },
 	{ "feature.homunculus_autofeed_rate",   &battle_config.feature_homunculus_autofeed_rate,30,     0,    100,              },
-	{ "summoner_race",                      &battle_config.summoner_race,                   RC_PLAYER_DORAM,      RC_FORMLESS,      RC_PLAYER_DORAM,              },
-	{ "summoner_size",                      &battle_config.summoner_size,                   SZ_SMALL,                SZ_SMALL,               SZ_BIG,              },
+	{ "summoner_trait",                     &battle_config.summoner_trait,                  3,      0,      3,              },
 	{ "homunculus_autofeed_always",         &battle_config.homunculus_autofeed_always,      1,      0,      1,              },
 	{ "feature.attendance",                 &battle_config.feature_attendance,              1,      0,      1,              },
 	{ "feature.privateairship",             &battle_config.feature_privateairship,          1,      0,      1,              },
@@ -8954,6 +9038,16 @@ static const struct _battle_data {
 	{ "show_skill_scale",                   &battle_config.show_skill_scale,                1,      0,      1,              },
 	{ "achievement_mob_share",              &battle_config.achievement_mob_share,           0,      0,      1,              },
 	{ "slave_stick_with_master",            &battle_config.slave_stick_with_master,         0,      0,      1,              },
+	/**
+	* Extended Vending system [Lilith]
+	**/
+	{ "extended_vending",					&battle_config.extended_vending,				1,		0,		1,				},
+	{ "show_broadcas_info",					&battle_config.show_broadcas_info,				1,		0,		1,				},
+	{ "show_item_vending",					&battle_config.show_item_vending,				1,		0,		1,				},
+	{ "ex_vending_info",					&battle_config.ex_vending_info,					1,		0,		1,				},
+	{ "ex_vending_report",					&battle_config.ex_vending_report,				1,		0,		1,				}, // [Easycore]
+	{ "item_zeny",							&battle_config.item_zeny,						0,		0,		MAX_ITEMID,		},
+	{ "item_cash",							&battle_config.item_cash,						0,		0,		MAX_ITEMID,		},
 
 #include "../custom/battle_config_init.inc"
 };

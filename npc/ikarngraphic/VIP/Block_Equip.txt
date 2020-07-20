@@ -1,0 +1,57 @@
+maintown,69,40,4	script	Block Equip#VIP	10125,{
+
+if (vip_status(1)){
+
+mes "[ Block Equip ]";
+
+	if(#PRIVATE_VIEWEQUIP == 1){
+	mes "BLOCK : ^08E000ON^000000";
+	mes "คุณใช้ Equip Private","สามารถ เปิด/ปิด หน้าต่างสวมใส่ได้แล้ว.";
+	} else {
+	mes "BLOCK : ^FF0000OFF^000000";
+	mes "คุณเปิดให้ผู้เล่นทั่วไป ดูของได้แล้ว";
+	}
+
+menu "> เปิดระบบปิดส่อง",R1,"> ปิดระบบ",R2,"> ออก",E1;
+
+R1:
+	set #PRIVATE_VIEWEQUIP,1;
+	dispbottom "ระบบ : คุณใช้ Equip Private สามารถ เปิด/ปิด หน้าต่างสวมใส่ได้แล้ว.";
+	end;
+
+R2:
+	set #PRIVATE_VIEWEQUIP,0;
+	dispbottom "ระบบ : คุณปิดการใช้ Equip Private แล้ว";
+	end;
+	
+E1:
+mes "[ Block Equip ]";
+mes "แล้วพบกันใหม่";
+end;
+	} else {
+
+mes "[ Block Equip ]";
+mes "VIP เท่านั้นที่สามารถใช้ได้";
+end;	
+	
+	}
+
+OnInit:
+waitingroom "  Equip Private",0;
+end;
+
+OnPCLoginEvent: 
+	
+	if (!vip_status(1)){
+
+	if (getgmlevel() > 90){ end; }
+
+	set #PRIVATE_VIEWEQUIP,0;
+	dispbottom "ระบบ : ปิดการใช้ Equip Private แล้วเนื่องจากคุณไม่ใช่ VIP Player";
+	end;
+	}
+
+    end; 
+}
+
+

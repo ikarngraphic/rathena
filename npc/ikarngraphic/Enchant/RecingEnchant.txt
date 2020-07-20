@@ -1,0 +1,253 @@
+//	== Lava Enchants ==
+//	  == ikarngraphic ==
+
+maintown,108,132,6	script	Racing Enchanter#cus	995,{
+
+	disable_items;
+
+	set .name$,"[ Racing Enchant ]";
+
+
+//============= Script ==============
+
+mes .name$;
+mes "ยินดีให้บริการตลอดเวลาค่ะ";
+mes "กรุณาเลือกสิ่งที่ท่านต้องการ";
+mes "ค่าบริการครั้งละ ^FF00001,000,000^000000 Zeny";
+mes "ลบออฟครั้งละ ^FF000010^000000 Cash";
+
+
+		if (checkweight(1201,1) == 0) {
+			mes "ช่องเก็บของเต็ม";
+			end;
+				}
+		if (MaxWeight - Weight < 10000) {
+			mes "น้ำหนักเกิน";
+			end;
+				}
+next;
+menu "เสริมพลัง, ของสวมใส่",EN_EQ,"ลบออฟ, ของสวมใส่",DL_EQ,"ข้ายังไม่ต้องการออฟตอนนี้",END_EQ;
+
+//=================================================================================================================================
+
+//	Main function
+
+//=================================================================================================================================
+EN_EQ:
+					mes .name$;
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "เลือกไอเท็มที่เจ้าต้องการจะออฟ ?";
+	setarray .@indices[1], EQI_HEAD_TOP;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+					
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะออฟ ^000099" + getequipname(.@id) + "^000000";
+
+			if (.@id == EQI_HEAD_TOP) goto encup;
+
+//=================================================================================================================================
+
+//        Selection
+	encup:
+
+//=================================================================================================================================
+	
+	//สุ่มหิน
+	set .@enc, callfunc("F_Rand",4811,4810,29081,29082,29061,29062,4807,4842,4832,4833,29091,29092,29071,29072,4815,4814,4885,4886,4805,4850,4760,4761,4762,4763,4766,4767,4789,4790,4793,4794,4861,4862,4863,4864,4865,4866,4867,4868,4869,4872,4873,4885,4886,4887,4888,4894,4895,4898,4899,4900,4948,4949,4950,4979,4979,4980,4981,4997,4998,4999);
+
+	//ตรวจสอบไอเท็ม
+	if (getequipid(EQI_HEAD_TOP) == 19189)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19190)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19191)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19192)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19193)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19194)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19195)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19196)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19197)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19198)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19199)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19200)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19201)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19202)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19203)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19204)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19205)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19396)  goto enc1;
+	if (getequipid(EQI_HEAD_TOP) == 19397)  goto enc1;
+	//if (getequipid(EQI_HEAD_TOP) != 40139 || getequipid(EQI_HEAD_TOP) != 40140){
+	
+	mes .name$;
+	mes "ไอเท็มชิ้นนี้ไม่สามารถออฟได้นิ !!";
+	mes "กลับมาหาเมื่อเจ้ามีของที่ต้องการ";
+	end;
+
+	//}
+
+	enc1:
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	if(@card4 != 0){
+		next;
+			mes .name$;
+			mes "ออฟของเจ้าครบแล้วนิ กรุณารีเซทก่อน";
+			end;
+	}
+
+	if (Zeny < .cost){ //money check
+					mes .name$;
+					mes "เจ้ามีเงินไม่พอ.";
+					end;
+				}
+					mes .name$;
+					mes "ออฟเลยไหม ?";
+				if (select( "^000099เอาเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes "[Costume Enchanter]";
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+					specialeffect2 EF_REPAIRWEAPON;
+					progressbar "0x00ff00",1;
+					set Zeny,Zeny-.cost;
+	if(@card3 == 0){
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, .@enc, @card4;
+	equip .@part;
+	next;
+		mes .name$;
+		mes "เสริมพลังไอเท็มสำเร็จ";
+		mes "ช่องที่ 1 : สำเร็จ";
+		end;
+	
+	} 
+
+	if(@card4 == 0){
+
+set .@enc, callfunc("F_Rand",29310,29311,29312,29313,29314,29315,29316,29317,29318,29319,29320,29321,29322,29323,29324,29325,29326,29327,29328,29329,29330,29331,29332,29333,29334,29335,29336,29337,29338,29339,29340,29341,29342,29343,29344,29345,29346,29347,29348,29349,29350,29351,29352,29353,29354,29355,29356,29357,29579,29580,29581,29582,29583,29584);
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, .@enc;
+	equip .@part;
+	next;
+		mes .name$;
+		mes "เสริมพลังไอเท็ม";
+		mes "ช่องที่ 2 : สำเร็จ";
+		end;
+	
+	}
+
+end;
+
+//===============================================================================
+
+//         Del Option
+	DL_EQ:
+
+//===============================================================================
+					mes .name$;
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "ต้องใช้ ^FF000050 Cash^000000 ในการลบ";
+					mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_HEAD_TOP;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 10){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+	progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 10;
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, 0, 0, 0;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+
+//===============================================================================
+//         Out Option	
+	END_EQ:
+
+//===============================================================================
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+OnInit:	
+	.cost = 1000000; // ค่าออฟ zeny
+end;
+
+}

@@ -1,0 +1,269 @@
+morocc,141,102,4	script	Gacha Pierrot	715,{
+Summtor:	//รีใหม่สำหรับมีไอเท็มอีก
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+
+set .@gachacoin,40001;	// Gacha Coin
+
+mes "Gacha Promotion วันนี้:";
+mes "' ^0000cc"+$GachaEName$+"^000000 '";
+mes "^FF6699"+getitemname(.@gachacoin)+"^000000 ของคุณ: ^FF6666"+countitem(.@gachacoin)+"^000000 ea.";
+if (getgmlevel() > 90){ mes "Delay : "+$DelayGacha+""; }
+if (getgmlevel() < 90) menu
+"- เล่น ^FF6699Gacha Event^000000",L_PlayGacha,
+//"- แลก^FF6699Gacha Coin^000000",L_TradeCoin,
+"- สอบถามข้อมูล",L_info,
+"- ^FF0000ยกเลิก",L_Q;
+
+if (getgmlevel() > 90) menu
+"- เล่น ^0099FFGacha Event^000000",L_PlayGacha,
+//"- แลก ^FF6699Gacha Coin^000000",L_TradeCoin,
+"- ตั้งค่า ^0099FFGacha Event^000000",L_Setup,
+"- สอบถามข้อมูล",L_info,
+"- ^FF0000ยกเลิก",L_Q;
+
+L_Setup:
+menu
+"- เซ็ต ^0099FFGacha Event^000000",L_Set,
+"- รีเซ็ต^0099FFGacha Event^000000",L_Reset,
+"- ^FF0000ยกเลิก",L_Q;
+
+//---------------------Set Gacha Event---------------------\\
+L_Set:
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "ขึ้นตอนแรก กรุณากรอกชื่อ";
+mes "^0099FFGacha Event^000000 ด้วยค่ะ หาก";
+mes "ต้องการยกเลิก กรุณาใส่ 0";
+next;
+input $GachaEName$;
+next;
+//set $GachaEventName$,"$GachaEName$";
+//next;
+if ($GachaEName$ == "0") goto L_Q;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เรียบร้อยค่ะ";
+mes "ชื่ออีเว้นท์: '^0000cc"+$GachaEName$+"^000000'";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "Gacha Promotion วันนี้:";
+mes "'^0000cc"+$GachaEName$+"^000000'";
+close;
+
+L_Cannot:
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เสียใจด้วยค่ะ Item ID ของไอเทม";
+mes "สิ้นสุดการสุ่มต้องมากกว่า Item ID";
+mes "ของไอเทมเริ่มต้นการสุ่มนะคะ";
+mes "กรุณากลับไปกรอกใหม่ด้วยค่ะ";
+next;
+goto Step3;
+
+//---------------------ReSet Gacha Event---------------------\\
+L_Reset:
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "^FF0000เมื่อคุณสั่ง Reset Gacha Event";
+mes "ข้อมูลทุกอย่างจะถูกลบและ Gacha";
+mes "จะปิดให้บริการกับผู้เล่น คุณแน่ใจ";
+mes "ไหมว่าจะ Reset ระบบ Gacha นี้^000000";
+menu "- ตกลง",-,"- ^FF0000ยกเลิก",L_Q;
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "^FF0000ข้ออมูลทั้งหมดถูก Reset แล้ว";
+set $GachaEName$,"";
+close;
+
+//---------------------Play Gacha Event---------------------\\
+L_PlayGacha:
+next;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '1' LIMIT 1",.@id1,.@amount1;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '2' LIMIT 1",.@id2,.@amount2;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '3' LIMIT 1",.@id3,.@amount3;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '4' LIMIT 1",.@id4,.@amount4;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '5' LIMIT 1",.@id5,.@amount5;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '6' LIMIT 1",.@id6,.@amount6;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '7' LIMIT 1",.@id7,.@amount7;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '8' LIMIT 1",.@id8,.@amount8;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '9' LIMIT 1",.@id9,.@amount9;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '10' LIMIT 1",.@id10,.@amount10;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '11' LIMIT 1",.@id11,.@amount11;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '12' LIMIT 1",.@id12,.@amount12;
+set .@amall,.@amount1+.@amount2+.@amount3+.@amount4+.@amount5+.@amount6+.@amount7+.@amount8+.@amount9+.@amount10;
+if(.@amall == 0){ mes "[ ^CC6633Gacha Pierrot^000000 ]"; mes "ไอเท็มหมดตู้แล้วกรุณารอไอเท็มลอตใหม่";	end;	}
+if($GachaEName$ == "") goto No_Gacha_Now;
+if (countitem(.@gachacoin) < 1) goto No_Coin;
+RANDNEW:
+set .@rare,rand(1,100);
+if(.@rare > 2){	set @Gacha,rand(1,10);	}
+if(.@rare <= 2){
+	
+if($DelayGacha == 0){	set $DelayGacha,rand(15,20);	}
+	set @Gacha,rand(11,12);	
+	if(.@amount11 == 0){ set @Gacha,12; }
+	if(.@amount12 == 0){ set @Gacha,11; }
+	goto SkipGacha;
+	}
+
+if($DelayGacha > 0){ set @Gacha,rand(1,10); }
+
+SkipGacha:
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "^FF0000---------------------";
+mes "ระบบกำลังสุ่มของให้";
+mes "คุณ กรุณารอสักครู่ค่ะ";
+mes "---------------------^000000";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+//mes "[ ไอเท็มทั้งหมด : "+.@amall+" ]";
+mes "^FF0000---------------------";
+mes "      •";
+mes "---------------------^000000";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+//mes "[ ไอเท็มทั้งหมด : "+.@amall+" ]";
+mes "^FF0000---------------------";
+mes "      •  •";
+mes "---------------------^000000";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+//mes "[ ไอเท็มทั้งหมด : "+.@amall+" ]";
+mes "^FF0000---------------------";
+mes "      •  •  •";
+mes "---------------------^000000";
+next;
+delitem .@gachacoin,1;
+if($DelayGacha != 0){ set $DelayGacha,$DelayGacha-1;	}
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand`='"+@Gacha+"' LIMIT 1",.@id,.@amount;
+if(.@amount == 0){	goto RANDNEW;	}
+getitem .@id,1;
+set .@amount,.@amount-1;
+query_sql( "UPDATE `gacha` SET `amount` = "+.@amount+" WHERE `id` = "+.@id+" LIMIT 1" );
+if(@Gacha >= 11){	announce "Gacha Pierrot : ผู้เล่น "+strcharinfo(0)+" ได้รับแรร์ไอเท็ม "+getitemname(.@id)+" จากตู้แล้วครับ!!",bc_all;	}
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "คุณได้รับ:";
+mes "^CC99CC"+getitemname(.@id)+"^000000";
+if(countitem(.@gachacoin) > 0){	next; goto Summtor;	}
+close;
+
+No_Gacha_Now:
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เสียใจด้วยค่ะ แต่วันนี้บริการ";
+mes "Gacha ยังไม่เปิดให้บริการ";
+mes "ตอนนี้ ไว้กลับมาใหม่วันหลัง";
+mes "นะคะ";
+close;
+
+No_Coin:
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เสียใจด้วยค่ะ แต่คุณมี";
+mes "^FF6699Gacha Coin^000000 ไม่พอสำหรับ";
+mes "การใช้บริการ Gacha นะคะ";
+close;
+
+//---------------------Trade Coin---------------------\\
+L_TradeCoin:
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "อัตราแลกเปลี่ยน:";
+mes "5 ^333366TCG Card^000000 = 1 ^FF6699Gacha Coin^000000";
+menu
+"- ^0099CC1^000000 เหรียญ",L1,
+"- ^9900993^000000 เหรียญ",L3,
+"- ^FF99CC5^000000 เหรียญ",L5,
+"- ^FF0000ยกเลิก",L_Q;
+
+L1:
+if (countitem(7227) < 5) goto No_TCG;
+next;
+delitem 7227,5;
+getitem .@gachacoin,1;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เรียบร้อยค่ะ";
+mes "^FF6699Gacha Coin^000000 ของคุณ:";
+mes "^FF6666"+countitem(.@gachacoin)+"^000000 Coins";
+close;
+
+L3:
+if (countitem(7227) < 15) goto No_TCG;
+next;
+delitem 7227,15;
+getitem .@gachacoin,3;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เรียบร้อยค่ะ";
+mes "^FF6699Gacha Coin^000000 ของคุณ:";
+mes "^FF6666"+countitem(.@gachacoin)+"^000000 Coins";
+close;
+
+L5:
+if (countitem(7227) < 25) goto No_TCG;
+next;
+delitem 7227,25;
+getitem .@gachacoin,5;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เรียบร้อยค่ะ";
+mes "^FF6699Gacha Coin^000000 ของคุณ:";
+mes "^FF6666"+countitem(.@gachacoin)+"^000000 Coins";
+close;
+
+No_TCG:
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "เสียใจด้วยค่ะ แต่คุณมี";
+mes "TCG Card ไม่พอสำหรับ";
+mes "การแลก Gacha Coin นะคะ";
+close;
+
+//---------------------Info---------------------\\
+L_info:
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "^0099FFGacha Event^000000";
+mes "เป็นระบบคืนทุนแก่ผู้เล่นรูป";
+mes "แบบหนึ่ง โดยมีรูปแบบการทำ";
+mes "งานเช่นเดียวกับตู้กาชาปอง";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes "ในตู้ประกอบไปด้วยไอเท็ม";
+mes "12 ชิ้นคือ";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '1' LIMIT 1",.@id1,.@amount1;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '2' LIMIT 1",.@id2,.@amount2;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '3' LIMIT 1",.@id3,.@amount3;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '4' LIMIT 1",.@id4,.@amount4;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '5' LIMIT 1",.@id5,.@amount5;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '6' LIMIT 1",.@id6,.@amount6;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '7' LIMIT 1",.@id7,.@amount7;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '8' LIMIT 1",.@id8,.@amount8;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '9' LIMIT 1",.@id9,.@amount9;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '10' LIMIT 1",.@id10,.@amount10;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '11' LIMIT 1",.@id11,.@amount11;
+query_sql "SELECT `id`,`amount` FROM `gacha` WHERE `rand` = '12' LIMIT 1",.@id12,.@amount12;
+mes ""+.@amount1+": "+getitemname(.@id1)+"";
+mes ""+.@amount2+": "+getitemname(.@id2)+"";
+mes ""+.@amount3+": "+getitemname(.@id3)+"";
+mes ""+.@amount4+": "+getitemname(.@id4)+"";
+mes ""+.@amount5+": "+getitemname(.@id5)+"";
+mes ""+.@amount6+": "+getitemname(.@id6)+"";
+next;
+mes "[ ^CC6633Gacha Pierrot^000000 ]";
+mes ""+.@amount7+": "+getitemname(.@id7)+"";
+mes ""+.@amount8+": "+getitemname(.@id8)+"";
+mes ""+.@amount9+": "+getitemname(.@id9)+"";
+mes ""+.@amount10+": "+getitemname(.@id10)+"";
+if (getgmlevel() < 90){
+mes "XXX: ^FF0000(Rare)^000000"+getitemname(.@id11)+"";
+mes "XXX: ^FF0000(Rare)^000000"+getitemname(.@id12)+"";	}
+if (getgmlevel() > 90){
+mes ""+.@amount11+": ^FF0000(Rare)^000000"+getitemname(.@id11)+"";
+mes ""+.@amount12+": ^FF0000(Rare)^000000"+getitemname(.@id12)+"";	}
+close;
+
+L_Q:
+close;
+
+
+OnInit:
+waitingroom "# Gachapong",0;
+end;
+}

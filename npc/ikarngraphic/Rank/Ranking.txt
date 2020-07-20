@@ -1,0 +1,286 @@
+///////////////////////////////////////////////
+//                                          //
+//                                          //
+//Tharakan Khumtong                         //
+//////////////////////////////////////////////
+
+-	script	RankingGet#1	-1,{
+	Oninit:
+	
+	// SETITEM MVP รางวัล
+	set $mitemrank1, 59003;  		// รางวัล item 1
+	set $mitemranknum1, 3;  		// จำนวนรางวัล item 1
+	set $mitemrank2, 59003;  		// รางวัล item 2
+	set $mitemranknum2, 2; 		// จำนวนรางวัล item 2
+	set $mitemrank3, 59003;  		// รางวัล item 3
+	set $mitemranknum3, 1;  		// รางวัลจำนวน item 3
+	
+	// SETITEM PVP รางวัล
+	set $pitemrank1, 41003; 		// รางวัล item 1
+	set $pitemranknum1, 150; 		// จำนวนรางวัล item 1
+	set $pitemrank2, 41003;  		// รางวัล item 2
+	set $pitemranknum2, 70;  		// จำนวนรางวัล item 2
+	set $pitemrank3, 41003; 		// รางวัล item 3
+	set $pitemranknum3, 25; 		// จำนวนรางวัล item 3
+	
+	end;
+}
+
+-	script	ResetRank#1	-1,{
+
+      /////////////***เวลารีแรงค์*****/////////
+OnClock0010: //เปลี่ยนเวลา **ตัวอย่ารีตีสามใส่ OnClock0300
+if(gettime(DT_DAYOFWEEK) == Monday ){	//เปลี่ยนวัน Sunday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+goto resetrank;
+}
+	end;
+	resetrank:
+	announce "[ ระบบ ] แรงค์ได้ถูกรีเซ็ตแล้ว ใครจะเป็นที่ 1 ใน Week นี้คนต่อไป....",bc_all;
+	query_sql( "TRUNCATE TABLE `tharakan_mvp` " );
+	query_sql( "TRUNCATE TABLE `tharakan_pvp` " );
+	end;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+-	script	RankingGet#2	-1,{
+OnPCLoginEvent:
+if(gettime(DT_DAYOFWEEK) == Sunday ){	//เปลี่ยนวัน Sunday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+if(.@Count[.@a] == 0){end;}
+query_sql( "SELECT `name`,`Count` FROM `tharakan_mvp` ORDER BY `Count` DESC LIMIT 3",.@Name$,.@Count );
+if( getarraysize( .@Name$ ) ){
+	for( set .@a,0; .@a < getarraysize( .@Name$ ); set .@a,.@a + 1 )
+			if(strcharinfo(0) == .@Name$[.@a]){
+			if(.@a == 0){
+				if(.@get[.@a] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $mitemrank1,$mitemranknum1; }
+			if(.@a == 1){
+				if(.@get[.@a] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $mitemrank2,$mitemranknum2; }
+			if(.@a == 2){
+				if(.@get[.@a] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $mitemrank3,$mitemranknum3;}
+				
+	query_sql( "INSERT INTO `tharakan_mvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`get`='1' ON DUPLICATE KEY UPDATE `get`='1'" );
+
+			}
+
+}
+}
+if(gettime(DT_DAYOFWEEK) == Sunday ){	//เปลี่ยนวัน Saturday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+query_sql( "SELECT `name`,`Count` FROM `tharakan_pvp` ORDER BY `Count` DESC LIMIT 3",.@Names$,.@Counts );
+if( getarraysize( .@Names$ ) ){
+	if(.@Counts[.@b] == 0){end;}
+	for( set .@b,0; .@b < getarraysize( .@Names$ ); set .@b,.@b + 1 )
+			if(strcharinfo(0) == .@Names$[.@b]){
+			
+			if(.@b == 0){
+				if(.@get[.@b] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $pitemrank1,$pitemranknum1; }
+			if(.@b == 1){
+								if(.@get[.@b] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $pitemrank2,$pitemranknum2; }
+			if(.@b == 2){
+								if(.@get[.@b] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $pitemrank3,$pitemranknum3;}
+			
+			
+	query_sql( "INSERT INTO `tharakan_pvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`get`='1' ON DUPLICATE KEY UPDATE `get`='1'" );
+	
+			}
+
+}
+}
+end;
+}
+
+-	script	Rank MvP	-1,{
+
+
+	OnNPCKillEvent:
+//เปลี่ยนวัน Saturday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+if(gettime(DT_DAYOFWEEK) == Sunday ){
+	//dispbottom "แรงค์จะไม่เปลี่ยนแปลงจนกว่าจะถึงเวลา 00.10น. กรุณารีบไปรับรางวัล";
+	end;}	
+if( getmonsterinfo( killedrid,MOB_MVPEXP ) )
+	query_sql( "INSERT INTO `tharakan_mvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`Count`='1' ON DUPLICATE KEY UPDATE `Count`=`Count`+1" );
+end;
+
+		
+	OnPCKilLEvent:
+//เปลี่ยนวัน Saturday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+if(gettime(DT_DAYOFWEEK) == Sunday ){
+	//dispbottom "แรงค์จะไม่เปลี่ยนแปลงจนกว่าจะถึงเวลา 00.10น. กรุณารีบไปรับรางวัล";
+	end;}	
+
+query_sql("SELECT last_ip FROM `login` WHERE account_id = "+killedrid+"", @LastIp$);
+query_sql("SELECT uid FROM `tharakan_pvp` WHERE char_id = "+getcharid(0)+"", @uid$);
+if(killedrid == killer){dispbottom "[ระบบป้องกัน] ฆ่าผู้เล่นคนเดิม หรือ ip เดียวกันจะไม่ได้คะแนนจัดอันดับ";end;}
+if(@uid$ == @LastIp$){dispbottom "[ระบบป้องกัน] ฆ่าผู้เล่นคนเดิม หรือ ip เดียวกันจะไม่ได้คะแนนจัดอันดับ";end;}
+
+query_sql( "INSERT INTO `tharakan_pvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`Count`='1' ON DUPLICATE KEY UPDATE `Count`=`Count`+1" );
+query_sql( "INSERT INTO `tharakan_pvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`uid`='1' ON DUPLICATE KEY UPDATE `uid`='"+@LastIp$+"'");
+ set killer, killedrid;
+set killceck,killceck + 1;
+	end;
+	
+	OnPCDieEvent:
+//เปลี่ยนวัน Saturday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+if(gettime(DT_DAYOFWEEK) == Sunday ){dispbottom "แรงค์จะไม่เปลี่ยนแปลงจนกว่าจะถึงเวลา 00.10น. กรุณารีบไปรับรางวัล";end;}	
+if(killceck == 0){set killceck, 0;end;}
+query_sql( "INSERT INTO `tharakan_pvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`Count`='1' ON DUPLICATE KEY UPDATE `Count`='0'");
+set killceck,killceck - 1;
+	end;
+	
+}
+
+maintown,45,67,4	script	Rank of Week	620,{
+
+	mes "[ ^FF0000TOP MVP 3 อันดับ^000000 ]";
+	mes "-----------------------------";
+	
+query_sql( "SELECT `name`,`Count` FROM `tharakan_mvp` ORDER BY `Count` DESC LIMIT 3",.@Name$,.@Count );
+if( getarraysize( .@Name$ ) ){
+	for( set .@a,0; .@a < getarraysize( .@Name$ ); set .@a,.@a + 1 )
+		
+		if(.@Count[.@a] > 0){mes "^FF0000" +(.@a + 1) +"^000000 : "+.@Name$[.@a]+" ^FF0000MVP^000000 : "+.@Count[.@a]+"";}
+
+}else{
+	mes "ยังไม่มีอันดับตอนนี้";
+}
+	
+		mes "-----------------------------";
+		mes "*^FF0000อันดับจะเริ่มต้นใหม่ทุกวันจันทร์^000000 ";
+		
+	mes "-----------------------------";
+	mes "[ รางวัลแต่ระอันดับ ]";
+	mes "^FF0000อันดับ 1 :^000000  "+getitemname($mitemrank1)+" "+$mitemranknum1+" อัน ";
+	mes "^FF0000อันดับ 2 :^000000  "+getitemname($mitemrank2)+" "+$mitemranknum2+" อัน ";
+	mes "^FF0000อันดับ 3 :^000000  "+getitemname($mitemrank3)+" "+$mitemranknum3+" อัน ";
+	mes "-----------------------------";
+	next;
+	mes "[ ^FF0000TOP PVP 3 อันดับ^000000 ]";
+	mes "-----------------------------";
+	
+query_sql( "SELECT `name`,`Count` FROM `tharakan_pvp` ORDER BY `Count` DESC LIMIT 3",.@Names$,.@Counts );
+if( getarraysize( .@Names$ ) ){
+	for( set .@b,0; .@b < getarraysize( .@Names$ ); set .@b,.@b + 1 )
+		if(.@Counts[.@b] > 0){mes "^FF0000" +(.@b + 1) +"^000000 : "+.@Names$[.@b]+" ^FF0000ฆ่า^000000 : "+.@Counts[.@b]+"";
+	}
+}else{
+	mes "ยังไม่มีอันดับตอนนี้.";
+}
+	mes "-----------------------------";
+	mes "*^FF0000อันดับจะเริ่มต้นใหม่ทุกวันจันทร์^000000 ";
+	mes "-----------------------------";
+	mes "[ รางวัลแต่ระอันดับ ]";
+	mes "^FF0000อันดับ 1 :^000000  "+getitemname($pitemrank1)+" "+$pitemranknum1+" อัน ";
+	mes "^FF0000อันดับ 2 :^000000  "+getitemname($pitemrank2)+" "+$pitemranknum2+" อัน ";
+	mes "^FF0000อันดับ 3 :^000000  "+getitemname($pitemrank3)+" "+$pitemranknum3+" อัน ";
+	mes "-----------------------------";
+	next;
+menu "รับรางวัล MVP",ok01,"รับรางวัล PVP",ok02,"ยกเลิก",no;
+
+ok01:
+if(gettime(DT_DAYOFWEEK) == Sunday ){	//เปลี่ยนวัน Saturday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+
+query_sql( "SELECT `name`,`Count`,`get` FROM `tharakan_mvp` ORDER BY `Count` DESC LIMIT 3",.@Name$,.@Count,.@get );
+if( getarraysize( .@Name$ ) ){
+	for( set .@a,0; .@a < getarraysize( .@Name$ ); set .@a,.@a + 1 )
+			if(strcharinfo(0) == .@Name$[.@a]){
+				
+			if(.@a == 0){
+				if(.@get[.@a] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $mitemrank1,$mitemranknum1; }
+			if(.@a == 1){
+				if(.@get[.@a] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $mitemrank2,$mitemranknum2; }
+			if(.@a == 2){
+				if(.@get[.@a] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $mitemrank3,$mitemranknum3;}
+				
+query_sql( "INSERT INTO `tharakan_mvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`get`='1' ON DUPLICATE KEY UPDATE `get`='1'" );
+
+			}
+
+} else { end; }
+end;
+}
+mes "";
+mes "";
+mes "";
+mes "^FF0000ยังไม่ถึงวันรับรางวัล^000000";
+mes "สามารถมารับได้ใน : วันอาทิตย์(เท่านั้น)";
+end;
+
+
+ok02:
+
+if(gettime(DT_DAYOFWEEK) == Sunday ){	//เปลี่ยนวัน Saturday,Saturday,Monday,Tuesday,Wednesday,Thursday,Friday
+
+	
+query_sql( "SELECT `name`,`Count`,`get` FROM `tharakan_pvp` ORDER BY `Count` DESC LIMIT 3",.@Names$,.@Counts,.@get );
+if( getarraysize( .@Names$ ) ){
+
+	for( set .@b,0; .@b < getarraysize( .@Names$ ); set .@b,.@b + 1 )
+			if(strcharinfo(0) == .@Names$[.@b]){
+				
+			if(.@b == 0){
+				if(.@get[.@b] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $pitemrank1,$pitemranknum1; }
+			if(.@b == 1){
+								if(.@get[.@b] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $pitemrank2,$pitemranknum2; }
+			if(.@b == 2){
+								if(.@get[.@b] == 1){
+					mes "^FF0000 รับของรางวัลไปแล้ว^000000.";end;
+				}
+				getitem $pitemrank3,$pitemranknum3;}
+			
+			
+query_sql( "INSERT INTO `tharakan_pvp` SET `char_id`='"+getcharid(0)+"',`name`='"+strcharinfo(0)+"',`get`='1' ON DUPLICATE KEY UPDATE `get`='1'" );
+	
+			}
+
+
+} else { end; }
+end;
+}
+mes "";
+mes "";
+mes "";
+mes "^FF0000ยังไม่ถึงวันรับรางวัล^000000";
+mes "สามารถมารับได้ใน : วันอาทิตย์(เท่านั้น)";
+end;
+
+
+
+no:
+
+end;
+
+OnInit:
+waitingroom "Ranking of Week",0;
+}

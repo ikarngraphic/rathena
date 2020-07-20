@@ -1,0 +1,92 @@
+//Zeny to Cash Exchanger NPC by teamcars of teamcars1broglobal@blogspot.com
+maintown,111,80,4	script	Cash Exchange	894,{
+
+	set .@zeny, 200000;
+
+	mes "[แลกแคช]";
+	mes "Exchange Rate:";
+ 	mes "^FF00001^000000) ^0000FF"+.@zeny+"^000000 zeny = ^00FF001^000000 Cash";
+ 	mes "^FF00002^000000) ^0000FF5^000000 TCG Card = ^00FF001^000000 Cash";
+	//mes "Exchange^0000FF10^000000 cash points get free ^00FF001^000000 Kafra point";
+	next;
+	disable_items;
+	menu "- ^FF0000แลกแคชด้วย Zeny^000000",Le0,
+	"- ^FF0000แลกแคชด้วย TCG Card^000000",LeK_1,
+	//"^0000FFCheck Cash Point",Edis2,
+	"- ^00FF00ยกเลิก^000000",LeEnd;
+	
+	Le0:
+		set @bEavail,(Zeny/.@zeny);
+		mes "[แลกแคช]";
+		mes "^0000FF" + strcharinfo(0) + "^000000";
+		mes "สามารถแลกได้สูงสุด : ^0000FF" + @bEavail + "^000000";
+		mes "คุณต้องการแลกเท่าไหร่?";
+		input @ExchangeEC;
+		set @ttalEC,(@ExchangeEC*.@zeny);
+		if (Zeny < @ttalEC) goto ENeedZenys;
+		next;
+		mes "[แลกแคช]";
+		mes "ต้องใช้เงิน ^0000FF" + @ttalEC + "^000000 zeny!";
+		next;
+		mes "ต้องการแลกหรือไม่?";
+		menu "- ^FF3355แลกแคชเลย",LEyes,"^000000- ยกเลิกก่อน^000000",LEno;
+		LEyes:
+		set #CASHPOINTS,#CASHPOINTS+@ExchangeEC;
+		//set #KAFRAPOINTS,#KAFRAPOINTS+(#CASHPOINTS/10);
+		set Zeny,zeny-@ttalEC;
+		Set @CEx,#CASHPOINTS;
+		//set #totalExchange,#totalExchange+@ExchangeEC;
+		goto Edis2;
+		end;
+		LEno:
+		mes "ขอบคุณ ^0000FF" + strcharinfo(0) + "^000000! ที่ใชบริการ";
+		mes "แล้วเจอกัน!";
+		end;
+		
+	LeK_1:
+
+		set .@i, countitem(7227);
+		set @bEavailTCG,(countitem(7227)/5);
+		
+		mes "คุณมี TCG : ^0055FF"+.@i+" ea^000000";
+			if (!.@i) { mes "คุณไม่มี TCG Card!! ไม่สามารถเข้าระบบได้"; end; }
+		mes "ฉันสามารถแลก ^FF00005 TCG^000000 กับ ^FF00001 Cash Points^000000.";
+			next;
+			
+		if(select(" - แลกไอเท็ม: - ^777777ยกลิก^000000")==2) end;
+		mes "[TCG แลกแคช]";
+		mes "คุณต้องการแลกเปลี่ยนเท่าไหร่?";
+		mes "^000088(กรุณากรอกจำนวนแคช)^000000";
+		mes "สามารถแลกได้สูงสุด : ^0000FF" + @bEavailTCG + "^000000";
+		
+		next;
+		input .@j;
+		mes "[TCG แลกแคช]";
+		
+			set .@j2,.@j*5;
+			if (.@j2 < 1 || .@j2 > countitem(7227)) { mes "จำนวนที่ไม่ถูกต้อง"; end; }
+		
+		mes "คุณแน่ใจหรือว่าต้องการแลก ^0055FF"+.@j2+" Cash^000000";
+		if(select(" - ใช่: - ^777777ยกลิก^000000")==2) end;
+		mes " ";
+		delitem 7227, .@j2;
+		set #CASHPOINTS, #CASHPOINTS+.@j;
+		mes "คุณมีแคช : "+#CASHPOINTS+" Points";
+		end;
+		
+	Edis2:
+		Set @CEx,#CASHPOINTS;
+		mes "มี Cash : ^0000FF" + @CEx + "^000000 P";
+		end;
+		ENeedZenys:
+			mes "ขอโทดด้วย, คุณไม่มี Zeny หรือ Zeny ไม่เพียงพอ";
+			end;
+	LeEnd:
+		end;	
+
+
+	OnInit:
+	waitingroom "Cash point Exchange",0;
+	end;
+
+}

@@ -1,0 +1,212 @@
+maintown,44,19,6	script	Siren Master#S	10121,{
+
+	mes "[ Siren Master ]";
+	mes "พวกเราอาศัยอยู้ใต้ท้องทะเลลึก";
+	mes "อยู่กันอย่างสงบดีๆ อยู่แล้วแท้ๆ";
+	next;
+	menu 
+	"^009933•^000000 ต้องการ ["+getmapusers("kraken_m01")+"/8]",-,
+	"^FF0000•^000000 รายละเอียด",Info,
+	"^FF0000•^000000 ยกเลิก",Cancel;
+
+
+	if($boss_kk == 1) goto L_go;
+	if (BaseLevel < 170){
+	mes "[ Main Commandant ]";
+	mes "ต้องมีเลเวลมากกว่า 170";
+	mes "ถึงจะเข้าได้นะครับ";
+	end;
+	}
+	goto L_eror;
+	
+
+L_go:	
+	if(getmapusers("kraken_m01")>=8) goto toomany;
+	announce "[Siren Master] : "+strcharinfo(0)+" ได้เข้าร่วม Siren Dungeon แล้ว !!",0,0xAAEC37; 
+	percentheal 100,100;
+	warp "kraken_m01",210,8;
+	end;
+
+
+L_eror:
+	mes "ยังไม่ถึงเวลากิจกรรมครับ";
+	mes "กิจกรรมจะเปิดทุก 3 ชม. ครับ";
+	mes "02.36 05.36 08.36 11.36";
+	mes "14.36 17.36 20.36 23.36";
+	end;
+
+Info: 
+	mes "[ Siren Master ]";
+	mes "กำจัดมอนเตอร์ในแต่ละด่านครับ";
+	mes "เมื่อคบกำหนดท่านจะมีสิทธ์";
+	mes "เปิดกล่องสมบัติครับ";
+	end;
+
+
+Cancel:
+	mes "ยินดีให้บริการครับ";
+	end;
+
+OnInit:
+	set $boss_kk,0;
+	disablenpc "w1kk";	disablenpc "w2kk";
+	disablenpc "itkk2";
+	//waitingroom "# Siren Dungeon(Easy)",0; 
+end;
+}
+
+kraken_m01,209,15,0	warp	kraken_1-1::w1kk	1,1,kraken_m01,209,20
+kraken_m01,210,60,0	warp	kraken_1-2::w2kk	1,1,kraken_m01,210,65
+
+-	script	CheckMac2	-1,{
+
+OnTimer10000:
+	
+	//areawarp "kraken_m01",0,0,999,999,"invek",153,157;
+
+	if (getmapusers("kraken_m01") == 0) {
+	disablenpc "w1kk";	disablenpc "w2kk";
+	disablenpc "itkk2";
+	announce "[Siren Master] : กิจกรรมได้จบลงแล้ว !!",0,0xAAEC37; 
+	set $status_kk,1;
+	killmonsterall "kraken_m01";
+	end;
+}
+
+initnpctimer;
+end;
+}
+
+
+
+-	script	HiddenNpcMac2	-1,{
+end;
+
+OnClock0236:
+OnClock0536:
+OnClock0836:
+OnClock1136:
+OnClock1436:
+OnClock1736:
+OnClock2036:
+OnClock2336:
+
+//OnClock0136:
+//OnClock0436:
+//OnClock0736:
+//OnClock1036:
+//OnClock1336:
+//OnClock1636:
+//OnClock1936:
+//OnClock2236:
+
+
+L_DevilStart:
+areawarp "kraken_m01",0,0,999,999,"maintown",86,57;
+announce "[Siren Master] : Siren Dungeon กำลังจะเปิดใน 3 นาที !!",0,0xAAEC37;
+initnpctimer;
+set $boss_kk,1;
+set $mob_kk,0;
+set $mob_kk2,0;
+set $mob_kk3,0;
+set $mob_kk4,0;
+set $status_kk,0;
+killmonsterall "kraken_m01";
+end;
+
+OnTimer60000:
+announce "[Siren Master] : Siren Dungeon กำลังจะเปิดใน 2 นาที !!",0,0xAAEC37;
+end;
+
+OnTimer120000:
+announce "[Siren Master] : Siren Dungeon กำลังจะเปิดใน 1 นาที !!",0,0xAAEC37;
+end;
+
+OnTimer180000:
+announce "[Siren Master] : Siren Dungeon ได้เริ่มต้นขึ้นแล้ว !!",0,0xAAEC37;
+initnpctimer "CheckMac2";
+sleep 3000;
+mapannounce "kraken_m01","Siren : เอาหละท่านผู้กล้า ในเมื่อท่านมาแล้วก็จงเข้ามา",bc_map,0xAAEC37;
+sleep 3000;
+mapannounce "kraken_m01","Siren : เปิดประตูได้",bc_map,0xAAEC37;
+enablenpc "w1kk";
+set $boss_kk,0;
+set $mob_kk,36;
+set $mob_kk2,2;
+set $mob_kk3,1;
+set $mob_kk4,1;
+areamonster "kraken_m01",186,57,234,43,"Aku",31015,10,"HiddenNpcMac2::Ondevildead";
+areamonster "kraken_m01",187,121,234,113,"Ale",31016,10,"HiddenNpcMac2::Ondevildead";
+areamonster "kraken_m01",230,111,236,62,"Aku",31015,8,"HiddenNpcMac2::Ondevildead";
+areamonster "kraken_m01",183,111,188,62,"Ale",31016,8,"HiddenNpcMac2::Ondevildead";
+end;
+
+Ondevildead:
+if ($status_kk == 1) end;
+if($mob_kk > 0){ set $mob_kk,$mob_kk - 1; }
+if($mob_kk == 0){ mapannounce "kraken_m01","Little : ไม่นะ !! ลูกน้องของข้าาาาาาาาาาาา~",bc_map,0xAAEC37;
+sleep 3000;
+mapannounce "kraken_m01","Little : จงเข้ามาเจอกับข้าซะ",bc_map,0xAAEC37;
+sleep 3000;
+mapannounce "kraken_m01","Little : ถ้าพร้อมแล้วเข้ามาเลย",bc_map,0xAAEC37;
+enablenpc "w2kk";
+areamonster "kraken_m01",209,89,213,82,"Little",31017,2,"HiddenNpcMac2::Ondevildead2";
+end;	}
+
+
+Ondevildead2:
+if ($status_kk == 1) end;
+if($mob_kk == 0){	set $mob_kk2,$mob_kk2 - 1;	}
+if($mob_kk2 == 0){ mapannounce "kraken_m01","Pirate Ghost : ใครกันที่กล้าบุกเข้ามาถึงที่นี่",bc_map,0xAAEC37;
+sleep 3000;
+mapannounce "kraken_m01","Pirate Ghost : เจ้าชั่งโอหังยิ่งนัก !!",bc_map,0xAAEC37;
+sleep 3000;
+mapannounce "kraken_m01","Pirate Ghost : ข้าจะไม่ปล่อยเจ้าออกไปแน่",bc_map,0xAAEC37;
+areamonster "kraken_m01",209,89,213,82,"Pirate Ghost",31018,1,"HiddenNpcMac2::Ondevildead3";
+end;	}
+
+
+Ondevildead3:
+if ($status_kk == 1) end;
+if($mob_kk2 == 0){	set $mob_kk3,$mob_kk3 - 1;	}
+if($mob_kk3 == 0){ mapannounce "kraken_m01","Siren : เจ้าทำให้เราโกรธมากแล้วนะ !!",bc_map,0xAAEC37;
+sleep 3000;
+if($mob_kk3 == 0){ mapannounce "kraken_m01","Siren : ทำไมเจ้าต้องทำร้ายพี่น้องของข้า ~ !!",bc_map,0xAAEC37; }
+sleep 3000;
+if($mob_kk3 == 0){ mapannounce "kraken_m01","Siren : แล้วเราจะได้เห็นดีกัน !!",bc_map,0xAAEC37; }
+areamonster "kraken_m01",209,89,213,82,"Siren",31019,1,"HiddenNpcMac2::Ondevildead4";
+end;	}
+
+Ondevildead4:
+if ($status_kk == 1) end;
+if($mob_kk3 == 0){	set $mob_kk4,$mob_kk4 - 1;	}
+if($mob_kk4 == 0){ mapannounce "kraken_m01","Siren : ม่ายยยย !! เมืองของเรา แตกสลายแล้วงั้นรึ",bc_map,0xAAEC37;
+sleep 1000;
+mapannounce "kraken_m01","Siren : ม่ายยยย !! เมืองของเรา แตกสลายแล้วงั้นรึ",bc_map,0xAAEC37;
+set $mob_kk,0;
+enablenpc "itkk2";
+stopnpctimer;
+killmonsterall "kraken_m01";
+end;	}
+
+}
+
+
+kraken_m01,209,91,4	script	WarpPort::itkk2	10007,{
+if(rand(1,100) < 80){ getitem 49529,rand(2,4);	} else { getitem 49529,rand(5,8); }
+if(rand(1,100) > 80){ getitem 49530,rand(2,3);	} else {  }
+//set zeny,zeny + 4500000;
+//dispbottom " - คุณได้รับได้รับ 4.5 M Zeny";
+//getexp 20000000,0;
+warp "maintown",86,57;
+end;
+}
+
+kraken_m01	mapflag	nowarp
+kraken_m01	mapflag	nowarpto
+kraken_m01	mapflag	noteleport
+kraken_m01	mapflag	nosave	SavePoint
+kraken_m01	mapflag	nomemo
+kraken_m01	mapflag	pvp	off
+kraken_m01	mapflag	gvg	off
+kraken_m01	mapflag	nobranch

@@ -241,14 +241,14 @@ uint64 AchievementDatabase::parseBodyNode(const YAML::Node &node){
 
 		// TODO: not camel case
 		if( this->nodeExists( rewardNode, "ItemID" ) ){
-			uint32 itemId;
+			uint16 itemId;
 
-			if( !this->asUInt32( rewardNode, "ItemID", itemId ) ){
+			if( !this->asUInt16( rewardNode, "ItemID", itemId ) ){
 				return 0;
 			}
 
 			if( !itemdb_exists( itemId ) ){
-				this->invalidWarning( rewardNode["ItemID"], "Unknown item with ID %u.\n", itemId );
+				this->invalidWarning( rewardNode["ItemID"], "Unknown item with ID %hu.\n", itemId );
 				return 0;
 			}
 

@@ -1,0 +1,560 @@
+//	== Challenge Glastheim Enchants ==
+//	        == ikarngraphic ==
+
+glast_01,138,291,4	script	OSC0005#GHCL	562,{
+
+	disable_items;
+
+	set .name$,"[ Challenge Enchant ]";
+
+
+//============= Script ==============
+
+mes .name$;
+mes "ยินดีให้บริการตลอดเวลาค่ะ";
+mes "กรุณาเลือกสิ่งที่ท่านต้องการ";
+mes "[2]^FF0000Temporal Fragment^000000 : 10";
+mes "[3]^FF0000Temporal Fragment^000000 : 20";
+mes "หรือ ไอเท็ม ^FF0000Temporal Gemstone^000000 : 2";
+mes "[4]^FF0000Temporal Spell^000000 : 2";
+mes "ลบออฟครั้งละ ^FF000050^000000 Cash";
+
+
+		if (checkweight(1201,1) == 0) {
+			mes "ช่องเก็บของเต็ม";
+			end;
+				}
+		if (MaxWeight - Weight < 10000) {
+			mes "น้ำหนักเกิน";
+			end;
+				}
+next;
+menu "เสริมพลัง, Circlet",EN_EQ,"ลบออฟ, Circlet",DL_EQ,"อัพเกรด, Circlet",UP_EQ,"ข้ายังไม่ต้องการออฟตอนนี้",END_EQ;
+
+//=================================================================================================================================
+
+//	Main function
+
+//=================================================================================================================================
+EN_EQ:
+					mes .name$;
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "เลือกไอเท็มที่เจ้าต้องการจะออฟ ?";
+	setarray .@indices[1], EQI_HEAD_TOP;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+					
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะออฟ ^000099" + getequipname(.@id) + "^000000";
+
+			if (.@id == EQI_HEAD_TOP) goto encmid;
+
+//=================================================================================================================================
+
+//        Selection
+	encmid:
+
+//=================================================================================================================================
+
+	//================================
+		EW_OK:
+	//================================
+
+	//ตรวจสอบไอเท็ม
+	if (getequipid(EQI_HEAD_TOP) == 19474)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19475)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19476)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19477)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19478)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19479)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19480)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19481)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19482)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19483)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19484)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19485)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19486)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19487)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19488)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19489)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19490)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19491)  goto enc2;
+	if (getequipid(EQI_HEAD_TOP) == 19492)  goto enc2;
+
+	mes .name$;
+	mes "ไอเท็มชิ้นนี้ไม่สามารถออฟได้นิ !!";
+	mes "กลับมาหาเมื่อเจ้ามีของที่ต้องการ";
+	end;
+
+	enc2:
+
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	if(@card4 != 0){
+		next;
+			mes .name$;
+			mes "ออฟของเจ้าครบแล้วนิ กรุณารีเซทก่อน";
+			end;
+	}
+
+if(@card2 == 0){
+
+	.item1 = 25867;
+	.itemea = 10;
+	goto passea;
+
+	}
+if(@card3 == 0){
+
+	next;
+	mes .name$;
+	mes "เลือกใช้ไอเท็มชนิดไหน";
+	menu "Temporal Fragment(20)",-,"Temporal Gemstone(2)",SCL2EN;
+
+	.item1 = 25867;
+	.itemea = 20;
+	.secl3 = 1;
+	goto passea;
+
+
+	SCL2EN:
+	.item1 = 25865;
+	.itemea = 2;
+	.secl3 = 2;
+	goto passea;
+
+	}
+if(@card4 == 0){
+
+	.item1 = 25866;
+	.itemea = 2;
+	goto passea;
+
+	}
+
+//====================================================================
+
+	passea:
+
+	if(countitem(.item1) < .itemea){
+					mes .name$;
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					end;
+				}
+
+	if (Zeny < .cost){ //money check
+					mes .name$;
+					mes "เจ้ามีเงินไม่พอ.";
+					end;
+				}
+					mes .name$;
+					mes "ออฟเลยไหม ?";
+				if (select( "^000099เอาเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes "[Costume Enchanter]";
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+	if(@card3 != 0) goto mode2;
+
+					specialeffect2 EF_REPAIRWEAPON;
+					progressbar "0x00ff00",1;
+					set Zeny,Zeny-.cost;
+					delitem .item1,20;
+					//delitem .item2,30;
+
+	if(@card2 == 0){
+
+	set .@enc, callfunc("F_Rand",4700,4701,4702,4703,4730,4731,4732,4733,4740,4741,4742,4743,4710,4711,4712,4713,4720,4721,4722,4723,4750,4751,4752,4753);
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, .@enc, @card3, @card4;
+	equip .@part;
+	next;
+		mes .name$;
+		mes "เสริมพลังไอเท็ม";
+		mes .ench$;
+		end;
+	
+	}
+
+	if(@card3 == 0){
+
+	if(.secl3 == 1){
+	set .@enc, callfunc("F_Rand",4700,4701,4702,4703,4730,4731,4732,4733,4740,4741,4742,4743,4710,4711,4712,4713,4720,4721,4722,4723,4750,4751,4752,4753,29672,29673,29674,29675,29676,29677,29678,29679,29680,29681,29682,29683,29684,29685,29686,29687,29688,29689);
+	} else {
+
+	set .@enc, callfunc("F_Rand",29673,29674,29675,29676,29677,29678,29679,29680,29681,29682,29683,29684,29685,29686,29687,29688,29689);
+
+	}
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, .@enc, @card4;
+	equip .@part;
+	next;
+		mes .name$;
+		mes "เสริมพลังไอเท็ม";
+		mes .ench$;
+		end;
+	
+	} 
+
+	mode2:
+	next;
+		mes .name$;
+		mes "ต้องการทำออฟแบบไหน";	
+
+	if(@card4 == 0){
+
+	set .@enc, callfunc("F_Rand",4818,4817,4816,4843,4832,4833,4834,4835,4869,4872,4873,4881,4815,4814,4813,4812,29061,29071,29081,29091,29101,29111);
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, .@enc;
+	equip .@part;
+	set .ench$,"Enchant : ^000088สำเร็จ^000000";
+	next;	
+
+		mes .name$;
+		mes "เสริมพลังไอเท็ม";
+		mes .ench$;
+		end;	
+	}
+end;
+
+//===============================================================================
+
+//         Upgrade Enchant
+	UP_EQ:
+
+//===============================================================================
+
+
+					mes .name$;
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "เลือกไอเท็มที่เจ้าต้องการจะออฟ ?";
+	setarray .@indices[1], EQI_HEAD_TOP;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+					
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะออฟ ^000099" + getequipname(.@id) + "^000000";
+
+			if (.@id == EQI_HEAD_TOP) goto uphat4;
+
+//=================================================================================================================================
+
+//        Selection
+	uphat4:
+
+//=================================================================================================================================
+
+
+	//ตรวจสอบไอเท็ม
+	if (getequipid(EQI_HEAD_TOP) == 19474)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19475)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19476)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19477)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19478)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19479)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19480)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19481)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19482)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19483)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19484)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19485)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19486)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19487)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19488)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19489)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19490)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19491)  goto upg4;
+	if (getequipid(EQI_HEAD_TOP) == 19492)  goto upg4;
+
+	upg4:
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	if(@card4 == 0){
+		next;
+			mes .name$;
+			mes "ยังไม่สามารถเพิ่มความสามารถได้";
+			end;
+	}
+/*
+	setarray .ids10[1],29061,29062,29063,29064,29065,29066,29067,29068,29069,29071,29072,29073,29074,29075,29076,29077,29078,29079,29081,29082,29083,29084,29085,29086,29087,29088,29089,29091,29092,29093,29094,29095,29096,29097,29098,29099,29101,29102,29103,29104,29105,29106,29107,29108,29109,29111,29112,29113,29114,29115,29116,29117,29118,29119;
+
+	set .@j, 10;
+
+	for (set .@c, 0; .@c < getarraysize(getd(".ids" + .@j)); set .@c, .@c + 1)
+	if (isequipped(getd(".ids" + .@j + "[" + .@c +"]")) == 1)
+		set .@s, .@c;
+
+if (!.@s) {
+	if (atoi(getequipname(.@part)) == -1){
+		mes .name$;
+		mes "ท่านไม่ได้สวมใส่อุปกรณ์";
+		end;
+	} else {
+		mes " ";
+		mes .name$;	
+		mes "  ^000088" + getitemname(@card4)+"^000000";	
+		mes "Enchant: ^FF0000ไม่สามารถอัพเกรดได้^000000";
+	end;
+	}
+end;
+}*/
+
+
+	// Mattle 1 ~ 10
+	if(@card4 == 29061){ set .@enc,29062; set .@usedenc,4;  goto FINIUPG; }
+	if(@card4 == 29062){ set .@enc,29063; set .@usedenc,6;  goto FINIUPG; }
+	if(@card4 == 29063){ set .@enc,29064; set .@usedenc,8;	goto FINIUPG; }
+	if(@card4 == 29064){ set .@enc,29065; set .@usedenc,10; goto FINIUPG; }
+	if(@card4 == 29065){ set .@enc,29066; set .@usedenc,12; goto FINIUPG; }
+	if(@card4 == 29066){ set .@enc,29067; set .@usedenc,16; goto FINIUPG; }
+	if(@card4 == 29067){ set .@enc,29068; set .@usedenc,20; goto FINIUPG; }
+	if(@card4 == 29068){ set .@enc,29069; set .@usedenc,28; goto FINIUPG; }
+	if(@card4 == 29069){ set .@enc,29070; set .@usedenc,40; goto FINIUPG; }
+
+	// Magic Essence 1~10
+	if(@card4 == 29071){ set .@enc,29072; set .@usedenc,4;   goto FINIUPG; }
+	if(@card4 == 29072){ set .@enc,29073; set .@usedenc,6;   goto FINIUPG; }
+	if(@card4 == 29073){ set .@enc,29074; set .@usedenc,8;   goto FINIUPG; }
+	if(@card4 == 29074){ set .@enc,29075; set .@usedenc,10;  goto FINIUPG; }
+	if(@card4 == 29075){ set .@enc,29076; set .@usedenc,12;  goto FINIUPG; }
+	if(@card4 == 29076){ set .@enc,29077; set .@usedenc,16;  goto FINIUPG; }
+	if(@card4 == 29077){ set .@enc,29078; set .@usedenc,20;  goto FINIUPG; }
+	if(@card4 == 29078){ set .@enc,29079; set .@usedenc,28;  goto FINIUPG; }
+	if(@card4 == 29079){ set .@enc,29080; set .@usedenc,40;  goto FINIUPG; }
+
+	// Acute 1~10
+	if(@card4 == 29081){ set .@enc,29082; set .@usedenc,4;   goto FINIUPG; }
+	if(@card4 == 29082){ set .@enc,29083; set .@usedenc,6;   goto FINIUPG; }
+	if(@card4 == 29083){ set .@enc,29084; set .@usedenc,8;   goto FINIUPG; }
+	if(@card4 == 29084){ set .@enc,29085; set .@usedenc,10;  goto FINIUPG; }
+	if(@card4 == 29085){ set .@enc,29086; set .@usedenc,12;  goto FINIUPG; }
+	if(@card4 == 29086){ set .@enc,29087; set .@usedenc,16;  goto FINIUPG; }
+	if(@card4 == 29087){ set .@enc,29088; set .@usedenc,20;  goto FINIUPG; }
+	if(@card4 == 29088){ set .@enc,29089; set .@usedenc,28;  goto FINIUPG; }
+	if(@card4 == 29089){ set .@enc,29090; set .@usedenc,40;  goto FINIUPG; }
+
+	// Master Archer 1~10
+	if(@card4 == 29091){ set .@enc,29092; set .@usedenc,4;   goto FINIUPG; }
+	if(@card4 == 29092){ set .@enc,29093; set .@usedenc,6;   goto FINIUPG; }
+	if(@card4 == 29093){ set .@enc,29094; set .@usedenc,8;   goto FINIUPG; }
+	if(@card4 == 29094){ set .@enc,29095; set .@usedenc,10;  goto FINIUPG; }
+	if(@card4 == 29095){ set .@enc,29096; set .@usedenc,12;  goto FINIUPG; }
+	if(@card4 == 29096){ set .@enc,29097; set .@usedenc,16;  goto FINIUPG; }
+	if(@card4 == 29097){ set .@enc,29098; set .@usedenc,20;  goto FINIUPG; }
+	if(@card4 == 29098){ set .@enc,29099; set .@usedenc,28;  goto FINIUPG; }
+	if(@card4 == 29099){ set .@enc,29100; set .@usedenc,40;  goto FINIUPG; }
+
+	// Adamantine 1~10
+	if(@card4 == 29101){ set .@enc,29102; set .@usedenc,4;  goto FINIUPG; }
+	if(@card4 == 29102){ set .@enc,29103; set .@usedenc,6;  goto FINIUPG; }
+	if(@card4 == 29103){ set .@enc,29104; set .@usedenc,8;  goto FINIUPG; }
+	if(@card4 == 29104){ set .@enc,29105; set .@usedenc,10; goto FINIUPG; }
+	if(@card4 == 29105){ set .@enc,29106; set .@usedenc,12; goto FINIUPG; }
+	if(@card4 == 29106){ set .@enc,29107; set .@usedenc,16; goto FINIUPG; }
+	if(@card4 == 29107){ set .@enc,29108; set .@usedenc,20; goto FINIUPG; }
+	if(@card4 == 29108){ set .@enc,29109; set .@usedenc,28; goto FINIUPG; }
+	if(@card4 == 29109){ set .@enc,29110; set .@usedenc,40; goto FINIUPG; }
+
+	// Affection 1~10
+	if(@card4 == 29111){ set .@enc,29112; set .@usedenc,4;   goto FINIUPG; }
+	if(@card4 == 29112){ set .@enc,29113; set .@usedenc,6;   goto FINIUPG; }
+	if(@card4 == 29113){ set .@enc,29114; set .@usedenc,8;   goto FINIUPG; }
+	if(@card4 == 29114){ set .@enc,29115; set .@usedenc,10;  goto FINIUPG; }
+	if(@card4 == 29115){ set .@enc,29116; set .@usedenc,12;  goto FINIUPG; }
+	if(@card4 == 29116){ set .@enc,29117; set .@usedenc,16;  goto FINIUPG; }
+	if(@card4 == 29117){ set .@enc,29118; set .@usedenc,20;  goto FINIUPG; }
+	if(@card4 == 29118){ set .@enc,29119; set .@usedenc,28;  goto FINIUPG; }
+	if(@card4 == 29119){ set .@enc,29120; set .@usedenc,40;  goto FINIUPG; }
+		
+		mes " ";	
+		mes "  ^000088" + getitemname(@card4)+"^000000";	
+		mes "Enchant: ^FF0000ไม่สามารถอัพเกรดได้^000000";
+	end;
+
+//===============================================================================
+
+	FINIUPG:
+
+	set @card5,@card4+1;
+	set .itemupg,25866;
+
+		next;
+		mes .name$;	
+		mes "  ^000088" + getitemname(@card4)+"^000000";	
+		mes "Enchant: ^000088สามารถอัพเกรดได้^000000";
+		mes " ^000088" + getitemname(@card5)+"^000000";
+		mes " ";
+		mes "ใช้ ^000088"+getitemname(.itemupg)+" : "+.@usedenc+"";
+		mes "ต้องการเสริมความสามารถหรือไม่";
+	next;
+		menu "ยืนยันที่จะทำต่อ",-,"ข้ายังไม่ต้องการออฟตอนนี้",END_EQ;
+
+	set .itemupg,25866;
+
+	if(countitem(.itemupg) < .@usedenc){
+					mes .name$;
+					mes "  ^000088" + getitemname(.itemupg)+"^000000";
+					mes "เจ้ามีวัตถุดิบไม่พอใช้งาน";
+					end;
+				}
+
+	delitem .itemupg,.@usedenc;
+
+	specialeffect2 154;
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, .@enc;
+	equip .@part;
+	next;
+		mes .name$;
+		mes "เสริมพลังไอเท็ม";
+		mes "^000088 สำเร็จ^000000";
+		end;
+
+
+
+
+
+
+}
+	
+
+//===============================================================================
+
+//         Del Option
+	DL_EQ:
+
+//===============================================================================
+					mes .name$;
+					mes "ต้องสวมใส่ก่อนทุกครั้งที่จะออฟ.";
+					mes "ต้องใช้ ^FF000050 Cash^000000 ในการลบ";
+					mes "เลือกไอเท็มที่จะลบออฟ";
+
+	setarray .@indices[1], EQI_HAND_R;
+		for( set .@i,1; .@i <= 1; set .@i,.@i+1 ) {
+				if( getequipisequiped(.@indices[.@i]) )
+	set .@menu$, .@menu$ + F_getpositionname(.@indices[.@i]) + "-[" + getequipname(.@indices[.@i]) + "]";
+	set .@menu$, .@menu$ + ":";
+			}
+	set .@id, .@indices[ select(.@menu$) ];
+	set .@part, getequipid(.@id);
+
+				// anti-hack
+				if (callfunc("F_IsEquipIDHack", .@id, .@part))
+					end;
+
+				if (#CASHPOINTS < 50){ //money check
+					mes .name$;
+					mes "เจ้ามี ^FF0000Cash^000000 ไม่พอ.";
+					end;
+				}
+
+				if (countitem(.@part) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	next;
+					mes .name$;
+					mes "เจ้าได้เลือกที่จะลบออฟ ^000099" + getequipname(.@id) + "^000000";
+					next;
+				if (select( "^000099เอาเลย ลบเลย^000000.", "ยังก่อน." ) == 2) {
+					next;
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;
+				}	
+
+	progressbar "0x007000", 1;
+
+	set #CASHPOINTS, #CASHPOINTS - 50;
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+
+	@card1 = getequipcardid(.@id,0);
+	@card2 = getequipcardid(.@id,1);
+	@card3 = getequipcardid(.@id,2);
+	@card4 = getequipcardid(.@id,3);
+	.@ref = getequiprefinerycnt(.@id);
+
+	delitem2 .@part, 1, 1, .@ref, 0, @card1, @card2, @card3, @card4;
+	getitem2 .@part, 1, 1, .@ref, 0, @card1, 0, 0, 0;
+	equip .@part;
+
+	mes .name$;
+	mes "การลบไอเท็มเสร็จสมบรูณ์";
+
+//===============================================================================
+//         Out Option	
+	END_EQ:
+
+//===============================================================================
+					mes .name$;
+					mes "ข้าเชื่อในการตัดสินใจของเจ้า.";
+					mes "อยากออฟให้มาหาข้าน่ะ.";
+					end;	
+end;
+
+}
+
+//===============================================================================
+//	Tread Temporal Circlet use [Sealed Temporal Circlet] : 5ea.
+//===============================================================================
+glast_01,140,291,4	itemshop	HUGINN2001#GHCL1	564,25864,19474:5,19475:5,19476:5,19477:5,19478:5,19479:5,19480:5,19481:5,19482:5,19483:5,19484:5,19485:5,19486:5,19487:5,19488:5,19489:5,19490:5,19491:5,19492:5;
+

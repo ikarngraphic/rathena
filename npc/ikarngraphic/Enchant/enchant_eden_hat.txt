@@ -1,0 +1,79 @@
+moc_para01,52,35,4	script	enchant eden hat	4_M_RUSMAN1,{
+	mes "[Michael]";
+	mes "เจ้ามาทำอะไรที่นี้ ?";
+	next;
+	switch (select("ขอรายละเอียด:ที่นี้ที่ไหน ?:ออฟหมวก")) {
+		mes "[Michael]";
+	case 1:
+			mes "ข้าสามารถออฟหมวก Eden Group Hat ได้.";
+			mes "โดยเจ้าสามารถเลือกค่าสเตตัสที่ต้องการได้.";
+			mes "ซึ่งข้าจะออฟให้เจ้าหนึ่งค่าเท่านั้น.";
+			mes "ที่สำคัญคือข้าทำให้ฟรีๆ.";
+		close;
+	case 2:
+		mes "พวกเรามีอาวุธ, ชุดเกราะและอื่นๆที่สร้างโดย Eden Group ที่นี้.";
+		mes "พวกเรามีพนักงานเก่งๆเยอะ.";
+		next;
+		mes "[Michael]";
+		mes "เพื่อเตรียมพร้อมรับมือกับเหตุฉุกเฉิน, พวกเราต้องมีของให้พอกับกองทัพที่เหลือ.";
+		mes "แย่แน่... ถ้ามันเกิดเหตุการณ์เหมือนกับ Morroc.";
+		next;
+		mes "[Michael]";
+		mes "เพราะฉะนั้นเจ้าดูรอบๆได้แต่อย่าแตะต้องล่ะ.";
+		next;
+		mes "[Michael]";
+		mes "ถ้าข้าทำผิดพลาด, Reke ต่อยข้าแน่ๆ.";
+		close;
+	case 3:
+		mes "เจ้าหมายถึงอัพเกรดของ, ใช่ไหม ?";
+		mes "ข้าสามารถออฟหมวก Eden Group Hat ได้.";
+		next;
+		mes "[Michael]";
+			if (countitem(5583) > 0) {
+				disable_items;
+				mes "เจ้าต้องการค่าสเตตัสไหนละ ?";
+				next;
+				switch (select("Upgrade STR:Upgrade AGI:Upgrade VIT:Upgrade INT:Upgrade DEX:Upgrade LUK:ไม่อ่ะ.")) {
+				case 1: callsub S_Upgrade,"STR",4701;
+				case 2: callsub S_Upgrade,"AGI",4731;
+				case 3: callsub S_Upgrade,"VIT",4741;
+				case 4: callsub S_Upgrade,"INT",4711;
+				case 5: callsub S_Upgrade,"DEX",4721;
+				case 6: callsub S_Upgrade,"LUK",4751;
+				case 7:
+					mes "[Michael]";
+					mes "ทำไมละ ? มันมีของที่ดีกว่ารึ.";
+					mes "ไม่มีทาง, ข้าทำให้เจ้าได้แค่หมวก.";
+					next;
+					mes "[Michael]";
+					mes "เจ้าต้องการอะไรจากข้ากันแน่.";
+					close;
+				}
+			}
+			mes "หมวกที่ต้องการออฟอยู่ไหน.";
+			mes "เจ้าต้องดูให้ดีว่าเอามันมาด้วย, เข้าใจ ?";
+			close;
+	}
+
+S_Upgrade:
+	mes "[Michael]";
+	mes "เข้าใจแล้ว.";
+	mes "ข้าจะ ^4d4dffอัพเกรด "+ getarg(0) +"^000000 ให้.";
+	mes "เจ้าแน่ใจไหม ?";
+	next;
+	switch (select("ได้ เอาเลย.:ไม่รอก่อน.")) {
+	case 1:
+		mes "[Michael]";
+		mes "ข้าจะเริ่มอัพเกรดล่ะน่ะ.";
+		next;
+		mes "[Michael]";
+		mes "เรียบร้อย.";
+		delitem 5583,1;
+		getitem2 5583,1,1,0,0,0,0,0,getarg(1);
+		close;
+	case 2:
+		mes "[Michael]";
+		mes "เจ้าไม่อยากอัพเกรดหรอ ?";
+		close;
+	}
+}

@@ -68,11 +68,6 @@ struct Sql* Sql_Malloc(void);
 
 
 
-/// Retrieves the last error number.
-unsigned int Sql_GetError( Sql* self );
-
-
-
 /// Establishes a connection.
 ///
 /// @return SQL_SUCCESS or SQL_ERROR

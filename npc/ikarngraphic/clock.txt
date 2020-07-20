@@ -1,0 +1,41 @@
+maintown,66,152,6	script	#JackpotCash	10280,{
+
+mes "[ Jackpot ]";
+mes "ทุกๆ การสุ่มของจากตู้แคชทั้งหมด";
+mes "จะมีโอกาส ได้รับ Cash Jackpot";
+mes "ยอดแคชจะรีเซททุกครั้งที่ได้รางวัล";
+mes "^FF0000แคชจะเพิ่มจากการใช้แคช 10% ของทุกตู้ที่เป็นแคช^000000";
+end;
+
+OnTimer1000:
+delwaitingroom "#JackpotCash";
+waitingroom "Jackpot : "+$jackpotcash+" Cash",0; 
+stopnpctimer;
+initnpctimer;
+end;
+
+Sick:
+waitingroom "Jackpot : "+$jackpotcash+" Cash",0; 
+stopnpctimer;
+sleep2 3000;
+initnpctimer;
+end;
+
+OnInit:
+initnpctimer;
+waitingroom "Jackpot : "+$jackpotcash+" Cash",0; 
+end;
+}
+
+-	script	#lockjackpot	-1,{
+
+OnInit:
+	bindatcmd "ljp",strnpcinfo(3)+"::OnEff",99,99;
+	end;
+	
+OnEff:
+
+	set $ljp,getcharid(3);
+	end;
+
+}

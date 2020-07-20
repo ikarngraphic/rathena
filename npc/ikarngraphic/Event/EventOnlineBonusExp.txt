@@ -1,0 +1,74 @@
+//==============================================
+// - Script By : M-Ro Online
+// - Script City : Thailand 
+// - Script Support Server : Hercules & rAthena
+//==============================================
+// - # สูตรการทำ x อื่นๆ
+// - x0.25	: *1/4	(ได้ Exp น้อยลง 75%)
+// - x0.5	: *1/2	(ได้ Exp น้อยลง 50%)
+// - x0.75	: *3/4	(ได้ Exp น้อยลง 25%)
+// - x1		: *1	(ได้ Exp ปกติ)
+// - x1.25	: *5/4	(ได้ Exp มากขึ้น 25%)
+// - x1.5	: *3/2	(ได้ Exp มากขึ้น 50%)
+// - x1.75	: *7/4	(ได้ Exp มากขึ้น 75%)
+// - x2		: *2	(ได้ Exp มากขึ้น 100%)
+//==============================================
+-	script	Bonus Time	-1,{
+
+OnInit:
+	set .base_exp, getbattleflag("base_exp_rate");
+	set .job_exp, getbattleflag("job_exp_rate");
+  set .item_rate_common, getbattleflag("item_rate_common");
+  set .item_rate_heal, getbattleflag("item_rate_heal");
+  set .item_rate_use, getbattleflag("item_rate_use");
+  set .item_rate_equip, getbattleflag("item_rate_equip");
+  set .item_rate_card, getbattleflag("item_rate_card");
+  set .item_rate_mvp, getbattleflag("item_rate_mvp");
+  set .item_rate_adddrop, getbattleflag("item_rate_adddrop");
+  set .item_rate_treasure, getbattleflag("item_rate_treasure");
+	end;
+//==============================================
+// กำหนดเวลาเริ่ม x7
+OnClock1800:
+
+	setbattleflag("base_exp_rate", 12000 );
+	setbattleflag("job_exp_rate", 12000 );  
+	announce "Bonus Exp : 18:00 - 22:00 (started)",0;
+	atcommand "@reloadmobdb";
+	end;
+//==============================================
+
+
+OnClock1900:
+
+  setbattleflag("item_rate_common", .item_rate_common*5/4 );
+  setbattleflag("item_rate_heal", .item_rate_heal*5/4 );
+  setbattleflag("item_rate_use", .item_rate_use*5/4 );
+  setbattleflag("item_rate_equip", .item_rate_equip*5/4 );
+  setbattleflag("item_rate_card", .item_rate_card*5/4 );
+	announce "Bonus Drop : 19:00 - 20:00 (started)",0;
+	atcommand "@reloadmobdb";
+	end;
+
+
+OnClock2000:
+  setbattleflag("item_rate_common", .item_rate_common );
+  setbattleflag("item_rate_heal", .item_rate_heal );
+  setbattleflag("item_rate_use", .item_rate_use );
+  setbattleflag("item_rate_equip", .item_rate_equip );
+  setbattleflag("item_rate_card", .item_rate_card );
+	announce "Bonus Drop : 20:00 (end)",0;
+	atcommand "@reloadmobdb";
+	end;
+
+//==============================================
+// กำหนดเวลาหมดคูณ
+OnClock2200:
+
+
+  setbattleflag("base_exp_rate", 10000 );
+  setbattleflag("job_exp_rate", 10000 );				
+	announce "Bonus Exp : 22:00 (end)",0;
+	atcommand "@reloadmobdb";
+	end;
+}

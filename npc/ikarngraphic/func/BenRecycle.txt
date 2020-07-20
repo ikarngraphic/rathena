@@ -1,0 +1,148 @@
+// https://irowiki.org/wiki/Ben_Recycle
+
+-	shop	ben_recycle_shop#iro	-1,909:-1
+
+mooc,195,125,4	script	Ben Recycle#iro	4_F_KAFRA1,{
+	function func_GetItemName;
+	function func_AddItem;
+	
+	mes "Hi, I can convert certain equipment into ores.";
+	mes "Would you give it a try?";
+	next;
+	if (select("Convert", "Information") == 2) {
+		for (.@i = 0; .@i < .size; .@i++) {
+			mes func_GetItemName(.nameid[.@i]);
+			if (.amount1[.@i] > 0 && .nameid1[.@i] > 0)
+				mes " ~ "+F_InsertComma(.amount1[.@i])+"x "+func_GetItemName(.nameid1[.@i]);
+			if (.amount2[.@i] > 0 && .nameid2[.@i] > 0)
+				mes " ~ "+F_InsertComma(.amount2[.@i])+"x "+func_GetItemName(.nameid2[.@i]);
+			mes " ";
+		}
+		next;
+	}
+	if (.shop_npc$ != "") {
+		mes "Place all the equipments you wish to convert into ores.";
+		close2;
+		npcshopattach .shop_npc$, 1;
+		callshop .shop_npc$, 2;
+		end;
+	}
+	else {
+		for (.@i = 0; .@i < .size; .@i++)
+			.@menu$ = .@menu$ + func_GetItemName(.nameid[.@i]) + ":";
+		.@i = select(.@menu$) - 1;
+		if (countitem(.nameid[.@i])) {
+			delitem .nameid[.@i], 1;
+			mes "Exchanged "+func_GetItemName(.nameid[.@i])+":";
+			if (.nameid1[.@i] > 0 && .amount1[.@i] > 0) {
+				mes " ~ "+F_InsertComma(.amount1[.@i])+"x "+func_GetItemName(.nameid1[.@i]);
+				getitem .nameid1[.@i], .amount1[.@i];
+			}
+			if (.nameid2[.@i] > 0 && .amount2[.@i] > 0) {
+				mes " ~ "+F_InsertComma(.amount2[.@i])+"x "+func_GetItemName(.nameid2[.@i]);
+				getitem .nameid2[.@i], .amount2[.@i];
+			}
+		}
+		else {
+			mes "you dont have "+func_GetItemName(.nameid[.@i]);
+		}
+	}
+	close;
+	
+	OnSellItem:
+		.@sold_nameid_size = getarraysize(@sold_nameid);
+		for (.@i = 0; .@i < .@sold_nameid_size && !.@fail; .@i++) {
+			for (.@x = 0; .@x < .size && !.@fail; .@x++) {
+				if (.nameid[.@x] == @sold_nameid[.@i]) {
+					if (!checkweight(.nameid1[.@x], .amount1[.@x])) {
+						mes "Exchange stopped, you're overweight.";
+						.@fail++;
+					}
+					else {
+						.@total++;
+						delitem2(@sold_nameid[.@i], @sold_quantity[.@i], @sold_identify[.@i], @sold_refine[.@i], @sold_attribute[.@i], @sold_card1[.@i], @sold_card2[.@i], @sold_card3[.@i], @sold_card4[.@i]);
+						mes "Exchanged "+func_GetItemName(.nameid[.@x])+":";
+						if (.nameid1[.@x] > 0 && .amount1[.@x] > 0) {
+							mes " ~ "+F_InsertComma(.amount1[.@x])+"x "+func_GetItemName(.nameid1[.@x]);
+							getitem .nameid1[.@x], .amount1[.@x];
+						}
+						if (.nameid2[.@x] > 0 && .amount2[.@x] > 0) {
+							mes " ~ "+F_InsertComma(.amount2[.@x])+"x "+func_GetItemName(.nameid2[.@x]);
+							getitem .nameid2[.@x], .amount2[.@x];
+						}
+						mes " ";
+					}
+				}
+			}
+		}
+		mes "Exchanged "+.@total+" item(s).";
+		close2;
+		npcshopattach .shop_npc$, 0;
+		end;
+	
+	function	func_GetItemName	{
+		.@itemid = getarg(0, 0);
+		.@itemslot = getitemslots(.@itemid);
+		.@item_name$ = getitemname(.@itemid);
+		.@itemtype = getiteminfo(.@itemid, 2);
+		if (.@itemslot || .@itemtype == IT_WEAPON || .@itemtype == IT_ARMOR)
+			.@item_name$ = .@item_name$ + " ["+.@itemslot+"]";
+		return .@item_name$;
+	}
+	
+	function	func_AddItem	{
+		.@nameid = getarg(0, 0);
+		.@nameid1 = getarg(1, 0);
+		.@amount1 = getarg(2, 0);
+		.@nameid2 = getarg(3, 0);
+		.@amount2 = getarg(4, 0);
+		
+		if (.@nameid > 0 
+			&& .@nameid1 > 0 && .@amount1 > 0
+			&& .@nameid2 > 0 && .@amount2 > 0 
+		) {
+			.nameid[.size] = .@nameid;
+			.nameid1[.size] = .@nameid1;
+			.amount1[.size] = .@amount1;
+			.nameid2[.size] = .@nameid2;
+			.amount2[.size] = .@amount2;
+			.size++;
+		}
+	}
+	
+	OnInit:
+		// if enable shop UI (only work if items can sell to npc shop)
+		.shop_npc$ = "ben_recycle_shop#iro";
+		
+		// func_AddItem(<equipment_id>, <item1>, <amount1>, <item2>, <amount2>);
+		
+		// WEAPONS
+		func_AddItem(1421, 757, 4, 756, 4);
+		func_AddItem(1822, 757, 2, 756, 2);
+		func_AddItem(1625, 757, 5, 756, 5);
+		func_AddItem(1819, 757, 3, 756, 3);
+		func_AddItem(1269, 757, 4, 756, 4);
+		func_AddItem(1142, 757, 3, 756, 3);
+		func_AddItem(1624, 757, 5, 756, 5);
+		func_AddItem(1626, 757, 5, 756, 5);
+		func_AddItem(13404, 757, 5, 756, 5);
+		func_AddItem(13027, 757, 6, 756, 6);
+		func_AddItem(1821, 757, 1, 756, 1);
+		func_AddItem(1268, 757, 5, 756, 5);
+		
+		// ARMORS
+		func_AddItem(2422, 757, 3, 756, 3);
+		func_AddItem(2104, 757, 1, 756, 1);
+		func_AddItem(5124, 757, 2, 756, 1);
+		func_AddItem(2406, 757, 3, 756, 3);
+		func_AddItem(5122, 757, 2, 756, 1);
+		func_AddItem(5126, 757, 2, 756, 1);
+		func_AddItem(2504, 757, 2, 756, 1);
+		func_AddItem(2353, 757, 15, 756, 15);
+		func_AddItem(2514, 757, 6, 756, 6);
+		func_AddItem(2404, 757, 2, 756, 1);
+		func_AddItem(2315, 757, 2, 756, 1);
+		func_AddItem(2102, 757, 2, 756, 1);
+		func_AddItem(2114, 757, 2, 756, 2);
+		end;
+}

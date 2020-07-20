@@ -1,0 +1,75 @@
+mooc,123,87,4	script	เติมเงิน TRUE MONEY	717,{
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "ระบบเติมเงิน Truemoney ผ่าน Server";
+mes "ท่านต้องการทำอะไร ?";
+next;
+menu 
+"^FF0000•^000000 เชคบัตรที่เติม",CHACKT,
+"^FF0000•^000000 เติมเงิน",ADDT,
+"^FF0000•^000000 ออก",ET;
+
+
+CHACKT:
+query_sql "SELECT `card_id` , `password` , `amount` , `status` , `added_time` FROM `truemoney` WHERE `user_id` = '"+getcharid(3)+"'",.@cardtrueid$,.@cardtrue$,.@truebath$,.@truestats$,.@trueaddtime$;
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "ยินดีต้อนรับค่ะ ท่านต้องการตรวจสอบ";
+mes "บัตรรหัสหมายเลขใดค่ะ";
+set @menu$,"";
+set @menu$,"^FF0000•^000000 " + .@cardtrue$[0] + "";
+for( set @a,1; @a < getarraysize(.@cardtrue$); set @a,@a + 1) {
+//mes "บัตรล่าสุด : ^FF0000"+.@cardtrue$+"^000000";
+set @menu$,@menu$ + ":^FF0000•^000000 " + .@cardtrue$[@a] + "";	}
+				next;
+if((prompt(@menu$) - getarraysize(.@cardtrue$)) > 0) {	end;	} else {
+set @m,@menu - 1;
+//mes "^FF0000 "+.@cardtrueid$[@m]+"^000000";
+
+query_sql "SELECT `amount` , `status` FROM `truemoney` WHERE `password` = '"+.@cardtrue$[@m]+"'",@bathT,@statsT;
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "หมายเลขบัตร : ^FF0000 "+.@cardtrue$[@m]+"^000000";
+sleep2 100;
+if(@bathT == 0 ){ mes "บัตรราคา : ^000088อยู่ในสถานะรอการตรวจสอบ^000000"; }	sleep2 100;
+if(@bathT == 1 ){ mes "บัตรราคา : ^DF013A50^000000 บาท"; }	sleep2 100;
+if(@bathT == 2 ){ mes "บัตรราคา : ^DF013A90^000000 บาท"; }	sleep2 100;
+if(@bathT == 3 ){ mes "บัตรราคา : ^DF013A150^000000 บาท"; }	sleep2 100;
+if(@bathT == 4 ){ mes "บัตรราคา : ^DF013A300^000000 บาท"; }	sleep2 100;
+if(@bathT == 5 ){ mes "บัตรราคา : ^DF013A500^000000 บาท"; }	sleep2 100;
+if(@bathT == 6 ){ mes "บัตรราคา : ^DF013A1,000^000000 บาท"; }	sleep2 100;
+if(@bathT == 7 ){ mes "บัตรราคา : ^DF013A50,000^000000 บาท"; }	sleep2 100;
+if (@statsT == 0) { mes "สถาณะ : ^000088กำลังตรวจสอบ^000000"; }	sleep2 100;
+if (@statsT == 1) { mes "สถาณะ : ^86B404สำเร็จ^FF0000(ยังไม่ได้รับ Cash)^000000"; }	sleep2 100;
+if (@statsT == 2) { mes "สถาณะ : ^86B404ได้รับ Cash แล้ว^000000"; }	sleep2 100;
+if (@statsT == 3) { mes "สถาณะ : ^86B404บัตรถูกใช้งานไปแล้ว^000000"; }	sleep2 100;
+if (@statsT == 4) { mes "สถาณะ : ^86B404รหัสบัตรไม่ถูกต้อง^000000"; }	sleep2 100;
+mes "เวลา : ^FF0000 "+.@trueaddtime$[@m]+"^000000";
+end;	}
+
+
+
+
+ADDT:
+mes "[   ^FF0000"+strnpcinfo(1)+"^000000   ]";
+mes "โปรดใส่ระหัสบัตรเติมเงิน TrueMoney";
+input @truemoneycard$;
+next;
+mes "รหัสบัตร : ^FA8258"+@truemoneycard$+"^000000 ";
+mes "ยืนยันการเติมเงิน ใช่หรือไม่";
+menu "^FF0000•^000000 ใช่",YT,
+"^FF0000•^000000 ไม่",ET;
+
+YT:
+query_sql "SELECT `userid` , `sex` , `email` , `logincount` , `last_ip` FROM `login` WHERE `account_id` = '"+getcharid(3)+"'",@user$,@sex$,@email$,@login,@last_ip$;
+query_sql "SELECT `account_id` FROM `login` WHERE `userid` = '"+@user$+"'",@acctrue;
+
+// TRUE 1000 BATH (TEST SERVER)
+query_sql "INSERT INTO `truemoney` (`password`,`user_id`,`amount`,`status`,`added_time`) VALUES ('"+@truemoneycard$+"','"+@acctrue+"','6','1','"+gettimestr("%y/%m/%d",19)+" "+gettimestr("%H:%M",19)+"')";
+
+// MAIN OPEN
+//query_sql "INSERT INTO `truemoney` (`password`,`user_id`,`status`,`added_time`) VALUES ('"+@truemoneycard$+"','"+@acctrue+"','0','"+gettimestr("%y/%m/%d",19)+" "+gettimestr("%H:%M:%S",19)+"')";
+
+	end;
+
+
+ET:	end;
+
+}

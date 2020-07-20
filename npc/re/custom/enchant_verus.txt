@@ -1,0 +1,613 @@
+//===== rAthena Script ======================================= 
+//= Mora Enchants
+//===== By: ================================================== 
+//= Euphy
+//===== Current Version: ===================================== 
+//= 1.2
+//===== Compatible With: ===================================== 
+//= rAthena Project
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Adds enchantments to various items in exchange for
+//= Mora coins.
+//===== Additional Comments: ================================= 
+//= 1.0 First Version. [Euphy]
+//= 1.1 Optimized. [Euphy]
+//= 1.1a Bug fixes. [Lemongrass]
+//= 1.2 Bug fixes (bugreport:7930) [DeadlySilence]
+//============================================================ 
+
+// = ดัดแปลงเป็น Verus Enchants.  [Jumbo]
+// = แต่งคำพูด.  [Jumbo]
+//============================================================
+verus04,69,114,6	script	Charleston#verus3	10053,{
+    if (checkweight(1201,1) == 0) {
+        mes "กระเป๋าเต็ม,ไปลดของก่อน.";
+        close;
+    }
+    if (MaxWeight - Weight < 1000) {
+        mes "กระเป๋ามีน้ำหนักมากเกินไป ? ไปลดน้ำหนักก่อนค่อยมาใหม่.";
+        close;
+    }
+    disable_items;
+    mes "[Charleston]";
+    mes "พวกเราคือนักประดิษฐ์ของโรงงานแห่งนี้ ถ้าเจ้าพบชิ้นส่วนที่แข็งแกร่งให้มาหาข้า.";
+    next;
+    switch(select("ขอรายละเอียดเพิ่มเติม","ออฟของ","ลบออฟ")){
+        case 1:
+            mes "[Charleston]";
+            mes "ข้าต้องการเงิน 1 แสน zeny และ 1 Charleston Component ในการออฟหรือลบออฟ.";
+            next;
+            mes "[Charleston]";
+            mes "นอกจากนี้, ถ้า^ff0000เลเวลตีบวกคือ +9^000000หรือมากกว่า,เจ้าสามารถได้ออฟที่แข็งแกร่งกว่าปกติ.";
+            next;
+            mes "[Charleston]";
+            mes "ข้าจะบอกกับเจ้าว่ามันจะไม่กระทบต่อค่าตีบวกและการ์ดของเจ้า, โปรดวางใจได้.";
+            end;
+        case 2:
+		set @verus_enchant_select,1;
+		break;
+		case 3:
+		set @verus_enchant_select,2;
+		break;
+	}
+	if (Zeny < 100000 || countitem(6752) == 0) {
+		mes "[Charleston]";
+		mes "ขอโทษด้วย, เจ้ามีวัตถุดิบหรือเงินไม่พอ.";
+		close;
+	}
+	mes "[Charleston]";
+    mes "เลือกของสวมใส่ที่ต้องการจะทำ.";
+	next;
+	set .@i, select("ยกเลิก:1. ชุดเกราะ:2. ผ้าคลุม:3. รองเท้า:4. ประดับ")-2;
+	if (.@i == -1) {
+		mes "[Charleston]";
+		mes "ตรวจดูว่าสวมใส่ไอเท็มมาด้วยหรือเปล่า.";
+		close;
+	}	
+	setarray .@parts[0], EQI_ARMOR, EQI_GARMENT, EQI_SHOES, EQI_ACC_L;
+	set .@part, .@parts[.@i];
+	if (!getequipisequiped(.@part)) {
+		mes "[Charleston]";
+		mes "ตรวจดูว่าสวมใส่ไอเท็มมาด้วยหรือเปล่า.";
+		close;
+	}
+	set .@equip_id, getequipid(.@part);
+	set @verus_equip_part, .@part;
+	
+	//callsub L_Socket,<enchant type>,<enchant plus>,<bonus enchant type>,<4-x enchants possible>;
+	// Enchant types:
+	//   [1]Normal [2]Superior Upgrade Shoes [3]Superior Agi Shoes [4]Normal Garment [5]Regular Garment [6]Superior Garment [7]Normal Armor [8]Speed [9]Attack [10]Defense [11]Normal Acc Upgrade [12]Normal Acc Dex
+	switch(.@part) {
+	case EQI_ARMOR:
+		switch(.@equip_id) {
+			case 15110: callsub L_Socket,7,8,10,1;  //Supplement Part Str
+			case 15343: callsub L_Socket,7,8,10,1;  //Supplement Part Str []
+			case 15111: callsub L_Socket,7,8,9,1; //Upgrade Part - Plate
+			case 15344: callsub L_Socket,7,8,9,1; //Upgrade Part - Plate []
+		}
+		break;
+	case EQI_GARMENT:
+		switch(.@equip_id) {
+			case 20732: callsub L_Socket,4,5,6,1; //Supplement Part Con
+			case 20733: callsub L_Socket,4,5,6,1; //Upgrade Part - Engine
+		}
+		break;
+	case EQI_SHOES:
+		switch(.@equip_id) {
+			case 22043: callsub L_Socket,1,1,3,1;  //Supplement Part Agi
+			case 22044: callsub L_Socket,1,1,2,1; //Upgrade Part - Booster
+		}
+		break;
+	case EQI_ACC_L:
+		switch(.@equip_id) {
+			case 2995: callsub L_Socket,12,0,0,2; //Supplement Part Dex
+			case 2996: callsub L_Socket,11,0,0,2; //Upgrade Part - Gun Barrel
+		}
+		break;
+	}
+	mes "[Charleston]";
+	mes "เจ้าต้องการที่จะอัพเกรด...";
+	mes "^990099"+getequipname(.@part)+"^000000??";
+	set @verus_equip_part,0;
+	close;
+		
+L_Socket:
+	set .@select, @verus_enchant_select;
+	set .@enchant_type, getarg(0);
+	.@enchant_plus = getarg(1);
+	.@bonus_enchant = getarg(2);
+	.@allowed_slot = getarg(3);
+	set .@part, @verus_equip_part;
+	set .@equip_id, getequipid(.@part);
+	set .@equip_name$, getitemname(.@equip_id);
+	set .@equip_refine, getequiprefinerycnt(.@part);
+	setarray .@equip_card[0], getequipcardid(.@part,0),getequipcardid(.@part,1),getequipcardid(.@part,2),getequipcardid(.@part,3);
+	set @verus_equip_part,0;
+	set @verus_enchant_select,0;
+		
+	if (.@select == 1) {
+		// ถ้าบวก 9 หรือสูงกว่า จะปลดล็อคออฟพิเศษ.
+		if (.@equip_refine >= 9 && .@bonus_enchant > 0) {
+			if (.@enchant_type < 1 || .@enchant_plus < 1 || .@enchant_type > 12 || .@enchant_plus > 12 || .@bonus_enchant > 12) {
+				mes "[Charleston]";
+				mes "มีปัญหาเกิดขึ้น.";
+				close;
+			}
+			setarray .@enchant_type$[1],"Regular Shoes Type","Superior Upgrade Shoes Type","Superior Upgrade Shoes Type 1","Normal Garment Type","Regular Upgrade Garment Type","Superior Upgrade Garment Type","Normal Armor Type","Speed Type","Attack Type","Defense Type","Normal Acc Type","Normal Acc Type 1";
+			mes "[Charleston]";
+			mes "เลือกชนิดออฟที่เจ้าต้องการ ?";
+			next;
+			switch(select(.@enchant_type$[.@enchant_plus],.@enchant_type$[.@bonus_enchant])) {
+			case 1:
+				set .@enchant_type, .@enchant_plus;
+				break;
+			case 2:
+				set .@enchant_type, .@bonus_enchant;
+				break;
+			}
+		}
+		if (.@equip_card[3] == 0 && .@allowed_slot < 4) {
+			set .@slot,4;
+			mes "[Charleston]";
+			mes "มันเป็นการออฟครั้งแรก. ออฟติดแน่นอน. เจ้าอยากจะออฟเลยไหม ?";
+		} else if (.@equip_card[2] == 0 && .@allowed_slot < 3) {
+			set .@slot,3;
+			mes "[Charleston]";
+			mes "ในการออฟครั้งที่สอง. ข้ามีโอกาสที่จะออฟไม่ติด. เจ้าพร้อมจะทำต่อไหม ?";
+		} else if (.@equip_card[1] == 0 && .@allowed_slot < 2) {
+			set .@slot,2;
+			mes "[Charleston]";
+			mes "ในการออฟครั้งที่สาม. ข้าจะให้ค่าที่ดีที่สุดแต่จำไว้ว่า, ^990000มีโอกาสที่ไอเท็มจะถูกทำลายหรือออฟก่อนหน้านั้นหายไป^000000. ต่อไหม ?";
+		} else {
+			mes "[Charleston]";
+			mes "ไอเท็มของเจ้าถึงจุดสูงสุดแล้ว. ไม่สามารถออฟได้อีกแล้ว.";
+			close;
+		}
+		next;
+		if(select("ข้าจะกลับมาภายหลัง.:ดำเนินการต่อเลย!") == 1) {
+			mes "[Charleston]";
+			mes "ถ้าเปลี่ยนใจให้กลับมาหาข้า.";
+			close;
+		}
+		switch(.@enchant_type) {
+		case 1: //Normal
+			     if (.@slot == 4) set .@i, rand(1,810);
+			else if (.@slot == 3) set .@i, rand(1,860);
+			else if (.@slot == 2) set .@i, rand(501,890);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4750; //Luck1
+			
+			else if (.@i < 551) set .@enchant,4701; //Strength2
+			else if (.@i < 601) set .@enchant,4731; //Agility2
+			else if (.@i < 651) set .@enchant,4741; //Vitality2
+			else if (.@i < 701) set .@enchant,4721; //Dexterity2
+			else if (.@i < 751) set .@enchant,4751; //Luck2
+			
+			else if (.@i < 781) set .@enchant,4815; //Spell1
+			else if (.@i < 811) set .@enchant,4869; //Attack_Delay_1
+			
+			else if (.@i < 861) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 2: //Superior Upgrade Shoes
+			     if (.@slot == 4) set .@i, rand(1,1060);
+			else if (.@slot == 3) set .@i, rand(501,1110);
+			else if (.@slot == 2) set .@i, rand(851,1140);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4750; //Luck1
+			
+			else if (.@i < 551) set .@enchant,4701; //Strength2
+			else if (.@i < 601) set .@enchant,4731; //Agility2
+			else if (.@i < 651) set .@enchant,4741; //Vitality2
+			else if (.@i < 701) set .@enchant,4721; //Dexterity2
+			else if (.@i < 751) set .@enchant,4751; //Luck2
+			else if (.@i < 801) set .@enchant,4815; //Spell1
+			else if (.@i < 851) set .@enchant,4869; //Attack_Delay_1
+			
+			else if (.@i < 881) set .@enchant,4702; //Strength3
+			else if (.@i < 911) set .@enchant,4732; //Agility3
+			else if (.@i < 941) set .@enchant,4742; //Vitality3
+			else if (.@i < 971) set .@enchant,4722; //Dexterity3
+			else if (.@i < 1001) set .@enchant,4752; //Luck3
+			else if (.@i < 1031) set .@enchant,4814; //Spell2
+			else if (.@i < 1061) set .@enchant,4872; //Attack_Delay_2
+
+			else if (.@i < 1111) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 3: //Superior Agi Shoes
+			     if (.@slot == 4) set .@i, rand(1,980);
+			else if (.@slot == 3) set .@i, rand(501,1030);
+			else if (.@slot == 2) set .@i, rand(801,1060);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4750; //Luck1
+			
+			else if (.@i < 551) set .@enchant,4701; //Strength2
+			else if (.@i < 601) set .@enchant,4731; //Agility2
+			else if (.@i < 651) set .@enchant,4741; //Vitality2
+			else if (.@i < 701) set .@enchant,4721; //Dexterity2
+			else if (.@i < 751) set .@enchant,4751; //Luck2
+			else if (.@i < 801) set .@enchant,4869; //Attack_Delay_1
+			
+			else if (.@i < 831) set .@enchant,4702; //Strength3
+			else if (.@i < 861) set .@enchant,4732; //Agility3
+			else if (.@i < 891) set .@enchant,4742; //Vitality3
+			else if (.@i < 921) set .@enchant,4722; //Dexterity3
+			else if (.@i < 951) set .@enchant,4752; //Luck3
+			else if (.@i < 981) set .@enchant,4872; //Attack_Delay_2
+			
+			else if (.@i < 1031) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 4: //Normal Garment
+			     if (.@slot == 4) set .@i, rand(1,780);
+			else if (.@slot == 3) set .@i, rand(1,830);
+			else if (.@slot == 2) set .@i, rand(501,860);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4750; //Luck1
+			
+			else if (.@i < 551) set .@enchant,4701; //Strength2
+			else if (.@i < 601) set .@enchant,4731; //Agility2
+			else if (.@i < 651) set .@enchant,4741; //Vitality2
+			else if (.@i < 701) set .@enchant,4721; //Dexterity2
+			else if (.@i < 751) set .@enchant,4751; //Luck2
+			
+			else if (.@i < 781) set .@enchant,4832; //Expert_Archer1
+			
+			else if (.@i < 831) set .@enchant,0;
+
+			else set .@enchant,9;
+			break;
+		case 5: //Regular Garment
+			     if (.@slot == 4) set .@i, rand(1,930);
+			else if (.@slot == 3) set .@i, rand(1,980);
+			else if (.@slot == 2) set .@i, rand(601,1010);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4750; //Luck1
+			else if (.@i < 601) set .@enchant,4710; //Inteligence1
+			
+			else if (.@i < 651) set .@enchant,4701; //Strength2
+			else if (.@i < 701) set .@enchant,4731; //Agility2
+			else if (.@i < 751) set .@enchant,4741; //Vitality2
+			else if (.@i < 801) set .@enchant,4721; //Dexterity2
+			else if (.@i < 851) set .@enchant,4751; //Luck2
+			else if (.@i < 901) set .@enchant,4711; //Inteligence2
+			
+			else if (.@i < 931) set .@enchant,4832; //Expert_Archer1
+			
+			else if (.@i < 981) set .@enchant,0;
+
+			else set .@enchant,9;
+			break;
+		case 6: //Superior Garment
+			     if (.@slot == 4) set .@i, rand(1,1260);
+			else if (.@slot == 3) set .@i, rand(701,1310);
+			else if (.@slot == 2) set .@i, rand(1051,1340);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4750; //Luck1
+			else if (.@i < 601) set .@enchant,4710; //Inteligence1
+			else if (.@i < 701) set .@enchant,4832; //Expert_Archer1
+			
+			else if (.@i < 751) set .@enchant,4701; //Strength2
+			else if (.@i < 801) set .@enchant,4731; //Agility2
+			else if (.@i < 851) set .@enchant,4741; //Vitality2
+			else if (.@i < 901) set .@enchant,4721; //Dexterity2
+			else if (.@i < 951) set .@enchant,4751; //Luck2
+			else if (.@i < 1001) set .@enchant,4711; //Inteligence2
+			else if (.@i < 1051) set .@enchant,4833; //Expert_Archer2
+			
+			else if (.@i < 1081) set .@enchant,4702; //Strength3
+			else if (.@i < 1111) set .@enchant,4732; //Agility3
+			else if (.@i < 1141) set .@enchant,4742; //Vitality3
+			else if (.@i < 1171) set .@enchant,4722; //Dexterity3
+			else if (.@i < 1201) set .@enchant,4752; //Luck3
+			else if (.@i < 1231) set .@enchant,4712; //Inteligence3
+			else if (.@i < 1261) set .@enchant,4834; //Expert_Archer3
+
+			else if (.@i < 1311) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 7: //Normal Armor
+			     if (.@slot == 4) set .@i, rand(1,680);
+			else if (.@slot == 3) set .@i, rand(1,730);
+			else if (.@slot == 2) set .@i, rand(401,760);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4730; //Agility1
+			else if (.@i < 201) set .@enchant,4750; //Luck1
+			else if (.@i < 301) set .@enchant,4859; //Evasion1
+			else if (.@i < 401) set .@enchant,4860; //Evasion3
+			
+			else if (.@i < 451) set .@enchant,4731; //Agility2
+			else if (.@i < 501) set .@enchant,4751; //Luck2
+			else if (.@i < 551) set .@enchant,4762; //Flee6
+			else if (.@i < 601) set .@enchant,4763; //Flee12
+			else if (.@i < 651) set .@enchant,4869; //Attack_Delay_1
+			
+			else if (.@i < 681) set .@enchant,4872; //Attack_Delay_2
+			
+			else if (.@i < 731) set .@enchant,0;
+
+			else set .@enchant,9;
+			break;
+		case 8: //Speed
+			     if (.@slot == 4) set .@i, rand(1,680);
+			else if (.@slot == 3) set .@i, rand(1,730);
+			else if (.@slot == 2) set .@i, rand(401,760);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4730; //Agility1
+			else if (.@i < 201) set .@enchant,4750; //Luck1
+			else if (.@i < 301) set .@enchant,4859; //Evasion1
+			else if (.@i < 401) set .@enchant,4860; //Evasion3
+			
+			else if (.@i < 451) set .@enchant,4731; //Agility2
+			else if (.@i < 501) set .@enchant,4751; //Luck2
+			else if (.@i < 551) set .@enchant,4762; //Flee6
+			else if (.@i < 601) set .@enchant,4763; //Flee12
+			else if (.@i < 651) set .@enchant,4869; //Attack_Delay_1
+			
+			else if (.@i < 681) set .@enchant,4872; //Attack_Delay_2
+			
+			else if (.@i < 731) set .@enchant,0;
+
+			else set .@enchant,9;
+			break;
+		case 9: //Attack
+			     if (.@slot == 4) set .@i, rand(1,720);
+			else if (.@slot == 3) set .@i, rand(401,770);
+			else if (.@slot == 2) set .@i, rand(601,800);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4720; //Dexterity1
+			else if (.@i < 301) set .@enchant,4832; //Expert_Archer1
+			else if (.@i < 401) set .@enchant,4811; //Fighting_Spirit1
+			
+			else if (.@i < 451) set .@enchant,4701; //Strength2
+			else if (.@i < 501) set .@enchant,4721; //Dexterity2
+			else if (.@i < 551) set .@enchant,4833; //Expert_Archer2
+			else if (.@i < 601) set .@enchant,4810; //Fighting_Spirit2
+			
+			else if (.@i < 631) set .@enchant,4702; //Strength3
+			else if (.@i < 661) set .@enchant,4722; //Dexterity3
+			else if (.@i < 691) set .@enchant,4834; //Expert_Archer3
+			else if (.@i < 721) set .@enchant,4809; //Fighting_Spirit3
+
+			else if (.@i < 771) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 10: //Defense
+			     if (.@slot == 4) set .@i, rand(1,720);
+			else if (.@slot == 3) set .@i, rand(401,770);
+			else if (.@slot == 2) set .@i, rand(601,800);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4740; //Vitality1
+			else if (.@i < 201) set .@enchant,4861; //MHP1
+			else if (.@i < 301) set .@enchant,4933; //Tolerance_Not1
+			else if (.@i < 401) set .@enchant,4791; //Def3
+			
+			else if (.@i < 451) set .@enchant,4741; //Vitality2
+			else if (.@i < 501) set .@enchant,4862; //MHP2
+			else if (.@i < 551) set .@enchant,4934; //Tolerance_Not2
+			else if (.@i < 601) set .@enchant,4792; //Def6
+			
+			else if (.@i < 631) set .@enchant,4742; //Vitality3
+			else if (.@i < 661) set .@enchant,4867; //MHP3
+			else if (.@i < 691) set .@enchant,4935; //Tolerance_Not3
+			else if (.@i < 721) set .@enchant,4793; //Def9
+
+			else if (.@i < 771) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 11: //Normal Acc Upgrade
+			     if (.@slot == 4) set .@i, rand(1,810);
+			else if (.@slot == 3) set .@i, rand(1,860);
+			else if (.@slot == 2) set .@i, rand(501,890);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4710; //Inteligence1
+			
+			else if (.@i < 551) set .@enchant,4701; //Strength2
+			else if (.@i < 601) set .@enchant,4731; //Agility2
+			else if (.@i < 651) set .@enchant,4741; //Vitality2
+			else if (.@i < 701) set .@enchant,4721; //Dexterity2
+			else if (.@i < 751) set .@enchant,4711; //Inteligence2
+			
+			else if (.@i < 781) set .@enchant,4815; //Spell1
+			else if (.@i < 811) set .@enchant,4869; //Attack_Delay_1
+			
+			else if (.@i < 861) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		case 12: //Normal Acc Upgrade
+			     if (.@slot == 4) set .@i, rand(1,830);
+			else if (.@slot == 3) set .@i, rand(1,880);
+			else if (.@slot == 2) set .@i, rand(501,910);
+			else {
+				mes "[Charleston]";
+				mes "ระบบพบข้อผิดพลาด.";
+				close;
+			}
+			     if (.@i < 101) set .@enchant,4700; //Strength1
+			else if (.@i < 201) set .@enchant,4730; //Agility1
+			else if (.@i < 301) set .@enchant,4740; //Vitality1
+			else if (.@i < 401) set .@enchant,4720; //Dexterity1
+			else if (.@i < 501) set .@enchant,4710; //Inteligence1
+			
+			else if (.@i < 551) set .@enchant,4701; //Strength2
+			else if (.@i < 601) set .@enchant,4731; //Agility2
+			else if (.@i < 651) set .@enchant,4741; //Vitality2
+			else if (.@i < 701) set .@enchant,4721; //Dexterity2
+			else if (.@i < 751) set .@enchant,4711; //Inteligence2
+			else if (.@i < 801) set .@enchant,4815; //Spell1
+			
+			else if (.@i < 831) set .@enchant,4814; //Spell2
+			
+			else if (.@i < 881) set .@enchant,0;
+			
+			else set .@enchant,9;
+			break;
+		default:
+			mes "[Charleston]";
+			mes "ข้าเดาว่าข้าทำผิด...";
+			close;
+		}
+		
+		// anti-hack
+		if (callfunc("F_IsEquipIDHack", .@part, .@equip_id) ||
+		    callfunc("F_IsEquipRefineHack", .@part, .@equip_refine) ||
+		    callfunc("F_IsEquipCardHack", .@part, .@equip_card[0], .@equip_card[1], .@equip_card[2], .@equip_card[3]))
+			close;
+
+		if (.@equip_card[3] == 0 && .@allowed_slot < 4) {
+			set .@equip_card[3],.@enchant;
+		} else if (.@equip_card[2] == 0 && .@allowed_slot < 3) {
+			set .@equip_card[2],.@enchant;
+			if (.@enchant == 0) {
+				set .@equip_card[3],0;
+			}
+		} else if (.@equip_card[1] == 0 && .@allowed_slot < 2) {
+			set .@equip_card[1],.@enchant;
+			if (.@enchant == 0) {
+				set .@equip_card[2],0;
+				set .@equip_card[3],0;
+			}
+		} else {
+			mes "[Charleston]";
+			mes "ข้าคิดว่าออฟสูงสุดแล้ว.";
+			close;
+		}
+		if (Zeny < 100000 || countitem(6752) == 0) {
+		mes "[Charleston]";
+		mes "ขอโทษด้วย, เจ้ามีวัตถุดิบหรือเงินไม่พอ.";
+		close;
+		}
+		delitem 6752,1; //Charleston_Component
+		set Zeny, Zeny-100000;
+		delequip .@part;
+		if (.@enchant == 9) {
+			specialeffect2 EF_SUI_EXPLOSION;
+			mes "[Charleston]";
+			mes "ไม่น่ะ!";
+ 			mes "ขะ... ข้าทำของๆเจ้าแตกซะแล้ว.";
+			close;
+		}
+		if (.@enchant == 0) {
+			specialeffect2 EF_SHIELDCHARGE;
+			mes "[Charleston]";
+			mes "ข้าทำออฟเจ้าหาย. ลองพยายามใหม่ครั้งหน้า.";
+		} else {
+			specialeffect2 EF_REPAIRWEAPON;
+			mes "[Charleston]";
+			mes "ข้าออฟ ^990000"+.@equip_name$+"^000000 สำเร็จ ในช่องที่ "+.@slot+".";
+		}
+		
+//		GetNonSlotItemSock2 .@equip_refine .@equip_id .@equip_card[0] .@equip_card[1] .@equip_card[2] .@equip_card[3]
+		getitem2 .@equip_id,1,1,.@equip_refine,0,.@equip_card[0],.@equip_card[1],.@equip_card[2],.@equip_card[3];
+
+		close;
+	} else if (.@select == 2) {
+		if (Zeny < 100000 || countitem(6752) == 0) {
+			mes "[Charleston]";
+			mes "ขอโทษด้วย, เจ้ามีวัตถุดิบหรือเงินไม่พอ.";
+			close;
+		}
+		specialeffect2 EF_REPAIRWEAPON;
+		mes "[Charleston]";
+		mes "ลบออฟเรียบร้อย.";
+		delitem 6752,1; //Charleston_Component
+		set Zeny, Zeny-100000;
+
+		// anti-hack
+		if (callfunc("F_IsEquipIDHack", .@part, .@equip_id) || callfunc("F_IsEquipCardHack", .@part, .@equip_card[0], .@equip_card[1], .@equip_card[2], .@equip_card[3]) || callfunc("F_IsEquipRefineHack", .@part, .@equip_refine))
+			close;
+
+		delequip .@part;	
+		
+//		GetNonSlotItemSock2 .@equip_refine .@equip_id .@equip_card[0] .@equip_card[1] .@equip_card[2] .@equip_card[3]
+		for ( .@i = getiteminfo(.@equip_id,10); .@i < MAX_SLOTS; .@i++ ) {
+			if (callfunc("F_IsCharm",.@equip_card[.@i]) == true)
+				.@equip_card[.@i] = 0;// Armor Enchant System
+		}
+		getitem2 .@equip_id,1,1,.@equip_refine,0,.@equip_card[0],.@equip_card[1],.@equip_card[2],.@equip_card[3];
+
+		close;
+	}
+}

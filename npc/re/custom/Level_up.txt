@@ -1,0 +1,206 @@
+maintown,96,51,4	script	รับรางวัล Level	833,{
+
+// Config ------------------------------------------
+set .@heading$, "[^0000FFEvent Levelup^000000]";
+// -------------------------------------------------
+// Scripts -----------------------------------------
+
+	mes .@heading$;
+	mes "สวัสดี  ^FF0000"+strcharinfo(0)+"^000000";
+	mes "ข้าจะมอบรางวัลให้แก่ผู้ที่มีเลเวลตามที่กำหนด";
+	mes "1 ID สามารถรับได้ 1 ครั้งเท่านั้น";
+	mes "แล้วเท่านั้น";
+	next;
+	menu "^FF0000•^000000 ไม่มีอะไร",L_close,"^009933•^000000 ข้าอยากได้",L_menu,"^FF0000•^000000 ดูของรางวัล",CH_menu;
+
+CH_menu:
+	mes .@heading$;
+	mes "Lv.99 = 500 Free Cash";
+	mes "Lv.100 = 10 Cash";
+	mes "Lv.150 = 20 Cash";
+	mes "Lv.175 = 50 Cash";
+	mes "Lv.200 = 100 Cash";
+	mes "Lv.250 = 1,000 Free Cash";
+	mes "Lv.300 = 2,000 Free Cash";
+	end;
+	
+L_menu:
+	switch(select("^009933•^000000 รับรางวัล Lv.99 :^009933•^000000 รับรางวัล Lv.100 :^009933•^000000 รับรางวัล Lv.150 :^009933•^000000 รับรางวัล Lv.175 :^009933•^000000 รับรางวัล Lv.200:^009933•^000000 รับรางวัล Lv.250 :^009933•^000000 รับรางวัล Lv.300")) {
+	next;
+
+case 1:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 99)	goto L_no99;
+	mes .@heading$;
+	if (#red_item99 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวล 99 รับไปเลย 500 Free Cash";
+	#FREECASH = #FREECASH + 500;
+	dispbottom "คุณได้รับ FREE CASH จำนวน 500 P";
+	set #red_item99, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }
+	
+case 2:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 100)	goto L_no100;
+	mes .@heading$;
+	if (#red_item100 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวล 100  รับไปเลย 10 cash";
+	#CASHPOINTS = #CASHPOINTS + 10;
+	dispbottom "คุณได้รับ CASH จำนวน 10 P";
+	set #red_item100, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }
+	
+case 3:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 150)	goto L_no120;
+	mes .@heading$;
+	if (#red_item120 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวล 150  รับไปเลย 20 cash";
+	#CASHPOINTS = #CASHPOINTS + 20;
+	dispbottom "คุณได้รับ CASH จำนวน 20 P";
+	set #red_item120, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }
+	
+case 4:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 175)	goto L_no140;
+	mes .@heading$;
+	if (#red_item140 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวล 175  รับไปเลย 50 cash";
+	#CASHPOINTS = #CASHPOINTS + 50;
+	dispbottom "คุณได้รับ CASH จำนวน 50 P";
+	set #red_item140, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }
+
+case 5:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 200)	goto L_no150;
+	mes .@heading$;
+	if (#red_item150 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวล 200  รับไปเลย 100 cash";
+	#CASHPOINTS = #CASHPOINTS + 100;
+	dispbottom "คุณได้รับ CASH จำนวน 100 P";
+	set #red_item150, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }	
+	
+case 6:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 250)	goto L_no175;
+	mes .@heading$;
+	if (#red_item175 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวล 250 รับไปเลย 1,000 FREE CASH";
+	#FREECASH = #FREECASH + 1000;
+	dispbottom "คุณได้รับ FREE CASH จำนวน 1,000 P";
+	set #red_item175, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }
+
+case 7:
+	mes .@heading$;
+	mes "ข้าขอตรวจสอบวก่อนว่าท่านผ่านเงื่อนไงหรือไม่";
+	next;
+	if (BaseLevel < 300)	goto L_no185;
+	mes .@heading$;
+	if (#red_item185 == 1){
+		mes "อ๊ะๆ รับไปแล้วนะจ๊ะ";
+		close;
+	} else {
+	mes "ยินดีด้วยคุณเล่นจนเลเวลตันและจ๊อบเลเวลตัน  รับไปเลย ^ff0000FREE CASH 2,000^000000";
+	#FREECASH = #FREECASH + 2000;
+	dispbottom "คุณได้รับ FREE CASH จำนวน 2,000 P";
+	set #red_item185, 1;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close; }	
+
+L_no99:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 99 นะ";
+	close;
+	
+L_no100:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 100 นะ";
+	close;
+
+L_no120:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 150 นะ";
+	close;	
+
+L_no140:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 175 นะ";
+	close;	
+
+L_no150:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 200 นะ";
+	close;	
+
+L_no175:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 250 นะ";
+	close;	
+	
+L_no185:
+	mes .@heading$;
+	mes "ท่านไม่ผ่านเงื่อนไข";
+	mes "กลับมาใหม่เมื่อเลเวล 300 นะ";
+	close;	
+	
+
+L_close:
+	mes .@heading$;
+	mes "เมื่อครบเงื่อนไขแล้วอย่าลืมกลับมารับรางวัลล่ะ";
+	close;
+	
+}
+}

@@ -1,0 +1,482 @@
+glast_01,143,288,4	script	Oscar#CL	10307,{
+
+// ------------------------------------------------
+	set .@npc$,"[ Oscar ]";
+	set .instance_delay, 82800;	// 23 hr
+// ------------------------------------------------
+
+	set .@gettimetick, gettimetick(2);
+
+
+if(ghclquest >= 1){
+
+mes .@npc$;
+mes "ท่านสามารถเข้าร่วมได้ หากไม่มี Delay";
+
+		set .@instance_delay, ( instance_delay_ghcl - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;
+		} else {
+			mes "คุณต้องรออีก : ^000088สามารถเข้าร่วมได้^000000";
+		}
+next;
+menu "ข้ายังไม่พร้อม !!",END_DG,"พร้อมแล้ว ไปได้เลย",N_MODE;
+
+
+} else {
+
+mes .@npc$;
+mes "สวัสดีท่านนักผจญภัย";
+mes "ยินดีที่ได้รู้จัก";
+mes "กระผมมีนามว่า Oscar";
+mes "รู้หรือไม่อณาจักรแห่งนี้เคยรุ่งเรืองมาก่อน";
+mes "และ เป็นเมืองหลวงแห่ง";
+mes "Rune-Midgards";
+cutin "OSCAR02",2;
+next;
+mes .@npc$;
+mes "ข้าได้พบว่า ช่วงเวลาหนึ่งได้ถูกบิดเบือนไป";
+mes "ถ้าหาก VarMundt, Himmelmez";
+mes "และ Schmith ไม่ได้อยู่ในเวลาที่กำหนด";
+mes "กาลเวลา และ เรื่องราวในช่วงเวลา";
+mes "จะถูกบิดเบือนไป อย่าสิ้นเชิง";
+next;
+mes .@npc$;
+mes "บางทีสิ่งได้รับรู้มา";
+mes "อาจไม่เป็นแบบที่เคยเป็น";
+cutin "OSCAR04",2;
+next;
+mes .@npc$;
+mes "ข้า Oscar ผู้ที่มาจากอดีต";
+mes "ศิษย์ของ VarMundt";
+mes "ข้าเดินทางข้ามเวลามา";
+mes "เพื่อตามหานักผจญภัย";
+mes "ที่ร่วมสู้กับ Himmelmez";
+next;
+mes .@npc$;
+mes "ในการจะเดินทางกลับไปต้องใช้";
+mes "^000099Curse-eroded Gemstone^000000 : 100 ชิ้น";
+mes "เจ้ามีไอเท็มนั้นหรือไม่";
+
+		set .@instance_delay, ( instance_delay_ghcl - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			cutin "OSCAR01",2;
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;
+		} else {
+			mes "คุณต้องรออีก : ^000088สามารถเข้าร่วมได้^000000";
+			cutin "OSCAR01",2;
+			next;
+			menu "ข้ายังไม่พร้อม !!",END_DG,"พร้อมแล้ว ไปได้เลย",N_MODE;
+		}
+	}
+
+
+//===============================================================
+	END_DG:
+//===============================================================
+
+cutin "OSCAR01",255;
+mes .@npc$;
+mes "หากเจ้าพร้อมแล้ว";
+mes "จงกลับมาหาข้า";
+end;
+
+//==========================================================================================================================================================
+
+//===============================================================
+	N_MODE:
+//===============================================================
+
+	set .@party_id,getcharid(1);
+
+	if(.@party_id == 0){
+
+	mes .@npc$;
+	mes "ท่านจำเป็นต้องมีปาร์ตี้";
+	mes "จึงจะสามารถเข้าหอคอยได้";
+	cutin "OSCAR01",255;
+	end;
+
+	}
+
+	if(.@party_id == $@GlastheimCH) goto JOINDUN;
+	
+
+		set .@instance_delay, ( instance_delay_ghcl - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;
+		}
+
+	if(getmapusers("1@gl_he") == 0) { 
+	
+	set $@GlastheimCH,0;
+
+	set $GHCL1,200;
+	set $GHCL2,0;
+	set $GHCL3,200;
+	set $GHCL4,200;
+	set $GHCL5,200;
+	set $GHCL6,200;
+	set $GHCL7,200;
+	set $GHCL8,200;
+	set $GHCL9,200;
+
+	disablenpc "ONCL3";
+	disablenpc "ONCL7";
+	disablenpc "w1cl";	disablenpc "w2cl";
+	disablenpc "w3cl";	disablenpc "w4cl";
+	disablenpc "w5cl";
+
+	killmonsterall "1@gl_he";
+
+	} else {
+
+	mes .@npc$;
+	mes "ยังคงมีเหล่านักผจญภัย";
+	mes "อยู่ในห้วงกาลเวลาอยู่";
+	end;
+	}
+
+	set .@party_id,getcharid(1);
+	set $@GlastheimCH,getcharid(1);
+	
+	if(.@party_id == 0){
+
+	mes .@npc$;
+	mes "ท่านจำเป็นต้องมีปาร์ตี้";
+	mes "จึงจะสามารถเข้าหอคอยได้";
+	end;
+
+	} else if(getpartyleader(.@party_id,2) != getcharid(0)) {
+
+	mes .@npc$;
+	mes "ท่านไม่ใช่หัวหน้าปาร์ตี้";
+	end;
+
+	} else if(ghclquest >= 1){
+
+	goto PASSGHCL;
+
+	} else if(countitem(25740) < 100){
+
+	mes .@npc$;
+	mes "ท่านไม่มีไอเท็มเปิด กาลเวลา";
+	end;
+
+	}
+
+
+PASSGHCL:
+
+	if(ghclquest >= 1){
+
+	set ghclquest,1;
+
+	} else {
+
+	delitem 25740,100;
+	set ghclquest,1;
+
+	}
+
+	
+JOINDUN:
+
+	mes .@npc$;
+	mes "สามารถเข้าร่วมดันเจี้ยนได้แล้ว";
+	next;
+
+	if(getpartyleader(.@party_id,2) != getcharid(0)){
+	warp "1@gl_he",150,28;
+	set instance_delay_ghcl, ( .@gettimetick + ( .instance_delay ));
+	} else {
+	warp "1@gl_he",150,28;
+	set instance_delay_ghcl, ( .@gettimetick + ( .instance_delay ));
+	sleep 5000;
+	disablenpc "ONCL6";
+	donpcevent "GHCLT-1::OnWanted";
+	}
+	end;
+}
+
+//==========================================================================================================================================================
+//==========================================================================================================================================================
+
+1@gl_he,150,41,4	script	Oscar::GHCLT-1	10307,{
+end;
+
+OnWanted:
+sleep 1000;	npctalk "Oscar : ห้ามออกจากที่นี่ก่อนเวลา";
+sleep 2000;	npctalk "Oscar : จะทำให้พวกเจ้าไม่สามารถเข้ามาได้";
+
+	enablenpc "w1cl";	enablenpc "w2cl";
+	enablenpc "w3cl";	enablenpc "w4cl";
+	disablenpc "GHCLT-1";
+
+set $GHCL1,120;
+areamonster "1@gl_he",160,159,264,20,"Cursed Raydric",20577,20,"Glastheim_CL1::Ondevildead";
+areamonster "1@gl_he",160,159,264,20,"Mutated White Knight",20583,20,"Glastheim_CL1::Ondevildead";
+areamonster "1@gl_he",160,159,264,20,"Mutated Khaliburg Knight",20584,20,"Glastheim_CL1::Ondevildead";
+
+areamonster "1@gl_he",43,158,121,15,"Cursed Raydric",20577,20,"Glastheim_CL1::Ondevildead";
+areamonster "1@gl_he",43,158,121,15,"Mutated White Knight",20583,20,"Glastheim_CL1::Ondevildead";
+areamonster "1@gl_he",43,158,121,15,"Mutated Khaliburg Knight",20584,20,"Glastheim_CL1::Ondevildead";
+
+end;
+}
+
+
+1@gl_he,146,80,0	warp	gl_he1-2::w1cl	1,1,1@gl_he,129,82
+1@gl_he,153,101,0	warp	gl_he1-2::w2cl	1,1,1@gl_he,176,101
+1@gl_he,134,81,0	warp	gl_he2-1::w3cl	1,1,1@gl_he,150,80
+1@gl_he,165,101,0	warp	gl_he2-1::w4cl	1,1,1@gl_he,148,101
+
+
+1@gl_he,0,0,0	script	Glastheim_CL1	-1,{
+
+Ondevildead:
+
+	set $GHCL1,$GHCL1 - 1;
+
+	if($GHCL1 == 0){
+	sleep 2000; mapannounce "1@gl_he","Oscar : เยี่ยมไปเลยเหล่านักผจญภัย",bc_map,0xAAEC37;
+	sleep 2000;
+
+	warpparty "1@gl_he",150,63,$@GlastheimCH;
+	enablenpc "ONCL2";
+	disablenpc "w1cl";	disablenpc "w2cl";
+	disablenpc "w3cl";	disablenpc "w4cl";
+	//donpcevent "ONCL2::OnWanted";
+	end;
+	}
+}	
+
+//=================== ROOM 2 ===============
+
+1@gl_he,150,157,4	script	Oscar::ONCL2	10307,{
+
+if($GHCL2 == 0){
+set $GHCL2,30;
+npctalk "Oscar : ในการจะผ่านเข้าไปต้องใช้ เผ่ามังกร 1 ตัว";
+sleep 2000;
+npctalk "Oscar : เดี๋ยวข้า จะปลอมตัวเข้าไปเอง";
+sleep 2000;
+npctalk "Oscar : ไม่ต้องห่วง ตามข้ามา";
+sleep 2000;
+
+enablenpc "w5cl";
+//areamonster "1@gl_he",124,69,184,17,"Khalitzburg",20388,30,"Glastheim_CL2::Ondevildead";
+sleep 3000;
+enablenpc "ONCL3";
+donpcevent "ONCL3::OnWanted";
+
+disablenpc "ONCL2";
+end;	}
+
+end;
+
+}
+
+1@gl_he,150,163,0	warp	gl_he3-1::w5cl	1,1,1@gl_he,150,170
+
+
+1@gl_he,150,170,4	script	Oscar::ONCL3	1713,{
+end;
+
+OnWanted:
+sleep 2000;
+npctalk "Oscar : ที่นี่แหละ";
+sleep 2000;
+npctalk "Oscar : ที่ ที่ทำให้ทุกอย่างเปลี่ยนไป";
+sleep 2000;
+npctalk "Oscar : รอเวลาอีกนิดนะ";
+sleep 2000;
+npctalk "Oscar : ข้าคงต้องไปแล้ว เดี๋ยจะกลับมารับนะ !!";
+disablenpc "ONCL3";
+enablenpc "BossCL1";
+sleep 1500;
+donpcevent "BossCL1::OnFirst";
+setnpcdisplay(strnpcinfo(0),1713);
+end;	}
+
+
+//=================== Boss ===============
+
+1@gl_he,157,239,4	script	Amadarai's Phantom::BossCL1	20573,{
+end;
+
+OnFirst:
+npctalk "Amadarai's : ?";
+sleep 2000;
+npctalk "Amadarai's : Who? Who?";
+sleep 2000;
+disablenpc "BossCL1";
+set $GHCL5,1;
+donpcevent "BossCL2::OnFirst";
+areamonster "1@gl_he",157,239,157,239,"Amadarai's Phantom",20573,1,"Glastheim_CL6::Ondevildead";
+end;
+
+}
+
+1@gl_he,0,0,0	script	thclmode::BossCL2	-1,{
+
+OnFirst:
+sleep 6000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 300000;
+if($GHCL5 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+end;
+}
+
+1@gl_he,0,0,0	script	Glastheim_CLS	-1,{
+Ondevildead:
+end;
+}
+
+
+1@gl_he,0,0,0	script	Glastheim_CL6	-1,{
+
+Ondevildead:
+
+	set $GHCL5,$GHCL5 - 1;
+
+	if($GHCL5 == 0){
+	sleep 2000; mapannounce "1@gl_he","Himelmez : Well well well !!",bc_map,0xAAEC37;
+	sleep 2000; mapannounce "1@gl_he","Himelmez : ช่างกล้านัก ที่เดินทางมาถึงที่นี่",bc_map,0xAAEC37;
+	sleep 2000;
+	set $GHCL6,20;
+	areamonster "1@gl_he",142,251,174,223,"Cursed Zombie",20579,10,"Glastheim_CL7::Ondevildead";
+	areamonster "1@gl_he",142,251,174,223,"Cursed Ghoul",20580,10,"Glastheim_CL7::Ondevildead";
+	end;
+	}
+
+}
+
+1@gl_he,0,0,0	script	Glastheim_CL7	-1,{
+
+Ondevildead:
+set $GHCL6,$GHCL6 - 1;
+
+	if($GHCL6 == 0){
+	sleep 2000; mapannounce "1@gl_he","Himelmez : ข้ามาถึงแล้ว !!",bc_map,0xAAEC37;
+	sleep 2000; mapannounce "1@gl_he","Himelmez : ข้าจะจัดการกับพวกเจ้าทั้งหมด",bc_map,0xAAEC37;
+	warpparty "1@gl_he",157,236,$@GlastheimCH;
+	sleep 2000;
+	set $GHCL7,1;
+	areamonster "1@gl_he",154,243,161,236,"Himelmez",20572,1,"Glastheim_CL8::Ondevildead";
+	end;
+	}
+}
+
+1@gl_he,0,0,0	script	Glastheim_CL8	-1,{
+
+Ondevildead:
+set $GHCL7,$GHCL7 - 1;
+	if($GHCL7 == 0){
+	
+mapannounce "1@gl_he","Oscar : มีบางอย่าง ขวางเวลาไว้",bc_map,0xAAEC37;
+sleep 2000;
+mapannounce "1@gl_he","Oscar : จัดการมัน ให้ข้าหน่อย ข้าไม่สามารถออกไปจาก ห้วงกาลเวลาได้",bc_map,0xAAEC37;
+set $GHCL8,1;
+donpcevent "BossCL3::OnFirst";
+
+	areamonster "1@gl_he",154,243,161,236,"Prime Corruption Root",20575,1,"Glastheim_CL9::Ondevildead";
+	end;
+			}
+			end;
+			}
+			
+1@gl_he,0,0,0	script	thclmode::BossCL3	-1,{
+
+OnFirst:
+sleep 6000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+sleep 150000;
+if($GHCL8 == 1){	areamonster "1@gl_he",142,251,174,223,"Thorn of Cursed",20581,10,"Glastheim_CLS::Ondevildead";	} else { end; }
+end;
+}			
+
+1@gl_he,0,0,0	script	Glastheim_CL9	-1,{
+end;
+
+Ondevildead:
+set $GHCL8,$GHCL8 - 1;
+
+	if($GHCL8 == 0){
+mapannounce "1@gl_he","Oscar : ขอบคุณพวกเจ้ามาก เป็นอีกครั้งที่ข้าต้องพึ่งพวกเจ้า",bc_map,0xAAEC37;
+sleep 2000;
+enablenpc "ONCL7";
+end;	}
+
+end;
+}
+
+1@gl_he,161,243,4	script	Oscar::ONCL7	10307,{
+
+	set .@npc$,"[ Oscar ]";
+
+mes .@npc$;
+mes "ข้าจะส่งเจ้ากลับสู่โลกแห่ง ปัจจุบัน";
+mes "ขอบคุณทุกท่านจริงๆ";
+next;
+
+	if(ghclquest >= 1){	getitem 25867,25;	} else { getitem 25740,10; }
+	set $@GlastheimCH,0;
+	warp "glast_01",138,288;
+end;
+
+}
+
+//==========================================================================================================================================================
+//==========================================================================================================================================================
+
+1@gl_he	mapflag	nosave	SavePoint
+1@gl_he	mapflag	nomemo
+1@gl_he	mapflag	nobranch
+1@gl_he	mapflag	noteleport

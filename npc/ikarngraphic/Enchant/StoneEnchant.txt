@@ -1,0 +1,360 @@
+//===== Current Version: =====================================
+//= 1.1 
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Exchange cards for points?.?
+//============================================================
+
+-	shop	enchantst_shop	-1,909:-1
+
+maintown,140,130,4	script	Enchanter Class	971,{
+//bat_c03,69,121,6	script	Enchanter Class	971,{
+	mes "[ Enchanter Class ]";
+	mes "หวัดดี, "+strcharinfo(0)+"!";
+	mes "มีอะไรให้ข้ารับใช้ไหม ?";
+	next;
+	switch(select(" - ยัด Class Stone: - ออก")) {
+	case 1:
+		mes "[ Enchanter Class ]";
+		mes "กรุณาเลือก Stone";
+		mes "ที่เจ้าต้อง";
+		mes "แล้วใส่ไอเท็มไว้ในตัว";		
+		deletearray @sold_nameid[0],getarraysize(@sold_nameid);
+		callshop "enchantst_shop",2;
+		npcshopattach "enchantst_shop";
+		end;
+	case 2:
+		mes "[ Enchanter Class ]";
+		mes "แล้วมาใหม่น่ะ!";
+		close;		
+	}
+
+OnSellItem:
+
+	//EQI_SHADOW_ARMOR (15)	Shadow Armor			sh_armor;
+	//EQI_SHADOW_WEAPON (16)	Shadow Weapon       sh_weapon;
+	//EQI_SHADOW_SHIELD (17)	Shadow Shield       sh_shield;
+	//EQI_SHADOW_SHOES (18)	Shadow Shoes            sh_shoes;
+	//EQI_SHADOW_ACC_R (19)	Shadow Accessory 2      sh_right_acc;
+	//EQI_SHADOW_ACC_L (20)	Shadow Accessory 1		sh_left_acc;
+	
+	//EQI_HEAD_TOP (1)	Upper head gear
+	//EQI_ARMOR (2)	Armor (Where you keep your Jackets and Robes)
+	//EQI_HAND_L (3)	What is in your Left hand.
+	//EQI_HAND_R (4)	What is in your Right hand.
+	//EQI_GARMENT (5)	The garment slot (Mufflers, Hoods, Manteaus)
+	//EQI_SHOES (6)	What foot gear the player has on.
+	//EQI_ACC_L (7)	Accessory 1.
+	//EQI_ACC_R (8)	Accessory 2.
+	//EQI_HEAD_MID (9)	Middle Headgear (masks and glasses)
+	//EQI_HEAD_LOW (10)	Lower Headgear (beards, some masks)
+	//EQI_COSTUME_HEAD_LOW (11)	Lower Costume Headgear
+	//EQI_COSTUME_HEAD_MID (12)	Middle Costume Headgear
+	//EQI_COSTUME_HEAD_TOP (13)	Upper Costume Headgear
+	//EQI_COSTUME_GARMENT (14)	Costume Garment
+	//EQI_SHADOW_ARMOR (15)	Shadow Armor
+	//EQI_SHADOW_WEAPON (16)	Shadow Weapon
+	//EQI_SHADOW_SHIELD (17)	Shadow Shield
+	//EQI_SHADOW_SHOES (18)	Shadow Shoes
+	//EQI_SHADOW_ACC_R (19)	Shadow Accessory 2
+	//EQI_SHADOW_ACC_L (20)	Shadow Accessory 1
+
+	//EQI_COSTUME_HEAD_TOP
+	if(@sold_nameid[0] == 25490) goto eq_c_top;
+	if(@sold_nameid[0] == 25494) goto eq_c_top;
+	if(@sold_nameid[0] == 25498) goto eq_c_top;
+	if(@sold_nameid[0] == 25409) goto eq_c_top;
+	if(@sold_nameid[0] == 25413) goto eq_c_top;
+	if(@sold_nameid[0] == 25417) goto eq_c_top;
+	if(@sold_nameid[0] == 25445) goto eq_c_top;
+	if(@sold_nameid[0] == 25450) goto eq_c_top;
+	if(@sold_nameid[0] == 25453) goto eq_c_top;
+	if(@sold_nameid[0] == 25706) goto eq_c_top;
+	if(@sold_nameid[0] == 25710) goto eq_c_top;
+	if(@sold_nameid[0] == 25714) goto eq_c_top;
+	if(@sold_nameid[0] == 25800) goto eq_c_top;
+	if(@sold_nameid[0] == 25804) goto eq_c_top;
+	if(@sold_nameid[0] == 25808) goto eq_c_top;
+	if(@sold_nameid[0] == 25843) goto eq_c_top;
+	if(@sold_nameid[0] == 25846) goto eq_c_top;
+	if(@sold_nameid[0] == 25850) goto eq_c_top;
+	if(@sold_nameid[0] == 25855) goto eq_c_top;
+	if(@sold_nameid[0] == 25859) goto eq_c_top;
+
+	//EQI_COSTUME_HEAD_MID
+	if(@sold_nameid[0] == 25491) goto sh_c_mid;
+	if(@sold_nameid[0] == 25495) goto sh_c_mid;
+	if(@sold_nameid[0] == 25499) goto sh_c_mid;
+	if(@sold_nameid[0] == 25410) goto sh_c_mid;
+	if(@sold_nameid[0] == 25414) goto sh_c_mid;
+	if(@sold_nameid[0] == 25418) goto sh_c_mid;
+	if(@sold_nameid[0] == 25446) goto sh_c_mid;
+	if(@sold_nameid[0] == 25451) goto sh_c_mid;
+	if(@sold_nameid[0] == 25454) goto sh_c_mid;
+	if(@sold_nameid[0] == 25707) goto sh_c_mid;
+	if(@sold_nameid[0] == 25711) goto sh_c_mid;
+	if(@sold_nameid[0] == 25715) goto sh_c_mid;
+	if(@sold_nameid[0] == 25799) goto sh_c_mid;
+	if(@sold_nameid[0] == 25803) goto sh_c_mid;
+	if(@sold_nameid[0] == 25807) goto sh_c_mid;
+	if(@sold_nameid[0] == 25844) goto sh_c_mid;
+	if(@sold_nameid[0] == 25847) goto sh_c_mid;
+	if(@sold_nameid[0] == 25851) goto sh_c_mid;
+	if(@sold_nameid[0] == 25856) goto sh_c_mid;
+	if(@sold_nameid[0] == 25860) goto sh_c_mid;
+	
+	//EQI_COSTUME_HEAD_LOW
+	if(@sold_nameid[0] == 25492) goto sh_c_low;
+	if(@sold_nameid[0] == 25496) goto sh_c_low;
+	if(@sold_nameid[0] == 25500) goto sh_c_low;
+	if(@sold_nameid[0] == 25411) goto sh_c_low;
+	if(@sold_nameid[0] == 25415) goto sh_c_low;
+	if(@sold_nameid[0] == 25419) goto sh_c_low;
+	if(@sold_nameid[0] == 25447) goto sh_c_low;
+	if(@sold_nameid[0] == 25452) goto sh_c_low;
+	if(@sold_nameid[0] == 25455) goto sh_c_low;
+	if(@sold_nameid[0] == 25708) goto sh_c_low;
+	if(@sold_nameid[0] == 25712) goto sh_c_low;
+	if(@sold_nameid[0] == 25716) goto sh_c_low;
+	if(@sold_nameid[0] == 25798) goto sh_c_low;
+	if(@sold_nameid[0] == 25802) goto sh_c_low;
+	if(@sold_nameid[0] == 25806) goto sh_c_low;
+	if(@sold_nameid[0] == 25845) goto sh_c_low;
+	if(@sold_nameid[0] == 25848) goto sh_c_low;
+	if(@sold_nameid[0] == 25852) goto sh_c_low;
+	if(@sold_nameid[0] == 25857) goto sh_c_low;
+	if(@sold_nameid[0] == 25861) goto sh_c_low;
+
+	//EQI_COSTUME_GARMENT 
+	if(@sold_nameid[0] == 25493) goto sh_c_gar;
+	if(@sold_nameid[0] == 25497) goto sh_c_gar;
+	if(@sold_nameid[0] == 25501) goto sh_c_gar;
+	if(@sold_nameid[0] == 25412) goto sh_c_gar;
+	if(@sold_nameid[0] == 25416) goto sh_c_gar;
+	if(@sold_nameid[0] == 25420) goto sh_c_gar;
+	if(@sold_nameid[0] == 25448) goto sh_c_gar;
+	if(@sold_nameid[0] == 25449) goto sh_c_gar;
+	if(@sold_nameid[0] == 25456) goto sh_c_gar;
+	if(@sold_nameid[0] == 25709) goto sh_c_gar;
+	if(@sold_nameid[0] == 25713) goto sh_c_gar;
+	if(@sold_nameid[0] == 25717) goto sh_c_gar;
+	if(@sold_nameid[0] == 25797) goto sh_c_gar;
+	if(@sold_nameid[0] == 25801) goto sh_c_gar;
+	if(@sold_nameid[0] == 25805) goto sh_c_gar;
+	if(@sold_nameid[0] == 25842) goto sh_c_gar;
+	if(@sold_nameid[0] == 25849) goto sh_c_gar;
+	if(@sold_nameid[0] == 25853) goto sh_c_gar;
+	if(@sold_nameid[0] == 25854) goto sh_c_gar;
+	if(@sold_nameid[0] == 25858) goto sh_c_gar;
+	if(@sold_nameid[0] == 25862) goto sh_c_gar;
+
+end;
+
+//===========================================================
+	eq_c_top:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_COSTUME_HEAD_TOP) <= 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_COSTUME_HEAD_TOP));
+	set .@idcard,13;
+	@ref = getequiprefinerycnt(EQI_COSTUME_HEAD_TOP);
+	goto enchantsucc;
+	end;
+	
+//===========================================================
+	sh_c_mid:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_COSTUME_HEAD_MID) <= 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_COSTUME_HEAD_MID));
+	set .@idcard,12;
+	@ref = getequiprefinerycnt(EQI_COSTUME_HEAD_MID);
+	goto enchantsucc;
+	end;
+	
+//===========================================================
+	sh_c_low:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_COSTUME_HEAD_LOW) <= 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_COSTUME_HEAD_LOW));
+	set .@idcard,11;
+	@ref = getequiprefinerycnt(EQI_COSTUME_HEAD_LOW);
+	goto enchantsucc;
+	end;
+	
+//===========================================================
+	sh_c_gar:
+//===========================================================
+
+	set .itemcarduse,@sold_nameid[0];
+	if(getequipid(EQI_COSTUME_GARMENT) <= 0){	goto ErrMes;	end;	}
+	set .@id,(getequipid(EQI_COSTUME_GARMENT));
+	set .@idcard,14;
+	@ref = getequiprefinerycnt(EQI_COSTUME_GARMENT);
+	goto enchantsucc;
+	end;
+	
+//===========================================================
+
+	enchantsucc:
+
+//===========================================================
+	
+	mes "[ Enchanter Class ]";
+	mes "ไอเท็ม : "+getitemname(.@id)+"";
+	mes "หิน : "+getitemname(.itemcarduse)+"";
+	mes "ถูกต้องหรือไม่ ?";
+	
+	if (.@id == 50105){ next;	mes "[Costume Enchanter]","ไอเท็มเช่าไม่สามารถใช้งานได้";	end; }
+	if (.@id == 52052){ next;	mes "[Costume Enchanter]","ไอเท็มเช่าไม่สามารถใช้งานได้";	end; }
+	if (.@id == 54039){ next;	mes "[Costume Enchanter]","ไอเท็มเช่าไม่สามารถใช้งานได้";	end; }
+	
+	if (countitem(.@id) > 1 ) {
+	next;
+					mes .name$;
+					mes "ข้าออฟได้ทีละอันเท่านั้น.";
+					mes "เอาไปเก็บในคลังก่อนแล้วค่อยมาใหม่.";
+					end;
+				}
+	
+	next;
+	
+	menu "ถูกต้องแล้ว",-,"ไม่ใช่ไอเท็มนี้",NoMes;
+	
+	//Cos Hat
+	if(.@idcard == 13){
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@idcard,0);
+	@card2 = getequipcardid(.@idcard,1);
+	@card3 = getequipcardid(.@idcard,2);
+	@card4 = getequipcardid(.@idcard,3);
+	
+		if (@card2 == 0){
+		
+		specialeffect2 154;
+		delitem .@id,1;
+		getitem2 .@id, 1, 1, @ref, 0, 0, .itemcarduse, 0, 0;
+		delitem .itemcarduse,1;
+		equip .@id;
+		end;
+		
+		} else {
+		
+		mes "[ Enchanter Class ]";
+		mes "กรุณาลบออฟมาก่อน";
+		end;
+		
+		}
+		close;
+	}
+	
+	//Cos Mid
+	if(.@idcard == 12){
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+		@card1 = getequipcardid(.@idcard,0);
+	@card2 = getequipcardid(.@idcard,1);
+	@card3 = getequipcardid(.@idcard,2);
+	@card4 = getequipcardid(.@idcard,3);
+	
+		if (@card3 == 0){
+		
+		specialeffect2 154;
+		delitem .@id,1;
+		getitem2 .@id, 1, 1, @ref, 0, @card1, 0, .itemcarduse, 0;
+		delitem .itemcarduse,1;
+		equip .@id;
+		end;
+		
+		} else {
+		
+		mes "[ Enchanter Class ]";
+		mes "กรุณาลบออฟมาก่อน";
+		end;
+		
+		}
+		close;
+	}
+	
+	//Cos Low
+	if(.@idcard == 11){
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+		@card1 = getequipcardid(.@idcard,0);
+	@card2 = getequipcardid(.@idcard,1);
+	@card3 = getequipcardid(.@idcard,2);
+	@card4 = getequipcardid(.@idcard,3);
+	
+		if (@card4 == 0){
+		
+		specialeffect2 154;
+		delitem .@id,1;
+		getitem2 .@id, 1, 1, @ref, 0, 0, 0, 0, .itemcarduse;
+		delitem .itemcarduse,1;
+		equip .@id;
+		end;
+		
+		} else {
+		
+		mes "[ Enchanter Class ]";
+		mes "กรุณาลบออฟมาก่อน";
+		end;
+		
+		}
+		close;
+	}
+	
+	//Cos Gar
+	if(.@idcard == 14){
+	
+		set @card1,0;	set @card2,0;	set @card3,0;	set @card4,0;
+	
+	@card1 = getequipcardid(.@idcard,0);
+	@card2 = getequipcardid(.@idcard,1);
+	@card3 = getequipcardid(.@idcard,2);
+	@card4 = getequipcardid(.@idcard,3);
+	
+		if (@card1 == 0){
+		
+		specialeffect2 154;
+		delitem .@id,1;
+		getitem2 .@id, 1, 1, @ref, 0, .itemcarduse, @card2, @card3, @card4;
+		delitem .itemcarduse,1;
+		equip .@id;
+		end;
+		
+		} else {
+		
+		mes "[ Enchanter Class ]";
+		mes "กรุณาถอดการ์ดเก่าก่อน";
+		end;
+		
+		}
+		close;
+	}
+	
+	
+ErrMes:
+mes "[ Enchanter Class ]";
+mes "คุณไม่ได้สวมใส่ไอเท็ม Input";
+mes "กรุณาสวมใส่ไอเท็มก่อน";
+end;	
+
+NoMes:
+mes "ไว้เจอกันใหม่";
+end;
+
+
+OnInit:
+	waitingroom "  Enchanter Class",0;
+end;
+}

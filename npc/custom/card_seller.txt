@@ -34,8 +34,8 @@ prontera,155,177,5	script	Card Seller	100,{
 	end;
 OnInit:
 	if (checkre(0)) {
-		.@mob_db$  = "mob_db_re";
-		.@item_db$ = "item_db_re";
+		.@mob_db$  = "mob_db";
+		.@item_db$ = "item_db";
 	} else {
 		.@mob_db$  = "mob_db";
 		.@item_db$ = "item_db";

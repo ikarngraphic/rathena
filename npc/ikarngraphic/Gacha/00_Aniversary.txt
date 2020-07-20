@@ -1,0 +1,100 @@
+-	shop	GC_ANNIV	-1,55022:1,54113:1,59012:1,41002:1,41003:1,49511:1,12412:1;
+
+		// ================ Monster ====================
+		-	script	AutoDropAnniver	-1,{
+		OnNPCKillEvent:
+		
+			set .iit,rand(1,200);
+			if(.iit < 2){ getitem 49516,1; }	
+		
+		end;	}
+
+mooc,154,94,4	script	Gacha Aniversary	562,{
+		set .name$,"[ Gacha Aniversary ]";
+		
+		set .@itemuse,49516;
+		set .@itemea,1;
+		
+mes .name$;
+mes "ใช้ ^2CDEB8"+getitemname(.@itemuse)+"^000000 : "+.@itemea+" ea.";
+mes "คุณมี : ^DE2C52"+countitem(.@itemuse)+"^000000";
+//mes "โอกาศได้มีแค่ 1% เท่านั้น";
+mes "กรุณาเลือกเมนูที่ท่านต้องการครับ";
+//mes "   ^FF0000เปิดจริงไม่มีตู้นี้^000000";
+mes "(^000088โอกาสดอปไอเท็มได้จากมอนทุกตัว^000000)";
+mes "  ^FF000028/11 - 5/12/2562^000000";
+mes "Patch : ^FF0000MN27112562^000000";
+//cutin "jpn_anni2_04",2;
+next;
+menu " - สุ่มไอเท็ม",L_YES," - ดูของรางวัล",L_SEE," - ยกเลิก",L_EX;
+
+L_YES:
+	close2;
+	//cutin "jpn_anni2_04",255;
+	if (countitem(.@itemuse) < .@itemea){
+		mes .name$;
+		mes "คุณไม่มีไอเท็มที่เรากำหนดไว้ครับ";
+		end;
+	}
+	
+	delitem .@itemuse,.@itemea;
+
+//	specialeffect2 408;
+	progressbar "0x007000", 1;
+
+set .@rand, rand(300);
+	if (.@rand >= 0 && .@rand < 255){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],41003,41003,41003,41003,41003,41003,49511,41003,41003,49511,12412,12412,12412;
+				}
+				
+	if (.@rand >= 255 && .@rand < 287){
+		set .@eff,611;
+		set .@acc,0;
+		setarray .@item[0],41002;
+				}			
+
+	if (.@rand >= 287 && .@rand < 300){
+		set .@eff,338;
+		set .@acc,1;
+		setarray .@item[0],55022,54113,59012,59012,59012;
+	}
+
+set .@get, .@item[rand(getarraysize(.@item))];
+
+	if(.@get == 55022 && getequipid(EQI_COSTUME_GARMENT) == 55022){
+		getitem 49514,1;
+		announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(49514)+"",8;
+		end;
+	}
+	if(.@get == 54113 && getequipid(EQI_COSTUME_HEAD_LOW) == 54113){
+		getitem 49515,1;
+		announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(49515)+"",8;
+		end;
+	}
+
+getitem .@get,1;
+specialeffect2 .@eff;
+if (.@acc == 1){ announce "[ Gacha ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8; }
+end;
+
+
+L_SEE:
+	//cutin "jpn_anni2_04",255;
+	callfunc "Shop_HQPC","GC_ANNIV",1;
+
+
+L_EX:
+	//cutin "jpn_anni2_04",255;
+end;
+
+OnBuyItem:
+end;
+
+OnInit: 
+waitingroom "Event 28/11 - 5/12",0;
+end;
+}
+
+

@@ -1,0 +1,196 @@
+mooc,159,166,3	script	MVP vs MVP	795,{
+			if(!mobcount("this","clr_mob::Onmobkilled01")) && (!mobcount("this","clr_mob::Onmobkilled02")) && ($@ba_st == 0) && ($@w_mob == 0){
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "อยากจะเล่นพนันกับข้ามั้ยล่ะ";
+			next;
+			if(select("เปิด MVP vs MVP:ไม่เล่นดีกว่า") !=1){ 
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "กลับบ้านไปดูดนมเมียซะ";
+			end;
+			}
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "เจ้าจงไปวางเดิมพันที่ผู้รับพนัน";
+			close2;
+			
+			setarray .@nmob[0],21301,21302,21303,21304,21305,21306,21307,21308,21309,21310,21311,21312,21313,21314,21315,21316,21317,21318,21319,21320;
+			setarray .@mobname$[0],"Champion Chen","Creator Flamel","Assassin Cross Eremes","Sniper Cecil","Stalker Gertie","High Wizard Kathryne","Lord Knight Seyren","Wounded Morroc","Fallen Bishop","Detale","Kades","Whitesmith Harword","Paladin Randel","Ifrit","Vesper","Professor Celia","Kiel D-01","General Daehyun","Pyuriel","Nidhoggr's Shadow";
+			set .@ch_fight, rand(0,19);
+			set .@ch_fights, rand(0,19);
+			while(.@ch_fights == .@ch_fight){ set .@ch_fights, rand(0,19); }
+			set .@intmobid, rand(1,1);
+			set .@intmobids, rand(1,1);
+			set $@mn$, .@mobname$[.@ch_fight];
+			set $@mns$, .@mobname$[.@ch_fights];
+			announce "[ MVP vs MVP ] : ขณะนี้สนามมวยซีปรีย์กำลังจะเริ่มมวยคู่เดือด "+$@mn$+" ปะทะ "+$@mns$+" ภายใน 1 นาที สามารถวางเดิมพันได้ที่ผู้รับพนัน",0;
+			set $@ba_st, 1;
+			sleep 60000;
+			announce "[ MVP vs MVP ] : "+$@mn$+" ปะทะ "+$@mns$+" ได้เริ่มต้นขึ้นแล้ว   กรุณาอย่ายืนชิดขอบเวทีมิฉะนั้นท่านอาจโดนลูกหลง",0;
+			set $@ba_st, 2;
+			monster "mooc",149,177, $@mn$ , .@nmob[.@ch_fight] , .@intmobid ,"clr_mob::Onmobkilled02",0,1;
+			monster "mooc",155,170, $@mns$ , .@nmob[.@ch_fights] , .@intmobids ,"clr_mob::Onmobkilled01";
+			//setmapflag "mooc", mf_monster_noteleport;
+			//setmapflag "mooc", mf_noskill;
+			//setmapflag "mooc", mf_nomobloot;
+			end;
+			}
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "รอให้ event จบ แล้วค่อยมาใหม่";
+			end;
+}
+
+mooc,145,166,6	script	พนัน MVP vs MVP	791,{
+			
+			if($@ba_st==1){
+			if(@plb_t <= gettimetick(2)){
+			set @plb_ch, 0;
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "จะแทงเท่าไหร่ดี ถ้าแทงถูกเจ้าจะได้ 1เท่าของเงินเดิมพัน";
+			mes "แทงได้ทีละ 1 M - 10 M Zeny";
+			
+			while(input(@pl_bet,1000000,10000000)){
+			mes "แทงได้ทีละ 1M - 10M";
+			mes "จะแทงไม่แทง";
+			if(select("แทง:ไม่แทง")!=1){
+			mes "เดี๋ยวเมิงจะโดนแทง";
+			end;
+			}
+			
+			next;
+			}
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "จะแทงข้างไหน";
+			set @plb_ch, select($@mn$+":"+$@mns$);
+			set Zeny, Zeny - @pl_bet;
+			set @plb_t, gettimetick(2)+120;
+			mes "วางเงินเดิมพันเรียบร้อย";
+			mes "กรุณากลับมารับเงินรางวัลเมื่อ mvp ที่ท่านแทงชนะ";
+			end;
+			}else{
+			next;
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "แทงไปแล้วนิ";
+			mes "จำนวนเงิน : ^FF0000"+@pl_bet/1000000+"^000000 M.";
+			end;
+			}
+			}
+			
+			if($@ba_st==2){
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "หมดเวลาเดิมพันแล้ว!!";
+			end;
+			}
+			
+			if($@ba_st==3){
+				if(@plb_ch == $@w_mob ){
+			set Zeny, Zeny+(@pl_bet*2);
+			set @plb_ch, 0;
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "ยินดีด้วยเจ้าแทงโดนข้า 1 ที";
+			end;
+			}
+			}
+			mes "[ ^FF0000MVP vs MVP^000000 ]";
+			mes "รอจัดคู่มวยใหม่";
+			end;
+	
+			
+}
+
+-	script	clr_mob	-1,{
+Onmobkilled01:
+			if(mobcount("mooc","clr_mob::Onmobkilled01")==0){
+			sleep 10000;
+			set $@ba_st, 3;
+			announce $@mn$+" : ชนะน็อคเอ้าท์ ใครแทงไว้กรุณามารับเงินที่ผู้รับพนันภายใน 1 นาที",0;
+			set $@w_mob, 1;
+			sleep 60000;
+			killmonster "mooc","clr_mob::Onmobkilled02";
+			set $@ba_st, 0;
+			set $@w_mob, 0;
+			announce "หมดเวลาปิดโต๊ะ ไปหาเจ้ามือเพื่อเปิดโต๊ะใหม่",0;
+			//removemapflag "mooc", mf_monster_noteleport;
+			//removemapflag "mooc", mf_noskill;
+			//removemapflag "mooc", mf_nomobloot;
+			end;
+			}
+
+Onmobkilled02:
+			if(mobcount("mooc","clr_mob::Onmobkilled02")==0){
+			set $@ba_st, 3;
+			sleep 10000;
+			announce $@mns$+" : ชนะน็อคเอาท์ ใครแทงไว้กรุณามารับเงินที่ผู้รับพนันภายใน 1 นาที",0;
+			set $@w_mob, 2;
+			sleep 60000;
+			killmonster "mooc","clr_mob::Onmobkilled01";
+			set $@ba_st, 0;
+			set $@w_mob, 0;
+			announce "หมดเวลาปิดโต๊ะ ไปหาตุ๊เพื่อเปิดโต๊ะใหม่",0;
+			//removemapflag "mooc", mf_monster_noteleport;
+			//removemapflag "mooc", mf_noskill;
+			//removemapflag "mooc", mf_nomobloot;
+			end;
+			}
+}
+
+-	script	set_eve_mg	-1,{
+	end;
+OnInit:
+	set $@w_mob$, "0";
+	//setwall "mooc",148,178,8,6,0,"mobgam_wall";
+	//setwall "mooc",148,177,8,4,0,"mobgam_walls";
+	//setwall "mooc",148,169,8,6,0,"mobgam_walle";
+	//setwall "mooc",156,169,10,0,0,"mobgam_walln";
+	//setwall "mooc",147,179,9,6,0,"mobgam_wall02";
+	//setwall "mooc",147,178,9,4,0,"mobgam_walls02";
+	//setwall "mooc",147,168,9,6,0,"mobgam_walle02";
+	//setwall "mooc",157,168,11,0,0,"mobgam_walln02";
+	//setcell "mooc",140,186,164,162,cell_landprotector,1;
+	//setcell "mooc",140,186,164,162,cell_basilica,1;
+	
+}
+
+mooc,147,179,3	script	เขตกิจกรรม::No_entry	858,{}
+mooc,148,179,3	duplicate(No_entry)	เขตกิจกรรม#01	858,{}
+mooc,149,179,3	duplicate(No_entry)	เขตกิจกรรม#02	858,{}
+mooc,150,179,3	duplicate(No_entry)	เขตกิจกรรม#03	858,{}
+mooc,151,179,3	duplicate(No_entry)	เขตกิจกรรม#04	858,{}
+mooc,152,179,3	duplicate(No_entry)	เขตกิจกรรม#05	858,{}
+mooc,153,179,3	duplicate(No_entry)	เขตกิจกรรม#06	858,{}
+mooc,154,179,3	duplicate(No_entry)	เขตกิจกรรม#07	858,{}
+mooc,155,179,3	duplicate(No_entry)	เขตกิจกรรม#08	858,{}
+mooc,156,179,3	duplicate(No_entry)	เขตกิจกรรม#09	858,{}
+
+mooc,147,178,3	duplicate(No_entry)	เขตกิจกรรม#10	858,{}
+mooc,147,177,3	duplicate(No_entry)	เขตกิจกรรม#11	858,{}
+mooc,147,176,3	duplicate(No_entry)	เขตกิจกรรม#12	858,{}
+mooc,147,175,3	duplicate(No_entry)	เขตกิจกรรม#13	858,{}
+mooc,147,174,3	duplicate(No_entry)	เขตกิจกรรม#14	858,{}
+mooc,147,173,3	duplicate(No_entry)	เขตกิจกรรม#15	858,{}
+mooc,147,172,3	duplicate(No_entry)	เขตกิจกรรม#16	858,{}
+mooc,147,171,3	duplicate(No_entry)	เขตกิจกรรม#17	858,{}
+mooc,147,170,3	duplicate(No_entry)	เขตกิจกรรม#18	858,{}
+mooc,147,169,3	duplicate(No_entry)	เขตกิจกรรม#19	858,{}
+
+mooc,147,168,3	duplicate(No_entry)	เขตกิจกรรม#20	858,{}
+mooc,148,168,3	duplicate(No_entry)	เขตกิจกรรม#21	858,{}
+mooc,149,168,3	duplicate(No_entry)	เขตกิจกรรม#22	858,{}
+mooc,150,168,3	duplicate(No_entry)	เขตกิจกรรม#23	858,{}
+mooc,151,168,3	duplicate(No_entry)	เขตกิจกรรม#24	858,{}
+mooc,152,168,3	duplicate(No_entry)	เขตกิจกรรม#25	858,{}
+mooc,153,168,3	duplicate(No_entry)	เขตกิจกรรม#26	858,{}
+mooc,154,168,3	duplicate(No_entry)	เขตกิจกรรม#27	858,{}
+mooc,155,168,3	duplicate(No_entry)	เขตกิจกรรม#28	858,{}
+mooc,156,168,3	duplicate(No_entry)	เขตกิจกรรม#29	858,{}
+
+mooc,157,168,3	duplicate(No_entry)	เขตกิจกรรม#30	858,{}
+mooc,157,169,3	duplicate(No_entry)	เขตกิจกรรม#31	858,{}
+mooc,157,170,3	duplicate(No_entry)	เขตกิจกรรม#32	858,{}
+mooc,157,171,3	duplicate(No_entry)	เขตกิจกรรม#33	858,{}
+mooc,157,172,3	duplicate(No_entry)	เขตกิจกรรม#34	858,{}
+mooc,157,173,3	duplicate(No_entry)	เขตกิจกรรม#35	858,{}
+mooc,157,174,3	duplicate(No_entry)	เขตกิจกรรม#36	858,{}
+mooc,157,175,3	duplicate(No_entry)	เขตกิจกรรม#37	858,{}
+mooc,157,176,3	duplicate(No_entry)	เขตกิจกรรม#38	858,{}
+mooc,157,177,3	duplicate(No_entry)	เขตกิจกรรม#39	858,{}
+mooc,157,178,3	duplicate(No_entry)	เขตกิจกรรม#40	858,{}
+mooc,157,179,3	duplicate(No_entry)	เขตกิจกรรม#41	858,{}

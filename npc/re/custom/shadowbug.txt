@@ -1,0 +1,32 @@
+// [This script is brought to you by Pang]
+// This NPC will give your players the selected elemental endowments normally given by sages. The NPC will also
+// sell elemental converters. The prices and whether elemental stones are required can be configured after the
+// OnInit label at the end.
+// V1.0 - Released - 5-Jul-2018
+
+prontera,139,175,4	script	แก้บัค Shadow Chaser	481,{
+	mes "สวัสดี เราสามารถแก้บัคสกิลหายของอาชีพ ^0000ffShadow Chaser^000000 ได้";
+	next;
+	mes "ท่านต้องการแก้บัคหรือไม่ ?";
+	switch(select("ใช่:ไม่")) {
+	case 1:
+		if(eaclass()&EAJL_THIRD && BaseJob == Job_Rogue){
+			mes "เราจะทำการแก้บัคให้ รอซํกครู่";
+			atcommand "@resetskill";
+			atcommand "@skpoint -999";
+			.@point = 49 + 69 + JobLevel -1;
+			atcommand "@skpoint " + .@point;
+			specialeffect2 EF_ANGEL2;
+			next;
+			mes "เรียบร้อย";
+			close;
+			}
+		mes "ท่านไม่ได้เป็นอาชีพ ^0000ffShadow Chaser^000000";
+		close;
+	case 2:
+		mes "ไว้พบกันใหม่โอกาสหน้า";
+		close;
+	}	
+
+}
+	

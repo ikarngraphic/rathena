@@ -1,0 +1,1290 @@
+//===== rAthena Script =======================================
+//= Auto Create Porion
+//===== By: ==================================================
+//= mr.TAURUS
+//===== Current Version: =====================================
+//= 1.8
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Description: =========================================
+//= 1.0 ทดสอบสคริปส์ทำยาให้อัตนโมัติ
+//= 1.1 มีวัตถุดิบครบ ก็จะทำยาให้ทั้งหมดเท่าที่วัตถุดิบมี
+//= 1.2 เพิ่มหมวดหมู่ชนิดของยา
+//= 1.3 เพิ่มการใช้งานหนังสือทำยา กับที่บดยา
+//= 1.4 เพิ่มร้านขายอุปกรณ์ทำยา
+//= 1.5 เพิ่มหมวดยาแอส
+//= 1.6 แก้ไขบางส่วน
+//= 1.7 เพิ่มหมวดน้ำผลไม้
+//= 1.8 เพิ่มเมนู ร้านขายอุปกรณ์ทำยา
+
+//============================================================
+-	shop	PotionMaker	-1,7144:100000,7127:100000,7128:100000,7129:100000,7130:100000,7131:100000,7132:100000,7133:200000,7434:100000,713:150,1093:300,1092:500,7143:5000,7134:100,7140:-1,7141:-1,715:-1,716:-1,717:-1,970:-1,971:-1,972:-1,952:160,911:-1,1017:160,1061:-1,905:160,7033:-1,1059:-1,929:-1,1032:-1,1050:-1,1051:-1,950:-1,1044:-1,1012:-1,7126:-1,1057:160
+
+maintown,102,89,4	script	นักปรุงยา::autopotions	558,{
+
+
+//= Config : ตั้งค่า ====================================================
+	
+	set .NPC$, "^00FF00[ นักปรุงยา ]^000000";
+	set .@Price,50000;
+	
+	//= หนังสือทำยา ========================================================
+	set .@NBGuide,7144;		// Potion Creation Guide
+	set .@SBGuide,7133;		// Slim Potion Creation Guide
+	set .@AlGuide,7127;		// Alcohol Creation Guide
+	set .@BGreGuide,7128;	// Bottle Grenade Creation Guide
+	set .@AcidGuide,7129;	// Acid Bottle Creation Guide
+	set .@PBGuide,7130;		// Plant Bottle Creation Guide
+	set .@MSGuide,7131;		// Marine Sphere Creation Guide
+	set	.@GCGuide,7132;		// Glistening Coat Creation Guide
+	set .@EPGuide,7434;		// Elemental Potion Book
+	
+	//= หมวดยาปั้ม ========================================================
+	setarray .@RedP, 501, 507, 2, 713, 1, 7134, 1;
+	setarray .@OrangeP, 502, 507, 1, 508, 1, 713, 1, 7134, 1;
+	setarray .@YellowP, 503, 508, 2, 713, 1, 7134, 1;
+	setarray .@WhiteP, 504, 509, 2, 713, 1, 7134, 1;
+	setarray .@BlueP, 505, 510, 2, 713, 1, 7134, 1;
+	setarray .@GreenP, 506, 511, 2, 713, 1, 7134, 1;
+	setarray .@Anodyne, 605, 708, 1, 970, 1, 713, 1, 7134, 1;
+	setarray .@Aloevera, 606, 704, 1, 518, 1, 713, 1, 7134, 1;
+	
+	//= หมวดยาปั้มสลิม ======================================================
+	setarray .@RedS, 545, 501, 1, 952, 1, 1092, 1, 7134, 1;
+	setarray .@YellowS, 546, 503, 1, 1018, 1, 1092, 1, 7134, 1;
+	setarray .@WhiteS, 547, 504, 1, 1061, 1, 1092, 1, 7134, 1;
+	
+	//= หมวดยากันธาตุ ======================================================
+	setarray .@RFire, 12118, 1012, 2, 716, 1, 1093, 1, 7134, 1;
+	setarray .@RWater, 12119, 905, 3, 717, 1, 1093, 1, 7134, 1;
+	setarray .@REarth, 12120, 7126, 2, 715, 1, 1093, 1, 7134, 1;
+	setarray .@RWind, 12121, 1057, 2, 717, 1, 1093, 1, 7134, 1;
+	
+	//= หมวดยาปา =========================================================
+	setarray .@Alcohol, 970, 905, 5, 7033, 5, 713, 1, 1092, 1, 7134, 1;
+	setarray .@BGrenade, 7135, 1059, 1, 970, 1, 713, 1, 7134, 1;
+	setarray .@Acid, 7136, 929, 1, 713, 1, 7134, 1;
+	setarray .@Plant, 7137, 1032, 1, 713, 1, 7134, 1;
+	setarray .@Marine, 7138, 1051, 1, 1050, 1, 713, 1, 7134, 1;
+	setarray .@Glistening, 7139, 950, 1, 1044, 1, 970, 1, 713, 1, 7134, 1;
+	
+	//= หมวดแอส ==========================================================
+	setarray .@PoisonB, 678, 657, 1, 713, 1, 937, 1, 939, 1, 952, 1, 972, 1, 7033, 1;
+	
+	//= น้ำผลไม้ ===========================================================
+	setarray .@AppleJ, 531, 512, 1, 713, 1;
+	setarray .@BananaJ, 532, 513, 1, 713, 1;
+	setarray .@CarrotJ, 533, 514, 1, 713, 1;
+	setarray .@GrapeJ, 534, 515, 1, 713, 1;
+	
+	
+//= Scripts ====================================================	
+	
+mes .NPC$;
+mes "สวัสดี  "+strcharinfo(0);
+mes "ยินดีต้อนรับสู่ ^FF0000บริการทำยาอัตโนมัติ^000000";
+next;
+mes .NPC$;
+mes "คุณต้องการจะทำยาแบบไหนค่ะ?";
+menu "• ^FF0000ไม่ต้องการ^000000",L_close,"• โพชั่นทั่วไป",L_Potion,"• โพชั่นสลิม",L_Slim,"• ยากันธาตุ",L_Resist,"• ยาปา",L_Pitcher,"• ยาพิษ",L_Poison,"• น้ำผลไม้",L_Juice,"• ร้านอุปกรณ์ทำยา",L_Shop;
+	
+L_Potion:
+switch(select("^009933•^000000 สร้าง ^FF0000Red Potion^000000:^009933•^000000 สร้าง ^FF0000Orange Potion^000000:^009933•^000000 สร้าง ^FF0000Yellow Potion^000000:^009933•^000000 สร้าง ^FF0000White Potion^000000:^009933•^000000 สร้าง ^FF0000Blue Potion^000000:^009933•^000000 สร้าง ^FF0000Green Potion^000000:^009933•^000000 สร้าง ^FF0000Anodyne^000000:^009933•^000000 สร้าง ^FF0000Aloevera^000000")) {
+	
+	case 1:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@RedP)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@RedP[1])+" "+(.@RedP[2])+" ชิ้น ";
+		mes "- "+getitemname(.@RedP[3])+" "+(.@RedP[4])+" ชิ้น ";
+		mes "- "+getitemname(.@RedP[5])+" "+(.@RedP[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@RedP[1])<.@RedP[2])+(countitem(.@RedP[3])<.@RedP[4])+(countitem(.@RedP[5])<.@RedP[6])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@RedP[1])+" "+(.@RedP[2])+" ชิ้น ";
+			mes "- "+getitemname(.@RedP[3])+" "+(.@RedP[4])+" ชิ้น ";
+			mes "- "+getitemname(.@RedP[5])+" "+(.@RedP[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@RedP)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@RedP[1])/ .@RedP[2];
+				if ( .@amount ) {
+				delitem .@RedP[1], .@amount*.@RedP[2];
+				delitem .@RedP[3], .@amount*.@RedP[4];
+				delitem .@RedP[5], .@amount*.@RedP[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@RedP, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 2:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@OrangeP)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@OrangeP[1])+" "+(.@OrangeP[2])+" ชิ้น ";
+		mes "- "+getitemname(.@OrangeP[3])+" "+(.@OrangeP[4])+" ชิ้น ";
+		mes "- "+getitemname(.@OrangeP[5])+" "+(.@OrangeP[6])+" ชิ้น ";
+		mes "- "+getitemname(.@OrangeP[7])+" "+(.@OrangeP[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@OrangeP[1])<.@OrangeP[2])+(countitem(.@OrangeP[3])<.@OrangeP[4])+(countitem(.@OrangeP[5])<.@OrangeP[6])+(countitem(.@OrangeP[7])<.@OrangeP[8])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@OrangeP[1])+" "+(.@OrangeP[2])+" ชิ้น ";
+			mes "- "+getitemname(.@OrangeP[3])+" "+(.@OrangeP[4])+" ชิ้น ";
+			mes "- "+getitemname(.@OrangeP[5])+" "+(.@OrangeP[6])+" ชิ้น ";
+			mes "- "+getitemname(.@OrangeP[7])+" "+(.@OrangeP[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@OrangeP)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@OrangeP[1])/ .@OrangeP[2];
+				if ( .@amount ) {
+				delitem .@OrangeP[1], .@amount*.@OrangeP[2];
+				delitem .@OrangeP[3], .@amount*.@OrangeP[4];
+				delitem .@OrangeP[5], .@amount*.@OrangeP[6];
+				delitem .@OrangeP[7], .@amount*.@OrangeP[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@OrangeP, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}	
+	case 3:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@YellowP)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@YellowP[1])+" "+(.@YellowP[2])+" ชิ้น ";
+		mes "- "+getitemname(.@YellowP[3])+" "+(.@YellowP[4])+" ชิ้น ";
+		mes "- "+getitemname(.@YellowP[5])+" "+(.@YellowP[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@YellowP[1])<.@YellowP[2])+(countitem(.@YellowP[3])<.@YellowP[4])+(countitem(.@YellowP[5])<.@YellowP[6])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@YellowP[1])+" "+(.@YellowP[2])+" ชิ้น ";
+			mes "- "+getitemname(.@YellowP[3])+" "+(.@YellowP[4])+" ชิ้น ";
+			mes "- "+getitemname(.@YellowP[5])+" "+(.@YellowP[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@YellowP)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@YellowP[1])/ .@YellowP[2];
+				if ( .@amount ) {
+				delitem .@YellowP[1], .@amount*.@YellowP[2];
+				delitem .@YellowP[3], .@amount*.@YellowP[4];
+				delitem .@YellowP[5], .@amount*.@YellowP[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@YellowP, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 4:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@WhiteP)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@WhiteP[1])+" "+(.@WhiteP[2])+" ชิ้น ";
+		mes "- "+getitemname(.@WhiteP[3])+" "+(.@WhiteP[4])+" ชิ้น ";
+		mes "- "+getitemname(.@WhiteP[5])+" "+(.@WhiteP[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@WhiteP[1])<.@WhiteP[2])+(countitem(.@WhiteP[3])<.@WhiteP[4])+(countitem(.@WhiteP[5])<.@WhiteP[6])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@WhiteP[1])+" "+(.@WhiteP[2])+" ชิ้น ";
+			mes "- "+getitemname(.@WhiteP[3])+" "+(.@WhiteP[4])+" ชิ้น ";
+			mes "- "+getitemname(.@WhiteP[5])+" "+(.@WhiteP[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@WhiteP)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@WhiteP[1])/ .@WhiteP[2];
+				if ( .@amount ) {
+				delitem .@WhiteP[1], .@amount*.@WhiteP[2];
+				delitem .@WhiteP[3], .@amount*.@WhiteP[4];
+				delitem .@WhiteP[5], .@amount*.@WhiteP[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@WhiteP, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 5:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@BlueP)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@BlueP[1])+" "+(.@BlueP[2])+" ชิ้น ";
+		mes "- "+getitemname(.@BlueP[3])+" "+(.@BlueP[4])+" ชิ้น ";
+		mes "- "+getitemname(.@BlueP[5])+" "+(.@BlueP[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@BlueP[1])<.@BlueP[2])+(countitem(.@BlueP[3])<.@BlueP[4])+(countitem(.@BlueP[5])<.@BlueP[6])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@BlueP[1])+" "+(.@BlueP[2])+" ชิ้น ";
+			mes "- "+getitemname(.@BlueP[3])+" "+(.@BlueP[4])+" ชิ้น ";
+			mes "- "+getitemname(.@BlueP[5])+" "+(.@BlueP[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@BlueP)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@BlueP[1])/ .@BlueP[2];
+				if ( .@amount ) {
+				delitem .@BlueP[1], .@amount*.@BlueP[2];
+				delitem .@BlueP[3], .@amount*.@BlueP[4];
+				delitem .@BlueP[5], .@amount*.@BlueP[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@BlueP, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 6:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@GreenP)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@GreenP[1])+" "+(.@GreenP[2])+" ชิ้น ";
+		mes "- "+getitemname(.@GreenP[3])+" "+(.@GreenP[4])+" ชิ้น ";
+		mes "- "+getitemname(.@GreenP[5])+" "+(.@GreenP[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@GreenP[1])<.@GreenP[2])+(countitem(.@GreenP[3])<.@GreenP[4])+(countitem(.@GreenP[5])<.@GreenP[6])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@GreenP[1])+" "+(.@GreenP[2])+" ชิ้น ";
+			mes "- "+getitemname(.@GreenP[3])+" "+(.@GreenP[4])+" ชิ้น ";
+			mes "- "+getitemname(.@GreenP[5])+" "+(.@GreenP[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@GreenP)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@GreenP[1])/ .@GreenP[2];
+				if ( .@amount ) {
+				delitem .@GreenP[1], .@amount*.@GreenP[2];
+				delitem .@GreenP[3], .@amount*.@GreenP[4];
+				delitem .@GreenP[5], .@amount*.@GreenP[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@GreenP, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 7:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Anodyne)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Anodyne[1])+" "+(.@Anodyne[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Anodyne[3])+" "+(.@Anodyne[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Anodyne[5])+" "+(.@Anodyne[6])+" ชิ้น ";
+		mes "- "+getitemname(.@Anodyne[7])+" "+(.@Anodyne[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Anodyne[1])<.@Anodyne[2])+(countitem(.@Anodyne[3])<.@Anodyne[4])+(countitem(.@Anodyne[5])<.@Anodyne[6])+(countitem(.@Anodyne[7])<.@Anodyne[8])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Anodyne[1])+" "+(.@Anodyne[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Anodyne[3])+" "+(.@Anodyne[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Anodyne[5])+" "+(.@Anodyne[6])+" ชิ้น ";
+			mes "- "+getitemname(.@Anodyne[7])+" "+(.@Anodyne[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Anodyne)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Anodyne[1])/ .@Anodyne[2];
+				if ( .@amount ) {
+				delitem .@Anodyne[1], .@amount*.@Anodyne[2];
+				delitem .@Anodyne[3], .@amount*.@Anodyne[4];
+				delitem .@Anodyne[5], .@amount*.@Anodyne[6];
+				delitem .@Anodyne[7], .@amount*.@Anodyne[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Anodyne, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 8:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Aloevera)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Aloevera[1])+" "+(.@Aloevera[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Aloevera[3])+" "+(.@Aloevera[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Aloevera[5])+" "+(.@Aloevera[6])+" ชิ้น ";
+		mes "- "+getitemname(.@Aloevera[7])+" "+(.@Aloevera[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Aloevera[1])<.@Aloevera[2])+(countitem(.@Aloevera[3])<.@Aloevera[4])+(countitem(.@Aloevera[5])<.@Aloevera[6])+(countitem(.@Aloevera[7])<.@Aloevera[8])+(countitem(.@NBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Aloevera[1])+" "+(.@Aloevera[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Aloevera[3])+" "+(.@Aloevera[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Aloevera[5])+" "+(.@Aloevera[6])+" ชิ้น ";
+			mes "- "+getitemname(.@Aloevera[7])+" "+(.@Aloevera[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@NBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Aloevera)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Aloevera[1])/ .@Aloevera[2];
+				if ( .@amount ) {
+				delitem .@Aloevera[1], .@amount*.@Aloevera[2];
+				delitem .@Aloevera[3], .@amount*.@Aloevera[4];
+				delitem .@Aloevera[5], .@amount*.@Aloevera[6];
+				delitem .@Aloevera[7], .@amount*.@Aloevera[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Aloevera, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}	
+	}	
+	
+	L_Slim:
+	switch(select("^009933•^000000 สร้าง ^FF0000Red Slim Potion^000000:^009933•^000000 สร้าง ^FF0000Yellow Slim Potion^000000:^009933•^000000 สร้าง ^FF0000White Slim Potion^000000")) {
+	
+	case 1:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@RedS)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@RedS[1])+" "+(.@RedS[2])+" ชิ้น ";
+		mes "- "+getitemname(.@RedS[3])+" "+(.@RedS[4])+" ชิ้น ";
+		mes "- "+getitemname(.@RedS[5])+" "+(.@RedS[6])+" ชิ้น ";
+		mes "- "+getitemname(.@RedS[7])+" "+(.@RedS[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@SBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@RedS[1])<.@RedS[2])+(countitem(.@RedS[3])<.@RedS[4])+(countitem(.@RedS[5])<.@RedS[6])+(countitem(.@RedS[7])<.@RedS[8])+(countitem(.@SBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@RedS[1])+" "+(.@RedS[2])+" ชิ้น ";
+			mes "- "+getitemname(.@RedS[3])+" "+(.@RedS[4])+" ชิ้น ";
+			mes "- "+getitemname(.@RedS[5])+" "+(.@RedS[6])+" ชิ้น ";
+			mes "- "+getitemname(.@RedS[7])+" "+(.@RedS[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@SBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@RedS)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@RedS[1])/ .@RedS[2];
+				if ( .@amount ) {
+				delitem .@RedS[1], .@amount*.@RedS[2];
+				delitem .@RedS[3], .@amount*.@RedS[4];
+				delitem .@RedS[5], .@amount*.@RedS[6];
+				delitem .@RedS[7], .@amount*.@RedS[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@RedS, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 2:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@YellowS)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@YellowS[1])+" "+(.@YellowS[2])+" ชิ้น ";
+		mes "- "+getitemname(.@YellowS[3])+" "+(.@YellowS[4])+" ชิ้น ";
+		mes "- "+getitemname(.@YellowS[5])+" "+(.@YellowS[6])+" ชิ้น ";
+		mes "- "+getitemname(.@YellowS[7])+" "+(.@YellowS[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@SBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@YellowS[1])<.@YellowS[2])+(countitem(.@YellowS[3])<.@YellowS[4])+(countitem(.@YellowS[5])<.@YellowS[6])+(countitem(.@YellowS[7])<.@YellowS[8])+(countitem(.@SBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@YellowS[1])+" "+(.@YellowS[2])+" ชิ้น ";
+			mes "- "+getitemname(.@YellowS[3])+" "+(.@YellowS[4])+" ชิ้น ";
+			mes "- "+getitemname(.@YellowS[5])+" "+(.@YellowS[6])+" ชิ้น ";
+			mes "- "+getitemname(.@YellowS[7])+" "+(.@YellowS[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@SBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@YellowS)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@YellowS[1])/ .@YellowS[2];
+				if ( .@amount ) {
+				delitem .@YellowS[1], .@amount*.@YellowS[2];
+				delitem .@YellowS[3], .@amount*.@YellowS[4];
+				delitem .@YellowS[5], .@amount*.@YellowS[6];
+				delitem .@YellowS[7], .@amount*.@YellowS[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@YellowS, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}	
+	case 3:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@WhiteS)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@WhiteS[1])+" "+(.@WhiteS[2])+" ชิ้น ";
+		mes "- "+getitemname(.@WhiteS[3])+" "+(.@WhiteS[4])+" ชิ้น ";
+		mes "- "+getitemname(.@WhiteS[5])+" "+(.@WhiteS[6])+" ชิ้น ";
+		mes "- "+getitemname(.@WhiteS[7])+" "+(.@WhiteS[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@SBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@WhiteS[1])<.@WhiteS[2])+(countitem(.@WhiteS[3])<.@WhiteS[4])+(countitem(.@WhiteS[5])<.@WhiteS[6])+(countitem(.@WhiteS[7])<.@WhiteS[8])+(countitem(.@SBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@WhiteS[1])+" "+(.@WhiteS[2])+" ชิ้น ";
+			mes "- "+getitemname(.@WhiteS[3])+" "+(.@WhiteS[4])+" ชิ้น ";
+			mes "- "+getitemname(.@WhiteS[5])+" "+(.@WhiteS[6])+" ชิ้น ";
+			mes "- "+getitemname(.@WhiteS[7])+" "+(.@WhiteS[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@SBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@WhiteS)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@WhiteS[1])/ .@WhiteS[2];
+				if ( .@amount ) {
+				delitem .@WhiteS[1], .@amount*.@WhiteS[2];
+				delitem .@WhiteS[3], .@amount*.@WhiteS[4];
+				delitem .@WhiteS[5], .@amount*.@WhiteS[6];
+				delitem .@WhiteS[7], .@amount*.@WhiteS[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@WhiteS, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	}	
+	
+	L_Resist:
+	switch(select("^009933•^000000 สร้าง ^FF0000Resist Water^000000:^009933•^000000 สร้าง ^FF0000Resist Earth^000000:^009933•^000000 สร้าง ^FF0000Resist Fire^000000:^009933•^000000 สร้าง ^FF0000Resist Wind^000000")) {
+	
+	case 1:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@RWater)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@RWater[1])+" "+(.@RWater[2])+" ชิ้น ";
+		mes "- "+getitemname(.@RWater[3])+" "+(.@RWater[4])+" ชิ้น ";
+		mes "- "+getitemname(.@RWater[5])+" "+(.@RWater[6])+" ชิ้น ";
+		mes "- "+getitemname(.@RWater[7])+" "+(.@RWater[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@RWater[1])<.@RWater[2])+(countitem(.@RWater[3])<.@RWater[4])+(countitem(.@RWater[5])<.@RWater[6])+(countitem(.@RWater[7])<.@RWater[8])+(countitem(.@EPGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@RWater[1])+" "+(.@RWater[2])+" ชิ้น ";
+			mes "- "+getitemname(.@RWater[3])+" "+(.@RWater[4])+" ชิ้น ";
+			mes "- "+getitemname(.@RWater[5])+" "+(.@RWater[6])+" ชิ้น ";
+			mes "- "+getitemname(.@RWater[7])+" "+(.@RWater[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@RWater)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@RWater[1])/ .@RWater[2];
+				if ( .@amount ) {
+				delitem .@RWater[1], .@amount*.@RWater[2];
+				delitem .@RWater[3], .@amount*.@RWater[4];
+				delitem .@RWater[5], .@amount*.@RWater[6];
+				delitem .@RWater[7], .@amount*.@RWater[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@RWater, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 2:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@REarth)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@REarth[1])+" "+(.@REarth[2])+" ชิ้น ";
+		mes "- "+getitemname(.@REarth[3])+" "+(.@REarth[4])+" ชิ้น ";
+		mes "- "+getitemname(.@REarth[5])+" "+(.@REarth[6])+" ชิ้น ";
+		mes "- "+getitemname(.@REarth[7])+" "+(.@REarth[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@REarth[1])<.@REarth[2])+(countitem(.@REarth[3])<.@REarth[4])+(countitem(.@REarth[5])<.@REarth[6])+(countitem(.@REarth[7])<.@REarth[8])+(countitem(.@EPGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@REarth[1])+" "+(.@REarth[2])+" ชิ้น ";
+			mes "- "+getitemname(.@REarth[3])+" "+(.@REarth[4])+" ชิ้น ";
+			mes "- "+getitemname(.@REarth[5])+" "+(.@REarth[6])+" ชิ้น ";
+			mes "- "+getitemname(.@REarth[7])+" "+(.@REarth[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@REarth)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@REarth[1])/ .@REarth[2];
+				if ( .@amount ) {
+				delitem .@REarth[1], .@amount*.@REarth[2];
+				delitem .@REarth[3], .@amount*.@REarth[4];
+				delitem .@REarth[5], .@amount*.@REarth[6];
+				delitem .@REarth[7], .@amount*.@REarth[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@REarth, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 3:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@RFire)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@RFire[1])+" "+(.@RFire[2])+" ชิ้น ";
+		mes "- "+getitemname(.@RFire[3])+" "+(.@RFire[4])+" ชิ้น ";
+		mes "- "+getitemname(.@RFire[5])+" "+(.@RFire[6])+" ชิ้น ";
+		mes "- "+getitemname(.@RFire[7])+" "+(.@RFire[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@RFire[1])<.@RFire[2])+(countitem(.@RFire[3])<.@RFire[4])+(countitem(.@RFire[5])<.@RFire[6])+(countitem(.@RFire[7])<.@RFire[8])+(countitem(.@EPGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@RFire[1])+" "+(.@RFire[2])+" ชิ้น ";
+			mes "- "+getitemname(.@RFire[3])+" "+(.@RFire[4])+" ชิ้น ";
+			mes "- "+getitemname(.@RFire[5])+" "+(.@RFire[6])+" ชิ้น ";
+			mes "- "+getitemname(.@RFire[7])+" "+(.@RFire[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@RFire)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@RFire[1])/ .@RFire[2];
+				if ( .@amount ) {
+				delitem .@RFire[1], .@amount*.@RFire[2];
+				delitem .@RFire[3], .@amount*.@RFire[4];
+				delitem .@RFire[5], .@amount*.@RFire[6];
+				delitem .@RFire[7], .@amount*.@RFire[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@RFire, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 4:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@RWind)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@RWind[1])+" "+(.@RWind[2])+" ชิ้น ";
+		mes "- "+getitemname(.@RWind[3])+" "+(.@RWind[4])+" ชิ้น ";
+		mes "- "+getitemname(.@RWind[5])+" "+(.@RWind[6])+" ชิ้น ";
+		mes "- "+getitemname(.@RWind[7])+" "+(.@RWind[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@RWind[1])<.@RWind[2])+(countitem(.@RWind[3])<.@RWind[4])+(countitem(.@RWind[5])<.@RWind[6])+(countitem(.@RWind[7])<.@RWind[8])+(countitem(.@EPGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@RWind[1])+" "+(.@RWind[2])+" ชิ้น ";
+			mes "- "+getitemname(.@RWind[3])+" "+(.@RWind[4])+" ชิ้น ";
+			mes "- "+getitemname(.@RWind[5])+" "+(.@RWind[6])+" ชิ้น ";
+			mes "- "+getitemname(.@RWind[7])+" "+(.@RWind[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@EPGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@RWind)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@RWind[1])/ .@RWind[2];
+				if ( .@amount ) {
+				delitem .@RWind[1], .@amount*.@RWind[2];
+				delitem .@RWind[3], .@amount*.@RWind[4];
+				delitem .@RWind[5], .@amount*.@RWind[6];
+				delitem .@RWind[7], .@amount*.@RWind[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@RWind, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}		
+	}
+	
+	L_Pitcher:
+	switch(select("^009933•^000000 สร้าง ^FF0000Alcohol^000000:^009933•^000000 สร้าง ^FF0000Bottle Grenade^000000:^009933•^000000 สร้าง ^FF0000Acid Bottle^000000:^009933•^000000 สร้าง ^FF0000Plant Bottle^000000:^009933•^000000 สร้าง ^FF0000Marine Sphere Bottle^000000:^009933•^000000 สร้าง ^FF0000Glistening Coat^000000")) {
+	
+	case 1:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Alcohol)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Alcohol[1])+" "+(.@Alcohol[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Alcohol[3])+" "+(.@Alcohol[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Alcohol[5])+" "+(.@Alcohol[6])+" ชิ้น ";
+		mes "- "+getitemname(.@Alcohol[7])+" "+(.@Alcohol[8])+" ชิ้น ";
+		mes "- "+getitemname(.@Alcohol[9])+" "+(.@Alcohol[10])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@AlGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Alcohol[1])<.@Alcohol[2])+(countitem(.@Alcohol[3])<.@Alcohol[4])+(countitem(.@Alcohol[5])<.@Alcohol[6])+(countitem(.@Alcohol[7])<.@Alcohol[8])+(countitem(.@Alcohol[9])<.@Alcohol[10])+(countitem(.@AlGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Alcohol[1])+" "+(.@Alcohol[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Alcohol[3])+" "+(.@Alcohol[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Alcohol[5])+" "+(.@Alcohol[6])+" ชิ้น ";
+			mes "- "+getitemname(.@Alcohol[7])+" "+(.@Alcohol[8])+" ชิ้น ";
+			mes "- "+getitemname(.@Alcohol[9])+" "+(.@Alcohol[10])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@AlGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Alcohol)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Alcohol[1])/ .@Alcohol[2];
+				if ( .@amount ) {
+				delitem .@Alcohol[1], .@amount*.@Alcohol[2];
+				delitem .@Alcohol[3], .@amount*.@Alcohol[4];
+				delitem .@Alcohol[5], .@amount*.@Alcohol[6];
+				delitem .@Alcohol[7], .@amount*.@Alcohol[8];
+				delitem .@Alcohol[9], .@amount*.@Alcohol[10];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Alcohol, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}	
+	case 2:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@BGrenade)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@BGrenade[1])+" "+(.@BGrenade[2])+" ชิ้น ";
+		mes "- "+getitemname(.@BGrenade[3])+" "+(.@BGrenade[4])+" ชิ้น ";
+		mes "- "+getitemname(.@BGrenade[5])+" "+(.@BGrenade[6])+" ชิ้น ";
+		mes "- "+getitemname(.@BGrenade[7])+" "+(.@BGrenade[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@BGreGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@BGrenade[1])<.@BGrenade[2])+(countitem(.@BGrenade[3])<.@BGrenade[4])+(countitem(.@BGrenade[5])<.@BGrenade[6])+(countitem(.@BGrenade[7])<.@BGrenade[8])+(countitem(.@BGreGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@BGrenade[1])+" "+(.@BGrenade[2])+" ชิ้น ";
+			mes "- "+getitemname(.@BGrenade[3])+" "+(.@BGrenade[4])+" ชิ้น ";
+			mes "- "+getitemname(.@BGrenade[5])+" "+(.@BGrenade[6])+" ชิ้น ";
+			mes "- "+getitemname(.@BGrenade[7])+" "+(.@BGrenade[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@BGreGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@BGrenade)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@BGrenade[1])/ .@BGrenade[2];
+				if ( .@amount ) {
+				delitem .@BGrenade[1], .@amount*.@BGrenade[2];
+				delitem .@BGrenade[3], .@amount*.@BGrenade[4];
+				delitem .@BGrenade[5], .@amount*.@BGrenade[6];
+				delitem .@BGrenade[7], .@amount*.@BGrenade[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@BGrenade, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 3:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Acid)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Acid[1])+" "+(.@Acid[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Acid[3])+" "+(.@Acid[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Acid[5])+" "+(.@Acid[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@AcidGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Acid[1])<.@Acid[2])+(countitem(.@Acid[3])<.@Acid[4])+(countitem(.@Acid[5])<.@Acid[6])+(countitem(.@AcidGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Acid[1])+" "+(.@Acid[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Acid[3])+" "+(.@Acid[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Acid[5])+" "+(.@Acid[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@AcidGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Acid)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Acid[1])/ .@Acid[2];
+				if ( .@amount ) {
+				delitem .@Acid[1], .@amount*.@Acid[2];
+				delitem .@Acid[3], .@amount*.@Acid[4];
+				delitem .@Acid[5], .@amount*.@Acid[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Acid, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}	
+	case 4:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Plant)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Plant[1])+" "+(.@Plant[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Plant[3])+" "+(.@Plant[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Plant[5])+" "+(.@Plant[6])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@PBGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Plant[1])<.@Plant[2])+(countitem(.@Plant[3])<.@Plant[4])+(countitem(.@Plant[5])<.@Plant[6])+(countitem(.@PBGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Plant[1])+" "+(.@Plant[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Plant[3])+" "+(.@Plant[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Plant[5])+" "+(.@Plant[6])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@PBGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Plant)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Plant[1])/ .@Plant[2];
+				if ( .@amount ) {
+				delitem .@Plant[1], .@amount*.@Plant[2];
+				delitem .@Plant[3], .@amount*.@Plant[4];
+				delitem .@Plant[5], .@amount*.@Plant[6];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Plant, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 5:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Marine)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Marine[1])+" "+(.@Marine[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Marine[3])+" "+(.@Marine[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Marine[5])+" "+(.@Marine[6])+" ชิ้น ";
+		mes "- "+getitemname(.@Marine[7])+" "+(.@Marine[8])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@MSGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Marine[1])<.@Marine[2])+(countitem(.@Marine[3])<.@Marine[4])+(countitem(.@Marine[5])<.@Marine[6])+(countitem(.@Marine[7])<.@Marine[8])+(countitem(.@MSGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Marine[1])+" "+(.@Marine[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Marine[3])+" "+(.@Marine[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Marine[5])+" "+(.@Marine[6])+" ชิ้น ";
+			mes "- "+getitemname(.@Marine[7])+" "+(.@Marine[8])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@MSGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Marine)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Marine[1])/ .@Marine[2];
+				if ( .@amount ) {
+				delitem .@Marine[1], .@amount*.@Marine[2];
+				delitem .@Marine[3], .@amount*.@Marine[4];
+				delitem .@Marine[5], .@amount*.@Marine[6];
+				delitem .@Marine[7], .@amount*.@Marine[8];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Marine, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 6:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@Glistening)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@Glistening[1])+" "+(.@Glistening[2])+" ชิ้น ";
+		mes "- "+getitemname(.@Glistening[3])+" "+(.@Glistening[4])+" ชิ้น ";
+		mes "- "+getitemname(.@Glistening[5])+" "+(.@Glistening[6])+" ชิ้น ";
+		mes "- "+getitemname(.@Glistening[7])+" "+(.@Glistening[8])+" ชิ้น ";
+		mes "- "+getitemname(.@Glistening[9])+" "+(.@Glistening[10])+" ชิ้น ";
+		mes "และต้องมี "+getitemname(.@GCGuide)+" อยู่ในช่องสัมภาระ.";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@Glistening[1])<.@Glistening[2])+(countitem(.@Glistening[3])<.@Glistening[4])+(countitem(.@Glistening[5])<.@Glistening[6])+(countitem(.@Glistening[7])<.@Glistening[8])+(countitem(.@Glistening[9])<.@Glistening[10])+(countitem(.@GCGuide)<1)+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@Glistening[1])+" "+(.@Glistening[2])+" ชิ้น ";
+			mes "- "+getitemname(.@Glistening[3])+" "+(.@Glistening[4])+" ชิ้น ";
+			mes "- "+getitemname(.@Glistening[5])+" "+(.@Glistening[6])+" ชิ้น ";
+			mes "- "+getitemname(.@Glistening[7])+" "+(.@Glistening[8])+" ชิ้น ";
+			mes "- "+getitemname(.@Glistening[9])+" "+(.@Glistening[10])+" ชิ้น ";
+			mes "และต้องมี "+getitemname(.@GCGuide)+" อยู่ในช่องสัมภาระ.";
+			mes "ในการสร้าง "+getitemname(.@Glistening)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@Glistening[1])/ .@Glistening[2];
+				if ( .@amount ) {
+				delitem .@Glistening[1], .@amount*.@Glistening[2];
+				delitem .@Glistening[3], .@amount*.@Glistening[4];
+				delitem .@Glistening[5], .@amount*.@Glistening[6];
+				delitem .@Glistening[7], .@amount*.@Glistening[8];
+				delitem .@Glistening[9], .@amount*.@Glistening[10];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@Glistening, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}		
+	}
+	
+	L_Poison:
+	switch(select("^009933•^000000 สร้าง ^FF0000Poison Bottle^000000")) {
+	
+	case 1:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@PoisonB)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@PoisonB[1])+" "+(.@PoisonB[2])+" ชิ้น ";
+		mes "- "+getitemname(.@PoisonB[3])+" "+(.@PoisonB[4])+" ชิ้น ";
+		mes "- "+getitemname(.@PoisonB[5])+" "+(.@PoisonB[6])+" ชิ้น ";
+		mes "- "+getitemname(.@PoisonB[7])+" "+(.@PoisonB[8])+" ชิ้น ";
+		mes "- "+getitemname(.@PoisonB[9])+" "+(.@PoisonB[10])+" ชิ้น ";
+		mes "- "+getitemname(.@PoisonB[11])+" "+(.@PoisonB[12])+" ชิ้น ";
+		mes "- "+getitemname(.@PoisonB[13])+" "+(.@PoisonB[14])+" ชิ้น ";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@PoisonB[1])<.@PoisonB[2])+(countitem(.@PoisonB[3])<.@PoisonB[4])+(countitem(.@PoisonB[5])<.@PoisonB[6])+(countitem(.@PoisonB[7])<.@PoisonB[8])+(countitem(.@PoisonB[9])<.@PoisonB[10])+(countitem(.@PoisonB[11])<.@PoisonB[12])+(countitem(.@PoisonB[13])<.@PoisonB[14])+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@PoisonB[1])+" "+(.@PoisonB[2])+" ชิ้น ";
+			mes "- "+getitemname(.@PoisonB[3])+" "+(.@PoisonB[4])+" ชิ้น ";
+			mes "- "+getitemname(.@PoisonB[5])+" "+(.@PoisonB[6])+" ชิ้น ";
+			mes "- "+getitemname(.@PoisonB[7])+" "+(.@PoisonB[8])+" ชิ้น ";
+			mes "- "+getitemname(.@PoisonB[9])+" "+(.@PoisonB[10])+" ชิ้น ";
+			mes "- "+getitemname(.@PoisonB[11])+" "+(.@PoisonB[12])+" ชิ้น ";
+			mes "- "+getitemname(.@PoisonB[13])+" "+(.@PoisonB[14])+" ชิ้น ";
+			mes "ในการสร้าง "+getitemname(.@PoisonB)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@PoisonB[1])/ .@PoisonB[2];
+				if ( .@amount ) {
+				delitem .@PoisonB[1], .@amount*.@PoisonB[2];
+				delitem .@PoisonB[3], .@amount*.@PoisonB[4];
+				delitem .@PoisonB[5], .@amount*.@PoisonB[6];
+				delitem .@PoisonB[7], .@amount*.@PoisonB[8];
+				delitem .@PoisonB[9], .@amount*.@PoisonB[10];
+				delitem .@PoisonB[11], .@amount*.@PoisonB[12];
+				delitem .@PoisonB[13], .@amount*.@PoisonB[14];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@PoisonB, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}		
+	}
+	
+	L_Juice:
+	switch(select("^009933•^000000 สร้าง ^FF0000Apple Juice^000000:^009933•^000000 สร้าง ^FF0000Banana Juice^000000:^009933•^000000 สร้าง ^FF0000Grape Juice^000000:^009933•^000000 สร้าง ^FF0000Carrot Juice^000000")) {
+	
+	case 1:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@AppleJ)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@AppleJ[1])+" "+(.@AppleJ[2])+" ชิ้น ";
+		mes "- "+getitemname(.@AppleJ[3])+" "+(.@AppleJ[4])+" ชิ้น ";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@AppleJ[1])<.@AppleJ[2])+(countitem(.@AppleJ[3])<.@AppleJ[4])+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@AppleJ[1])+" "+(.@AppleJ[2])+" ชิ้น ";
+			mes "- "+getitemname(.@AppleJ[3])+" "+(.@AppleJ[4])+" ชิ้น ";
+			mes "ในการสร้าง "+getitemname(.@AppleJ)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@AppleJ[1])/ .@AppleJ[2];
+				if ( .@amount ) {
+				delitem .@AppleJ[1], .@amount*.@AppleJ[2];
+				delitem .@AppleJ[3], .@amount*.@AppleJ[4];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@AppleJ, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 2:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@BananaJ)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@BananaJ[1])+" "+(.@BananaJ[2])+" ชิ้น ";
+		mes "- "+getitemname(.@BananaJ[3])+" "+(.@BananaJ[4])+" ชิ้น ";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@BananaJ[1])<.@BananaJ[2])+(countitem(.@BananaJ[3])<.@BananaJ[4])+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@BananaJ[1])+" "+(.@BananaJ[2])+" ชิ้น ";
+			mes "- "+getitemname(.@BananaJ[3])+" "+(.@BananaJ[4])+" ชิ้น ";
+			mes "ในการสร้าง "+getitemname(.@BananaJ)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@BananaJ[1])/ .@BananaJ[2];
+				if ( .@amount ) {
+				delitem .@BananaJ[1], .@amount*.@BananaJ[2];
+				delitem .@BananaJ[3], .@amount*.@BananaJ[4];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@BananaJ, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}	
+	case 3:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@GrapeJ)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@GrapeJ[1])+" "+(.@GrapeJ[2])+" ชิ้น ";
+		mes "- "+getitemname(.@GrapeJ[3])+" "+(.@GrapeJ[4])+" ชิ้น ";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@GrapeJ[1])<.@GrapeJ[2])+(countitem(.@GrapeJ[3])<.@GrapeJ[4])+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@GrapeJ[1])+" "+(.@GrapeJ[2])+" ชิ้น ";
+			mes "- "+getitemname(.@GrapeJ[3])+" "+(.@GrapeJ[4])+" ชิ้น ";
+			mes "ในการสร้าง "+getitemname(.@GrapeJ)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@GrapeJ[1])/ .@GrapeJ[2];
+				if ( .@amount ) {
+				delitem .@GrapeJ[1], .@amount*.@GrapeJ[2];
+				delitem .@GrapeJ[3], .@amount*.@GrapeJ[4];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@GrapeJ, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	case 4:
+		mes "ในการสร้าง";
+		mes "• "+getitemname(.@CarrotJ)+" 1 ขวด ";
+		mes "จะต้องใช้วัตถุดิบ";
+		mes "- "+getitemname(.@CarrotJ[1])+" "+(.@CarrotJ[2])+" ชิ้น ";
+		mes "- "+getitemname(.@CarrotJ[3])+" "+(.@CarrotJ[4])+" ชิ้น ";
+		next;
+		mes .NPC$;
+		mes "ฉันจะตรวจสอบและใช้วัตถุดิบทั้งหมดที่คุณมี";
+		mes "จะทำการสร้างยาให้ตามจำนวนวัตถุดิบ";
+		mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+		mes "คุณต้องการเริ่มทำยาหรือไม่?";
+		next;
+		menu "^009933•^000000 เริ่มทำยา",-,"^FF0000•^000000 ไม่ต้องการ",L_close;
+		if (countitem(.@CarrotJ[1])<.@CarrotJ[2])+(countitem(.@CarrotJ[3])<.@CarrotJ[4])+( Zeny < .@Price ) {
+			mes .NPC$;
+			mes "คุณต้องมี";
+			mes "- "+getitemname(.@CarrotJ[1])+" "+(.@CarrotJ[2])+" ชิ้น ";
+			mes "- "+getitemname(.@CarrotJ[3])+" "+(.@CarrotJ[4])+" ชิ้น ";
+			mes "ในการสร้าง "+getitemname(.@CarrotJ)+" 1 ขวด ";
+			mes "และมีค่าบริการ ^FF0000 "+(.@Price)+" ^000000z";
+			mes "โปรดกลับมาใหม่อีกครั้งพร้อมวัตถุดิบ";
+			close;
+			}
+			set .@amount, countitem(.@CarrotJ[1])/ .@CarrotJ[2];
+				if ( .@amount ) {
+				delitem .@CarrotJ[1], .@amount*.@CarrotJ[2];
+				delitem .@CarrotJ[3], .@amount*.@CarrotJ[4];
+				set Zeny, Zeny - .@Price;
+				progressbar "FF0000",1;
+				specialeffect2 305;
+				getitem .@CarrotJ, .@amount;
+			next;
+			mes .NPC$;
+			mes "ทำการสร้างทั้งหมดแล้ว";
+			mes "ขอบคุณที่ใช้บริการค่ะ";
+			close;
+		}
+	}
+
+	L_Shop:
+		close2;
+		callshop "PotionMaker",1;
+		end;
+		
+L_close:
+	next;
+	mes .NPC$;
+	mes "แล้วพบกันใหม่ค่ะ";
+	close;
+	 
+}
+
+

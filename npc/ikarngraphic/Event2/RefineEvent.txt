@@ -1,0 +1,257 @@
+//===== eAthena Script ===========================================
+//= Refine Event
+//===== By: ===================================================
+//= Readygo
+//===== Current Version: ==========================================
+//= 1.0
+//===== Comment ===============================================
+// -> กิจกรรมตี+ Item ที่กำหนดไว้มาแลกของ
+// -> สามารถเพิ่มเองได้ไม่จำกัด ( ที่ SetItem ) 
+// -> เพิ่ม Item ที่ SetItem อย่างเดียว NPC Refinner ไม่ต้องไปแก้ไขอะไรทั้งสิ้น
+//============================================================
+// ยกตัวอย่าง +10 Cap[1]	แลกกับ	Flying Evil Wing
+// ยกตัวอย่าง +9 Cap[1]	แลกกับ	ยาแอส 500ea
+// ยกตัวอย่าง +9 Cap[1]	แลกกับ	ยาปา 500 ชุด ( Acid 500ea / Fire 500ea )
+// ยกตัวอย่าง +8 Cap[1]	แลกกับ	ดอกเหลือง 100ea
+// ** วิธีการดูง่ายๆ ให้ดูที่แนวตั้ง  และสามารถเพิ่มต่อไปได้เรื่อยๆ **
+
+function	script	SetItem	{
+setarray @refineupgrade[0], 20,		19,		18,		17,		16,		15,		14,		13,		12,		11,		10,		9,		8;		// จำนวนการตี +
+
+setarray @itemrefine[0], 	5213,	5213,	5213,	5213,	5213,	5213,	5213,	5213,	5213,	5213,	5213,	5213,	5213;		// Item ที่ใช้ตี +
+
+setarray @itemtrade_1[0],	41003,	41003,	41003,	41003,	41003,	41003,	41003,	41003,	41003,	41003,	41003,	41003,	41003;		// ของแลกชิ้นที่ 1
+setarray @amoutitem_1[0],	500,	400,	300,	200,	100,	90,		80,		70,		60,		50,		40,		30,		20;		// จำนวนของแลกชิ้นที่ 1
+
+setarray @itemtrade_2[0],	55063,	0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0;		// ของแลกชิ้นที่ 2
+setarray @amoutitem_2[0],	1,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0;		// ของแลกชิ้นที่ 2
+
+setarray @itemtrade_3[0],	0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0;		// ของแลกชิ้นที่ 3
+setarray @amoutitem_3[0],	0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0;		// ของแลกชิ้นที่ 3
+return;
+}
+
+// =============================================== NPC Refinner =========================================
+-	script	refine event	-1,{
+
+	set $@tr$,"^000080[ Refiner ]^000000";
+
+cutin "orleans_1",2;
+mes $@tr$;
+mes "สวัสดี ^FF0000 "+strcharinfo(0)+" ^000000 ";
+mes "ข้าคือนักตี + ตัวยงของ Server นี้.";
+mes "ท่านมีความกล้าในการตี + หรือปล่าวล่ะ ?";
+mes "ลองดูข้อเสนอของข้าก่อนก็แล้วกัน .";
+next;
+cutin "orleans_7",2;
+mes $@tr$;
+callfunc "SetItem";
+set .@menu$,"";
+	for( set .@u,0; .@u < getarraysize(@itemrefine); set .@u,.@u+1 ) {
+		sleep2 1;
+		if (0 == getitemslots( @itemrefine[.@u]))	set .@menu$, .@menu$ + "["+(.@u+1)+"] ^FF0000+" + "" + @refineupgrade[.@u]+"^A0522D "+getitemname(@itemrefine[.@u])+"^000000";
+		if (1 <= getitemslots( @itemrefine[.@u]))	set .@menu$, .@menu$ + "["+(.@u+1)+"] ^FF0000+" + "" + @refineupgrade[.@u]+"^A0522D "+getitemname(@itemrefine[.@u])+"["+getitemslots( @itemrefine[.@u])+"]^000000";
+		set .@menu$, .@menu$ + ":";
+		if (0 == getitemslots( @itemrefine[.@u])) 	mes "["+(.@u+1)+"] ^FF0000+"+@refineupgrade[.@u ]+" ^A0522D"+getitemname(@itemrefine[.@u])+" ^000000โดยแลกกับ";
+		if (1 <= getitemslots( @itemrefine[.@u])) 	mes "["+(.@u+1)+"] ^FF0000+"+@refineupgrade[.@u ]+" ^A0522D"+getitemname(@itemrefine[.@u])+"["+getitemslots( @itemrefine[.@u])+"] ^000000โดยแลกกับ";
+		if (@itemtrade_1[.@u] > 0)	mes "-> ^FF4500"+getitemname(@itemtrade_1[.@u])+" ^4169E1"+@amoutitem_1[.@u]+"^000000 ea";
+		if (@itemtrade_2[.@u] > 0)	mes "-> ^FF4500"+getitemname(@itemtrade_2[.@u])+" ^4169E1"+@amoutitem_2[.@u]+"^000000 ea";
+		if (@itemtrade_3[.@u] > 0)	mes "-> ^FF4500"+getitemname(@itemtrade_3[.@u])+" ^4169E1"+@amoutitem_3[.@u]+"^000000 ea";
+		continue;
+	}
+next;
+cutin "orleans_2",2;
+mes $@tr$;
+mes "ว่าไงละ ท่านต้องการแลกหรือเปล่า ?";
+next;
+set .@u,select(.@menu$);
+mes $@tr$;
+	if(countitem2(@itemrefine[(.@u-1)],1,@refineupgrade[(.@u-1)],0,0,0,0,0) < 1) {
+		cutin "orleans_3",2;
+		if (0 == getitemslots( @itemrefine[(.@u-1)]))	mes "ท่านไม่มี ^FF0000+" + "" + @refineupgrade[(.@u-1)]+"^A0522D "+getitemname(@itemrefine[(.@u-1)])+"^000000";
+		if (1 <= getitemslots( @itemrefine[(.@u-1)]))	mes "ท่านไม่มี ^FF0000+" + "" + @refineupgrade[(.@u-1)]+"^A0522D "+getitemname(@itemrefine[(.@u-1)])+"["+getitemslots( @itemrefine[(.@u-1)])+"]^000000";
+	}
+	else if(countitem2(@itemrefine[(.@u-1)],1,@refineupgrade[(.@u-1)],0,0,0,0,0) >= 1) {
+		if(@inventorylist_count >= 95){	cutin "orleans_4",2;	mes "ไม่สามารถดำเนินการต่อไปได้ เนื่องจากคุณมี item ในตัวมากเกินไป.";	goto L_end;	}
+//		mes ""+(((readparam(24)+(getiteminfo(@itemtrade_1[(.@u-1)],6)*@amoutitem_1[(.@u-1)])+(getiteminfo(@itemtrade_2[(.@u-1)],6)*@amoutitem_2[(.@u-1)])+(getiteminfo(@itemtrade_3[(.@u-1)],6)*@amoutitem_3[(.@u-1)]))-getiteminfo(@itemrefine[(.@u-1)],6))/10)+"";
+//		mes ""+(readparam(25)-100)/10+"";
+		if ((((readparam(24)+(getiteminfo(@itemtrade_1[(.@u-1)],6)*@amoutitem_1[(.@u-1)])+(getiteminfo(@itemtrade_2[(.@u-1)],6)*@amoutitem_2[(.@u-1)])+(getiteminfo(@itemtrade_3[(.@u-1)],6)*@amoutitem_3[(.@u-1)]))-getiteminfo(@itemrefine[(.@u-1)],6))/10) > (readparam(25)-100)/10) {	cutin "orleans_4",2;	mes "ไม่สามารถดำเนินการต่อไปได้ เนื่องจากคุณมีน้ำหนักมากเกินไป. ";	goto L_end;	}
+		delitem2 @itemrefine[(.@u-1)],1,1,@refineupgrade[(.@u-1)],0,0,0,0,0;
+		if (@itemtrade_1[.@u-1] > 0) getitem @itemtrade_1[(.@u-1)],@amoutitem_1[(.@u-1)];
+		if (@itemtrade_2[.@u-1] > 0) getitem @itemtrade_2[(.@u-1)],@amoutitem_2[(.@u-1)];
+		if (@itemtrade_3[.@u-1] > 0) getitem @itemtrade_3[(.@u-1)],@amoutitem_3[(.@u-1)];
+		cutin "orleans_6",2;
+		mes "ไม่เลวๆ +ได้ขนาดนี้ ในภายภาคหน้า";
+		mes "เจ้าอาจจะเป็นนักตี + ตัวยงเช่นข้า";
+		mes "ขอให้โชคดี";
+	}
+L_end:
+close2;	cutin "",255;
+
+end;
+}
+	
+
+// ============================================= NPC Add Map =============================================
+1@pdb,202,194,4	duplicate(refine event)	Refine Event::refevt	878
+
+//maintown,54,30,4	shop	ของกิจกรรมตีบวก::shopef01	988,5111:100000,5465:100000,5363:100000,5467:100000,5500:100000,5658:100000,5253:100000,5324:100000,5489:100000,5209:100000,5366:100000,5469:100000,5225:100000,5413:100000,5571:100000,5108:100000,5213:100000,5395:100000,5466:100000,
+//1@pdb,201,202,4	shop	ของกิจกรรมตีบวก::shopef01	988,5213:10000;
+
+1@pdb,213,194,4	script	Refine[Free]Event::refevtplus	911,{
+
+	set .test,1;	//0 = เปิด , 1 = ปิด
+	
+		if(.test == 1){
+
+	mes "[ ^FF0000Free Refine^000000 ]";
+	mes "นี่คือกิจกรรมตีบวกฟรีแจกแคช";
+	mes "ตีเท่าไหร่ได้เท่านั้น";
+	mes " ";
+	mes "มีเวลาร่วมสนุก 5 นาที";
+	mes "ลงมือตีบวกได้เลย";
+	mes "^000088[ตีบวกได้เลยไม่ใช้หินตีบวก]^000000";
+	
+	next;
+	menu " - ^FF0000ตีบวกเลย^000000",-," - ยกเลิก",ext;
+	
+	}
+
+	if(getequipid(EQI_HEAD_TOP) != 5213){	end;	}
+
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 0){ 		set .@per,100;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 1){ 		set .@per,100;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 2){ 		set .@per,100;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 3){ 		set .@per,100;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 4){ 		set .@per,95;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 5){ 		set .@per,90;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 6){ 		set .@per,85;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 7){ 		set .@per,80;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 8){ 		set .@per,75;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 9){ 		set .@per,65;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 10){ 		set .@per,60;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 11){ 		set .@per,60;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 12){ 		set .@per,50;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 13){ 		set .@per,45;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 14){ 		set .@per,40;		set .@eff,0;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 15){ 		set .@per,40;		set .@eff,55;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 16){ 		set .@per,35;		set .@eff,55;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 17){ 		set .@per,35;		set .@eff,55;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 18){ 		set .@per,30;		set .@eff,55;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 19){ 		set .@per,20;		set .@eff,779;			goto randrefine; }
+	if(getequiprefinerycnt(EQI_HEAD_TOP) == 20){ 	end; }
+
+randrefine:
+
+	if(.@per >= rand(1,100)){
+		successrefitem EQI_HEAD_TOP;
+			if(.@eff == 0){ } else { specialeffect2 .@eff; }
+		if(getequiprefinerycnt(EQI_HEAD_TOP) == 15){ mapannounce "1@pdb", strcharinfo(0) + " ทำการตีบวกถึงลำดับ 17! แล้ว ยินดีด้วยนะครับ",0; }
+		if(getequiprefinerycnt(EQI_HEAD_TOP) == 16){ mapannounce "1@pdb", strcharinfo(0) + " ทำการตีบวกถึงลำดับ 17! แล้ว ยินดีด้วยนะครับ",0; }
+		if(getequiprefinerycnt(EQI_HEAD_TOP) == 17){ mapannounce "1@pdb", strcharinfo(0) + " ทำการตีบวกถึงลำดับ 17! แล้ว ยินดีด้วยนะครับ",0; }
+		if(getequiprefinerycnt(EQI_HEAD_TOP) == 18){ mapannounce "1@pdb", strcharinfo(0) + " ทำการตีบวกถึงลำดับ 18! แล้ว ยินดีด้วยนะครับ",0; }
+		if(getequiprefinerycnt(EQI_HEAD_TOP) == 19){ mapannounce "1@pdb", strcharinfo(0) + " ทำการตีบวกถึงลำดับ 19! แล้ว ยินดีด้วยนะครับ",0; }
+		if(getequiprefinerycnt(EQI_HEAD_TOP) == 20){ mapannounce "1@pdb", strcharinfo(0) + " ทำการตีบวกถึงลำดับ 20! แล้ว ยินดีด้วยนะครับ",0; }
+	} else {
+		downrefitem EQI_HEAD_TOP;
+	}
+end;
+
+ext:
+	end;
+
+}
+
+-	script	#Secret_refevt	-1,{
+
+OnInit:
+	bindatcmd "refineevent",strnpcinfo(3)+"::OnEff",0,99;
+	disablenpc "refevt";
+	disablenpc "refevtplus";
+	end;
+	
+OnEff:
+
+			menu "Open Refine Event",-,"ยกเลิกการซื้อ",noop;
+
+	if($@refineevent == 1){ dispbottom "[Event] : ไม่สามารถเปิดซ้ำได้กรุณากด @resetevent",0xA1EA18; }
+
+	dispbottom "[Event] : เปิดกิจกรรม Refine Event("+$roundrefine+") เรียบร้อยแล้ว",0xA1EA18;
+	announce "[Event] : กิจกรรม ตีบวก 5 นาที ถูกเปิดขึ้น สามารถใช้คำวั่ง @joinevent เข้าร่วมได้ ( 1IP สามารถเข้าร่วมได้ 2 ID )",0,0xEDA631;
+	disablenpc "refevt";
+	disablenpc "refevtplus";
+	set $@refineevent,1;
+	set $roundrefine,$roundrefine+1;
+	sleep 10000;
+	announce "[Event] : กิจกรรม ตีบวก 5 นาทีกำลังจะเริ่มต้นขึ้นหลังจากนี้ 30 วินาที",0,0xEDA631;
+	sleep 10000;
+	announce "[Event] : กิจกรรม ตีบวก 5 นาทีกำลังจะเริ่มต้นขึ้นหลังจากนี้ 20 วินาที",0,0xEDA631;
+	sleep 10000;
+	announce "[Event] : กิจกรรม ตีบวก 5 นาทีกำลังจะเริ่มต้นขึ้นหลังจากนี้ 10 วินาที",0,0xEDA631;
+	sleep 10000;
+	announce "[Event] : กิจกรรม ตีบวก เริ่มต้นขึ้นแล้ว ใครไม่ทัน ไว้โอกาสหน้านะ",0,0xEDA631;
+	set $@refineevent,0;
+	
+	sleep 3000;	
+	mapannounce "1@pdb","[Refine Event] : มีเวลาตีบวกเพียง 5 นาทีเท่านั้น!!",bc_map,0xA1EA18;
+	sleep 3000;	
+	mapannounce "1@pdb","[Refine Event] : และสามารถแลกของรางวัลได้เพียง 1 นาที ก่อนจะย้ายกลับเมือง อัตโนมัติ",bc_map,0xA1EA18;
+	sleep 3000;	
+	mapannounce "1@pdb","[Refine Event] : อีก 10 วิจะมี NPC ปรากฏขึ้น เจ้าสามารถเริ่มตีบวกได้เลย",bc_map,0xA1EA18;
+	sleep 10000;
+	
+	enablenpc "refevtplus";
+	sleep 60000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 4 นาที",bc_map,0xA1EA18;
+	sleep 60000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 3 นาที",bc_map,0xA1EA18;
+	sleep 60000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 2 นาที",bc_map,0xA1EA18;
+	sleep 60000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 1 นาที",bc_map,0xA1EA18;
+	sleep 30000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 30 วินาที",bc_map,0xA1EA18;
+	sleep 10000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 20 วินาที",bc_map,0xA1EA18;
+	sleep 10000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 10 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 9 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 8 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 7 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 6 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 5 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 4 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 3 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 2 วินาที",bc_map,0xA1EA18;
+	sleep 1000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 1 วินาที",bc_map,0xA1EA18;	
+	sleep 1000;
+	enablenpc "refevt";
+	disablenpc "refevtplus";
+	mapannounce "1@pdb","[Refine Event] : หมดเวลาในการตีบวก (รีบแลกรางวัลก่อนถูกส่งกลับหละ)",bc_map,0xA1EA18;
+	sleep 30000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 30 วินาที (ในการแลกรางวัล)",bc_map,0xA1EA18;
+	sleep 10000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 20 วินาที (ในการแลกรางวัล)",bc_map,0xA1EA18;
+	sleep 10000;
+	mapannounce "1@pdb","[Refine Event] : เหลือเวลาอีก 10 วินาที (ในการแลกรางวัล)",bc_map,0xA1EA18;
+	sleep 10000;
+	mapannounce "1@pdb","[Refine Event] : หมดเวลาในการแลกรางวัล",bc_map,0xA1EA18;
+	disablenpc "refine event";
+	sleep 3000;
+	mapannounce "1@pdb","[Refine Event] : ไว้พบกันใหม่โอกาสหน้านะ ทุกคน",bc_map,0xA1EA18;
+	sleep 2000;
+	mapwarp "1@pdb","maintown",86,56;
+	end;
+
+	noop:	end;
+
+}

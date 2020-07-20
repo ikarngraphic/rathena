@@ -1,0 +1,179 @@
+//===== rAthena Script ==================================
+//===== Translate By: ===================================
+//= LungEsteay
+//================================================
+
+trinity,123,152,4	script	ออฟปีกขาว#mal	402,{
+
+	disable_items;
+	if (checkweight(1201,1) == 0) {
+		mes "คุณมีไอเทมมากเกินไป เอาไปเก็บก่อน!";
+		end;
+	}
+	if (MaxWeight - Weight < 10000) {
+		mes "คุณมีน้ำหนักมากเกินไป";
+		end;
+	}
+	if (getequipid(EQI_GARMENT) == 2573) {
+		if (Zeny >= 1000000)
+			set .@menu$, "เสริมพลัง Archangel Wing";
+		else
+			set .@menu$, "^999999เงินคุณไม่เพียงพอ!^000000";
+	} else
+		set .@menu$, "^999999คุณไม่ได้ใส่ Archangel Wing!^000000";
+	mes "[Fallen Angel]";
+	mes "วันนี้ อากาศดีจังเลยเนอะ";
+	next;
+	mes "[Fallen Angel]";
+	mes "ถ้าคุณมี Archangel Wing ฉันจะเสริมพลังให้";
+	next;
+	switch(select("คืออะไรหรอ:"+.@menu$+":ลบล้างพลัง")) {
+	case 1:
+		switch(select("ไร้สาระ:คุณกำลังจะทำอะไร?")) {
+		case 1:
+			mes "[Fallen Angel]";
+			mes "พูดอะไรของคุณ?";
+			end;
+		case 2:
+			mes "[Fallen Angel]";
+			mes "ฉันสามารถเสริมพลังให้กับปีกของคุณได้ แต่ว่ามันก็^ff0000มีโอกาสเล็กน้อยที่มันจะเสียหาย^000000!";
+			end;
+		}
+	case 2:
+		if (Zeny < 1000000) {
+			mes "[Fallen Angel]";
+			mes "คุณมีเงินไม่พอนะ";
+			end;
+		}
+		mes "[Fallen Angel]";
+		mes "การเสริมพลังจะต้องใช้เงิน ^0000ff1,000,000 zeny^000000.";
+		mes "^ff0000มีโอกาสเล็กน้อยที่มันจะถูกทำลอย^000000!";
+ 		mes "ถ้าคุณยอมรับแล้ว ฉันจะเสริมพลังให้.";
+		next;
+		if(select("ฉันไม่แน่ใจแล้ว...:ก็ได้,จัดการเลย") == 1) {
+			mes "[Fallen Angel]";
+			mes "Ok! Take your time to consider!";
+			end;
+		}
+		specialeffect2 EF_REPAIRWEAPON;
+		progressbar "ffff00",0;
+		if (getequipisequiped(EQI_GARMENT) == 0) {
+			mes "[Fallen Angel]";
+			mes "เอ็งถอดออกหรอ";
+			end;
+		}
+		if (getequipid(EQI_GARMENT) != 2573) {
+			mes "[Fallen Angel]";
+			mes "เจ้าไม่ได้ใส่มันนิ";
+			end;
+		}
+		if (getequipcardid(EQI_GARMENT,3)) {
+			mes "[Fallen Angel]";
+			mes "ปีกนี้มีการเสริมพลังอยู่แล้ว ,รบกวนเจ้าไปลบของเก่าออกก่อน";
+			end;
+		}
+		set .@equip_refine, getequiprefinerycnt(EQI_GARMENT);
+		setarray .@equip_card[0], getequipcardid(EQI_GARMENT,0),getequipcardid(EQI_GARMENT,1),getequipcardid(EQI_GARMENT,2);
+
+		set .@i, rand(1,900);
+		     if (.@i < 2)   set .@enchant,4848; //Immuned1
+		else if (.@i < 3)   set .@enchant,4849; //Cranial1
+		else if (.@i < 4)   set .@enchant,4852; //Heal_Amount5
+		else if (.@i < 9)   set .@enchant,4853; //S_Str
+		else if (.@i < 14)  set .@enchant,4854; //S_Agi
+		else if (.@i < 19)  set .@enchant,4855; //S_Vital
+		else if (.@i < 24)  set .@enchant,4856; //S_Int
+		else if (.@i < 29)  set .@enchant,4857; //S_Dex
+		else if (.@i < 34)  set .@enchant,4858; //S_Luck
+		else if (.@i < 39)  set .@enchant,4851; //Heal_Amount4
+		else if (.@i < 49)  set .@enchant,4850; //Heal_Amount3
+		else if (.@i < 74)  set .@enchant,4760; //Matk1
+		else if (.@i < 84)  set .@enchant,4761; //Matk2
+		else if (.@i < 109) set .@enchant,4817; //Sharp2
+		else if (.@i < 119) set .@enchant,4816; //Sharp3
+		else if (.@i < 144) set .@enchant,4814; //Spell2
+		else if (.@i < 154) set .@enchant,4813; //Spell3
+		else if (.@i < 179) set .@enchant,4833; //Expert_Archer2
+		else if (.@i < 189) set .@enchant,4834; //Expert_Archer3
+		else if (.@i < 214) set .@enchant,4810; //Fighting_Spirit2
+		else if (.@i < 224) set .@enchant,4809; //Fighting_Spirit3
+		else if (.@i < 259) set .@enchant,4701; //Strength2
+		else if (.@i < 294) set .@enchant,4731; //Agility2
+		else if (.@i < 329) set .@enchant,4721; //Dexterity2
+		else if (.@i < 364) set .@enchant,4741; //Vitality2
+		else if (.@i < 399) set .@enchant,4751; //Luck2
+		else if (.@i < 434) set .@enchant,4711; //Inteligence2
+		else if (.@i < 504) set .@enchant,4700; //Strength1
+		else if (.@i < 574) set .@enchant,4730; //Agility1
+		else if (.@i < 644) set .@enchant,4720; //Dexterity1
+		else if (.@i < 714) set .@enchant,4740; //Vitality1
+		else if (.@i < 784) set .@enchant,4750; //Luck1
+		else if (.@i < 854) set .@enchant,4710; //Inteligence1
+		else set .@enchant,0;
+
+		set Zeny, Zeny - 1000000;
+		delequip EQI_GARMENT;
+		if (.@enchant == 0) {
+			mes "[Fallen Angel]";
+			mes "Be merciful to the survivor,";
+			mes "Send flowers to the dead.";
+			next;
+			mes "[Fallen Angel]";
+			mes "Help for justice,";
+			mes "Elimination of evil.";
+			next;
+			mes "[Fallen Angel]";
+			mes "เสียใจด้วย Archangel Wing ถูกทำลายไปแล้ว!";
+			end;
+		}
+		getitem2 2573,1,1,.@equip_refine,0,.@equip_card[0],.@equip_card[1],.@equip_card[2],.@enchant; //Archangel_Wing
+		if (.@i < 4)
+//			announce strcharinfo(0)+" has enchanted Archangel Wing with amazing capability!",bc_all,0xFF0000,FW_NORMAL,10;
+		mes "[Fallen Angel]";
+		mes "Take it!";
+		mes "I believe that you will become the dominator of the new world!";
+		end;
+	case 3:
+		mes "[Fallen Angel]";
+		mes "การลบพลังต้องใช้^0000ff3 units of Silvervine Fruit^000000.";
+		next;
+		if(select("ขอคิดดูก่อนนะ...:โอเค,จัดการเลย.") == 1) {
+			mes "[Fallen Angel]";
+			mes "Ok! Take your time to consider!";
+			end;
+		}
+		specialeffect2 EF_REPAIRWEAPON;
+		progressbar "ffff00",0;
+		if (getequipisequiped(EQI_GARMENT) == 0) {
+			mes "[Fallen Angel]";
+			mes "The Archangel Wing has been taken out!";
+			end;
+		}
+		if (getequipid(EQI_GARMENT) != 2573) {
+			mes "[Fallen Angel]";
+			mes "เจ้าไม่ได้ใส่ Archangel Wing!";
+			end;
+		}
+		if (countitem(6417) < 3) {
+			mes "[Fallen Angel]";
+			mes "คุณมี Silvervine Fruit ไม่พอ!";
+			end;
+		}
+		if (getequipcardid(EQI_GARMENT,3) < 4700) { // Armor Enchant System
+			mes "[Fallen Angel]";
+			mes "ปีกนี้ยังไม่ได้เสริมพลังเลยนะ!";
+			end;
+		}
+		set .@equip_refine, getequiprefinerycnt(EQI_GARMENT);
+		setarray .@equip_card[0], getequipcardid(EQI_GARMENT,0),getequipcardid(EQI_GARMENT,1),getequipcardid(EQI_GARMENT,2);
+		delitem 6417,3; //Silvervine
+		delequip EQI_GARMENT;
+		getitem2 2573,1,1,.@equip_refine,0,.@equip_card[0],.@equip_card[1],.@equip_card[2],0; //Archangel_Wing
+		mes "[Fallen Angel]";
+		mes "Take it!";
+		end;
+	}
+//OnInit: waitingroom "  Enc. ปีกขาว",0;end;
+end;
+}
+

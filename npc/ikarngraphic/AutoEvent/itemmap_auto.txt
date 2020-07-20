@@ -1,0 +1,35 @@
+morocc,0,0,0	script	TimerItemGiver	111,{
+	end;
+
+OnClock0600:
+OnClock2000:
+	initnpctimer;
+	startnpctimer;
+	$isTimerItemGiverRun = 1;
+	announce "ผู้เล่นที่อยู่ในแมพ Main Tower (Lv.280) ตั้งแต่เวลานี้จนถึง 21.00 น. จะได้รับ Free Cash Coin แบบสุ่ม 0~10",0;
+	end;
+
+OnClock0700:
+OnClock2100:
+	stopnpctimer;
+	$isTimerItemGiverRun = 0;
+	end;
+
+OnTimer30000:
+	if(!$isTimerItemGiverRun)
+	end;
+	startnpctimer;
+	initnpctimer;
+	addrid(1);
+	mapannounce "maintown","ผู้เล่นที่อยู่ในแมพ Main Tower (Lv.280) ตั้งแต่เวลานี้จนถึง 21.00 น. จะได้รับ Free Cash Coin แบบสุ่ม 0~10",0;
+	if( BaseLevel >= 280 ){	getitem 41023,rand(0,10);	} else { end; }
+	end;
+	
+OnInit:
+	if(gettime(3) >= 21 || gettime(3) < 20)
+	if(gettime(3) >= 07 || gettime(3) < 06)
+	goto OnClock2100;
+	else
+	goto OnClock2000;
+	end;
+}

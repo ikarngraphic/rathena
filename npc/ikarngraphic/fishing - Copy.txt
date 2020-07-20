@@ -1,0 +1,300 @@
+-	script	FishingHole	-1,{
+	
+//Fishing rod
+set .@Rod,2764;
+//Fishing Lure
+set .@Lure,2775;
+//Auto-Fish
+set .@Auto,1;
+//Auto-Fish on Fail
+set .@AutoFail,1;
+Fish:
+	if (isequipped(.@Rod)) && (isequipped(.@Lure)){
+		specialeffect EF_BUBBLE,"FishingHole";
+		//soundeffect "fishingrod.wav",0;
+		//dispbottom "[Fishing] เหวี่ยงเหยื่อไปแล้ว...";
+		set .@fcast,12;
+			if (isequipped(2550)) { //Fisher's Muffler
+				set .@fcast,.@fcast - 2;
+			}
+			if (isequipped(2443)) { //Fisher's Boots
+				set .@fcast,.@fcast - 2;
+			}
+			if (isequipped(2764)) { //Fishing Pole
+				set .@fcast,.@fcast - 2;
+			}
+			if (isequipped(2775)) { //Fishing Lure
+				set .@fcast,.@fcast - 1;
+			}
+		progressbar "ffffff",.@fcast;
+		if (rand(1,20) == 2){
+		getitem 14522,1; //Quest Item
+		specialeffect2 EF_TEMP_OK;
+		//soundeffectall "success.wav",0,strcharinfo(3);
+		//mapannounce strcharinfo(3),strcharinfo(0)+" has caught a [Water Token]!",bc_map,"0xff77ff";
+		if(.@Auto==1){
+		goto Fish;}else{
+		end;}
+		}
+			if (rand(1,6) == 1) ||(rand(1,6) == 3) || (rand(1,6) == 6){
+			setarray .@Catch[0],14522,14523,14522,14523,14522,607,14523,14523;// List of Junk/Other
+			set .@CatchRand,.@Catch[rand(getarraysize(.@Catch))];
+			getitem .@CatchRand,1;
+			}
+			else {
+			dispbottom "[Fishing] ตกอะไรไม่ได้เลย...";
+			if(.@AutoFail == 1){
+			goto Fish;} else{
+			end;}
+			}
+		if (rand(1,120) == 3){
+		setarray .@Rare[0],7083,49505;
+		set .@RareCatch, .@Rare[rand(getarraysize(.@Rare))];
+		getitem .@RareCatch,1; //Reward
+		mapannounce strcharinfo(3),strcharinfo(0)+"ได้รับไอเท็ม "+getitemname(.@RareCatch)+" จากการตกปลา!",bc_map,"0xFFFF00";
+		}
+		if(.@Auto == 1){
+		goto Fish;} else{
+		end;}
+		}
+	else {
+	dispbottom "[Fishing] ต้องการเบ็ดตกปลาและเหยื่อ";
+	end;
+	}
+}
+maintown,124,148,4	duplicate(FishingHole)	Fishing Hole#1	10065
+maintown,135,148,4	duplicate(FishingHole)	Fishing Hole#2	10065
+maintown,129,144,4	duplicate(FishingHole)	Fishing Hole#3	10065
+
+maintown,109,142,4	shop	Fishing Seller#ZenyF	929,2764:300000,2775:300000,2550:300000,2443:300000;
+
+/*
+mooc,201,140,4	script	ของตกปลา	929,{
+mes "[ ของตกปลา ]";
+mes "ท่านต้องการไอเท็มชิ้นไหน";
+mes "เลือกมาได้เลย";
+next;
+menu "- ^FF0000"+getitemname(2764)+"^000000",ea1,"- ^FF0000"+getitemname(2775)+"^000000",ea2,"- "+getitemname(2550)+"",ea3,"- "+getitemname(2443)+"",ea4,"",ext;
+
+
+ea1:
+mes "[ ของตกปลา ]";
+	set .@itemsell,2764;
+	set .@zenym,100000;
+mes "<ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM>";
+mes "ราคา : ^FF0000"+.@zenym+"^000000";
+next;
+switch(select(" - เช่า 1 ชั่วโมง: - เช่า 2 ชั่วโมง: - เช่า 3 ชั่วโมง")) {
+case 1:
+	set .@time,3600;
+	set .@zeny,25000;
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 2:
+	set .@time,7200;
+	set .@zeny,60000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 3:
+	set .@time,10800;
+	set .@zeny,150000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+}
+
+
+ea2:
+mes "[ ของตกปลา ]";
+	set .@itemsell,2775;
+	set .@zenym,100000;
+mes "<ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM>";
+mes "ราคา : ^FF0000"+.@zenym+"^000000";
+next;
+switch(select(" - เช่า 1 ชั่วโมง: - เช่า 2 ชั่วโมง: - เช่า 3 ชั่วโมง")) {
+case 1:
+	set .@time,3600;
+	set .@zeny,25000;
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 2:
+	set .@time,7200;
+	set .@zeny,60000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 3:
+	set .@time,10800;
+	set .@zeny,150000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+}
+
+ea3:
+mes "[ ของตกปลา ]";
+	set .@itemsell,2550;
+	set .@zenym,150000;
+mes "<ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM>";
+mes "ราคา : ^FF0000"+.@zenym+"^000000";
+next;
+switch(select(" - เช่า 1 ชั่วโมง: - เช่า 2 ชั่วโมง: - เช่า 3 ชั่วโมง")) {
+case 1:
+	set .@time,3600;
+	set .@zeny,30000;
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 2:
+	set .@time,7200;
+	set .@zeny,70000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 3:
+	set .@time,10800;
+	set .@zeny,180000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+}
+
+ea4:
+mes "[ ของตกปลา ]";
+	set .@itemsell,2443;
+	set .@zenym,150000;
+mes "<ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM>";
+mes "ราคา : ^FF0000"+.@zenym+"^000000";
+next;
+switch(select(" - เช่า 1 ชั่วโมง: - เช่า 2 ชั่วโมง: - เช่า 3 ชั่วโมง")) {
+case 1:
+	set .@time,3600;
+	set .@zeny,30000;
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 2:
+	set .@time,7200;
+	set .@zeny,70000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+case 3:
+	set .@time,10800;
+	set .@zeny,180000;
+
+mes "[ ของตกปลา ]";
+mes "ระยะเวลา : "+.@time/60+" นาที";
+mes "จำนวนเงิน : "+.@zeny+" z.";
+set .@zenyu,.@zeny+.@zenym;
+mes "รวม : "+ .@zenyu +" z.";
+next;
+menu "ใช่ข้ายืนยัน",-,"ยกเลิก",ext;
+	goto SetItem;
+
+}
+
+SetItem:
+
+ set .@zenyu,.@zeny+.@zenym;
+ 
+if (Zeny < .@zenyu){
+mes "[ ของตกปลา ]";
+mes "คุณมีเงินไม่พอสำหรับเช่าไอเท็มนิ !!"; 
+end;	}
+
+set Zeny, Zeny - .@zenyu;
+
+rentitem .@itemsell,.@time;
+mes "[ ของตกปลา ]";
+mes "คุณได้รับ <ITEM>"+getitemname(.@itemsell)+"<INFO>"+.@itemsell+"</INFO></ITEM> !!"; 
+mes "เป็นที่เรียบร้อยแล้วค่ะ !!";
+end;
+
+
+ext:
+mes "[ ของตกปลา ]";
+mes "ไว้เจอกันใหม่ !!";
+end;
+
+OnInit:
+waitingroom "ของตกปลา",0;
+end;
+}
+*/

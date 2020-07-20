@@ -1,0 +1,66 @@
+//==============================================
+// - Script By : M-Ro Online
+// - Script City : Thailand 
+// - Script Support Server : Hercules & rAthena
+//==============================================
+
+god_town,148,60,6	warp	WBLANN	1,1,god_town,148,65
+
+god_town,152,59,6	script	บอสกลางเมือง#S	10017,{
+mes "[ บอสกลางเมือง ]";
+mes "บอสกลางเมืองเป็นอะไรที่โหดมาก";
+mes "หากเข้าไประวังตัวไว้ด้วยหละ";
+next;
+menu "ข้อมูลบอส",-,"ยกเลิก",EN;
+
+mes "[ บอสกลางเมือง ]";
+mes "ยังไม่มีข้อมูลในขณะนี้";
+end;
+
+EN:
+end;
+
+OnInit:
+set $@BOSSLANN,0;
+donpcevent "BLSV::OnRes";
+//waitingroom " บอสกลางเมือง",0;
+end;
+	}
+
+god_town,0,0,0	script	BossLann::BLSV	-1,{
+OnClock0000:
+OnClock0100:
+OnClock0200:
+OnClock0300:
+OnClock0400:
+OnClock0500:
+OnClock0600:
+OnClock0700:
+OnClock0800:
+OnClock0900:
+OnClock1000:
+OnClock1100:
+OnClock1200:
+OnClock1300:
+OnClock1400:
+OnClock1500:
+OnClock1600:
+OnClock1700:
+OnClock1800:
+OnClock1900:
+OnClock2000:
+OnClock2100:
+OnClock2200:
+OnClock2300:
+
+OnRes:
+if($@BOSSLANN == 0){	set $@BOSSLANN,1;
+announce "[ Boss กลางเมือง ] : ขณะนี้ บอสกลางเมืองได้ปรากฏตัวออกมาแล้ว เหล่าผู้เล่นช่วยกันฆ่ามันที !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+monster "god_town",148,72,"T W O",3254,1,"BLSV::OnDie";
+end;	}else{	end;	}
+
+OnDie:
+set $@BOSSLANN,0;
+announce "[ Boss กลางเมือง ] : ขณะนี้ บอสกลางเมืองได้ถูกกำจัดโดย [ "+strcharinfo(0)+" ] แล้วครับผม !!",BC_ALL,0xAAEC37,FW_BOLD,18;
+end;
+}

@@ -1,0 +1,269 @@
+//===== Current Version: =====================================
+//= 1.1 
+//===== Compatible With: =====================================
+//= rAthena SVN
+//===== Description: =========================================
+//= Exchange cards for points?.?
+//============================================================
+
+-	shop	card_shopmvpc	-1,4121:1,4123:1,4128:1,4131:1,4132:1,4134:1,4135:1,4137:1,4143:1,4144:1,4145:1,4146:1,4147:1,4148:1,4168:1,4236:1,4425:1,4372:1,4386:1,4142:1,4441:1,4408:1,4430:1,4419:1,4376:1,4456:1,4367:1,4374:1,4352:1,4601:1,4636:1,4592:1,31023:1,4562:1,4697:1,4560:1,4603:1,4563:1,4574:1,4576:1,4509:1,4566:1,4580:1,4525:1,4520:1,4652:1,4565:1,4561:1,4578:1,4507:1,4564:1,31026:1,4625:1,27020:1,4263:1,4276:1,4302:1,4305:1,4318:1,4324:1,4330:1,4342:1,4357:1,4359:1,4361:1,4363:1,4365:1,4399:1,4403:1,4407:1,27106:1,27162:1,27126:1,4662:1,4671:1,4672:1,4673:1,4674:1,4675:1,4676:1,4677:1,4678:1,4679:1,4680:1,4681:1,4682:1,4683:1,4647:1,4648:1,4649:1,4650:1,4651:1,27081:1,27104:1,27113:1,27119:1,27152:1,27151:1,27164:1,27168:1,27180:1,27182:1,27265:1,27321:1,27324:1,27325:1,27327:1,27326:1,27298:1,27294:1,27287:1,27362:1,27363:1,27346:1,27344:1,27345:1,27127:1,27128:1,27305:1,27318:1,27319:1,43020:1,43021:1,43015:1,43031:1,43023:1,43024:1,43022:1,43025:1,43052:1,43041:1,43038:1,27334:1,27329:1;
+
+maintown,139,73,4	script	MVP Card	512,{
+	mes "[Card Trader]";
+	mes "หวัดดี, "+strcharinfo(0)+"!";
+	mes "มีอะไรให้ข้ารับใช้ไหม ?";
+	mes "ใช้ CARD ^FF0000"+#MVPTREAD+"^000000/3 ในการสุ่ม";
+	mes "กับ ^FF0000"+#CASHPOINTS+"^000000/100 Cash Points";
+	next;
+	switch(select(" - รายละเอียด: - แลกการ์ดเป็นแต้มพอยท์: - สุ่ม Card MVP ใหม่: - ดูการ์ด MVP: - ออก")) {
+	case 1:
+		mes "[Card Trader]";
+		mes "^0055FF"+.Points[1]+" แต้ม^000000 สำหรับการ์ดบอส.";
+		mes "เจ้าสามารถเอาแต้มพอยท์";
+		mes "มาสุ่มเป็นการ์ดใหม่ได้";
+		mes "ฟังดูน่าสนใจไหม ?";
+		close;
+	case 2:
+		mes "[Card Trader]";
+		mes "กรุณาเลือกการ์ด";
+		mes "ที่เจ้าต้องการแลก.";
+		if (.Level) {
+			mes " ";
+			mes "ข้าต้องการจาก";
+			mes "มอนสเตอร์ที่เลเวล";
+			mes .Level+" หรือมากกว่า.";
+		}
+		deletearray @sold_nameid[0],getarraysize(@sold_nameid);
+		callshop "card_shopmvpc",2;
+		npcshopattach "card_shopmvpc";
+		end;
+	case 3:
+	
+		if(#MVPTREAD < 3 || #CASHPOINTS < 100){ 
+		
+		mes "[Card Trader]";
+		mes "เจ้ามีแต้ม MVP CARD หรือ CASH";
+		mes "ไม่เพียงพอต่อการสุ่มไอเท็มใหม่";
+		mes "กรุณาเชคก่อนทุกครั้ง";
+		end;
+
+			} else {
+	
+		set #CASHPOINTS, #CASHPOINTS - 100;
+		set #MVPTREAD,#MVPTREAD - 3;
+		progressbar "0x007000", 1;
+		
+		
+		setarray .@item[0],4121,4123,4128,4131,4132,4134,4135,4137,4143,4144,4145,4146,4147,4148,4168,4236,4425,4372,4386,4142,4441,4408,4430,4419,4376,4456,4367,4374,4352,4601,4636,4592,31023,4562,4697,4560,4603,4563,4574,4576,4509,4566,4580,4525,4520,4652,4565,4561,4578,4507,4564,31026,4625,27020,4263,4276,4302,4305,4318,4324,4330,4342,4357,4359,4361,4363,4365,4399,4403,4407,27106,27162,27126,4662,4671,4672,4673,4674,4675,4676,4677,4678,4679,4680,4681,4682,4683,4647,4648,4649,4650,4651,27081,27104,27113,27119,27152,27151,27164,27168,27180,27182,27265,27321,27324,27325,27327,27326,27298,27294,27287,27362,27363,27346,27344,27345,27127,27128,27305,27318,27319,43020,43021,43015,43031,43023,43024,43022,43025,43052,43041,43038,27334,27329;
+
+		set .@get, .@item[rand(getarraysize(.@item))];
+		getitem .@get,1;
+		specialeffect2 .@eff;
+		announce "[ MVP Tread Card ] : '"+strcharinfo(0)+"' ได้รับไอเท็ม "+getitemname(.@get)+"",8;
+		
+		}
+		end;
+		
+	case 4:
+		callshop "card_shopmvpc",1;
+		npcshopattach "card_shopmvpc";
+		end;
+	
+	
+	case 5:
+		mes "[Card Trader]";
+		mes "แล้วมาใหม่น่ะ!";
+		close;		
+	}
+
+OnSellItem:
+	mes "การ์ดที่จะแลก:";
+	mes "-----------------------------------";
+	for(set .@i,0; .@i<getarraysize(@sold_nameid); set .@i,.@i+1)
+		if((@sold_nameid[.@i] == 4121) ||
+		(@sold_nameid[.@i] == 4123) ||
+		(@sold_nameid[.@i] == 4128) ||
+		(@sold_nameid[.@i] == 4131) ||
+		(@sold_nameid[.@i] == 4132) ||
+		(@sold_nameid[.@i] == 4134) ||
+		(@sold_nameid[.@i] == 4135) ||
+		(@sold_nameid[.@i] == 4137) ||
+		(@sold_nameid[.@i] == 4143) ||
+		(@sold_nameid[.@i] == 4144) ||
+		(@sold_nameid[.@i] == 4145) ||
+		(@sold_nameid[.@i] == 4146) ||
+		(@sold_nameid[.@i] == 4147) ||
+		(@sold_nameid[.@i] == 4148) ||
+		(@sold_nameid[.@i] == 4168) ||
+		(@sold_nameid[.@i] == 4236) ||
+		(@sold_nameid[.@i] == 4425) ||
+		(@sold_nameid[.@i] == 4372) ||
+		(@sold_nameid[.@i] == 4386) ||
+		(@sold_nameid[.@i] == 4142) ||
+		(@sold_nameid[.@i] == 4441) ||
+		(@sold_nameid[.@i] == 4408) ||
+		(@sold_nameid[.@i] == 4430) ||
+		(@sold_nameid[.@i] == 4419) ||
+		(@sold_nameid[.@i] == 4376) ||
+		(@sold_nameid[.@i] == 4456) ||
+		(@sold_nameid[.@i] == 4367) ||
+		(@sold_nameid[.@i] == 4374) ||
+		(@sold_nameid[.@i] == 4352) ||
+		(@sold_nameid[.@i] == 4601) ||
+		(@sold_nameid[.@i] == 4636) ||
+		(@sold_nameid[.@i] == 4592) ||
+		(@sold_nameid[.@i] == 31023) ||
+		(@sold_nameid[.@i] == 4562) ||
+		(@sold_nameid[.@i] == 4697) ||
+		(@sold_nameid[.@i] == 4560) ||
+		(@sold_nameid[.@i] == 4603) ||
+		(@sold_nameid[.@i] == 4563) ||
+		(@sold_nameid[.@i] == 4574) ||
+		(@sold_nameid[.@i] == 4576) ||
+		(@sold_nameid[.@i] == 4509) ||
+		(@sold_nameid[.@i] == 4566) ||
+		(@sold_nameid[.@i] == 4580) ||
+		(@sold_nameid[.@i] == 4525) ||
+		(@sold_nameid[.@i] == 4520) ||
+		(@sold_nameid[.@i] == 4652) ||
+		(@sold_nameid[.@i] == 4565) ||
+		(@sold_nameid[.@i] == 4561) ||
+		(@sold_nameid[.@i] == 4578) ||
+		(@sold_nameid[.@i] == 4507) ||
+		(@sold_nameid[.@i] == 4564) ||
+		(@sold_nameid[.@i] == 31026) ||
+		(@sold_nameid[.@i] == 4625) ||
+		(@sold_nameid[.@i] == 27020) ||
+		(@sold_nameid[.@i] == 4263) ||
+		(@sold_nameid[.@i] == 4276) ||
+		(@sold_nameid[.@i] == 4302) ||
+		(@sold_nameid[.@i] == 4305) ||
+		(@sold_nameid[.@i] == 4318) ||
+		(@sold_nameid[.@i] == 4324) ||
+		(@sold_nameid[.@i] == 4330) ||
+		(@sold_nameid[.@i] == 4342) ||
+		(@sold_nameid[.@i] == 4357) ||
+		(@sold_nameid[.@i] == 4359) ||
+		(@sold_nameid[.@i] == 4361) ||
+		(@sold_nameid[.@i] == 4363) ||
+		(@sold_nameid[.@i] == 4365) ||
+		(@sold_nameid[.@i] == 4399) ||
+		(@sold_nameid[.@i] == 4403) ||
+		(@sold_nameid[.@i] == 4407) ||
+		(@sold_nameid[.@i] == 27106) ||
+		(@sold_nameid[.@i] == 27162) ||
+		(@sold_nameid[.@i] == 27126) ||
+		(@sold_nameid[.@i] == 4662) ||
+		(@sold_nameid[.@i] == 4671) ||
+		(@sold_nameid[.@i] == 4672) ||
+		(@sold_nameid[.@i] == 4673) ||
+		(@sold_nameid[.@i] == 4674) ||
+		(@sold_nameid[.@i] == 4675) ||
+		(@sold_nameid[.@i] == 4676) ||
+		(@sold_nameid[.@i] == 4677) ||
+		(@sold_nameid[.@i] == 4678) ||
+		(@sold_nameid[.@i] == 4679) ||
+		(@sold_nameid[.@i] == 4680) ||
+		(@sold_nameid[.@i] == 4681) ||
+		(@sold_nameid[.@i] == 4682) ||
+		(@sold_nameid[.@i] == 4683) ||
+		(@sold_nameid[.@i] == 4647) ||
+		(@sold_nameid[.@i] == 4648) ||
+		(@sold_nameid[.@i] == 4649) ||
+		(@sold_nameid[.@i] == 4650) ||
+		(@sold_nameid[.@i] == 4651) ||
+		(@sold_nameid[.@i] == 27081) ||
+		(@sold_nameid[.@i] == 27104) ||
+		(@sold_nameid[.@i] == 27113) ||
+		(@sold_nameid[.@i] == 27119) ||
+		(@sold_nameid[.@i] == 27152) ||
+		(@sold_nameid[.@i] == 27151) ||
+		(@sold_nameid[.@i] == 27164) ||
+		(@sold_nameid[.@i] == 27168) ||
+		(@sold_nameid[.@i] == 27180) ||
+		(@sold_nameid[.@i] == 27182) ||
+		(@sold_nameid[.@i] == 27265) ||
+		(@sold_nameid[.@i] == 27321) ||
+		(@sold_nameid[.@i] == 27324) ||
+		(@sold_nameid[.@i] == 27325) ||
+		(@sold_nameid[.@i] == 27327) ||
+		(@sold_nameid[.@i] == 27326) ||
+		(@sold_nameid[.@i] == 27298) ||
+		(@sold_nameid[.@i] == 27294) ||
+		(@sold_nameid[.@i] == 27287) ||
+		(@sold_nameid[.@i] == 27362) ||
+		(@sold_nameid[.@i] == 27363) ||
+		(@sold_nameid[.@i] == 27346) ||
+		(@sold_nameid[.@i] == 27344) ||
+		(@sold_nameid[.@i] == 27345) ||
+		(@sold_nameid[.@i] == 27127) ||
+		(@sold_nameid[.@i] == 27128) ||
+		(@sold_nameid[.@i] == 27305) ||
+		(@sold_nameid[.@i] == 27318) ||
+		(@sold_nameid[.@i] == 27319) ||
+		(@sold_nameid[.@i] == 43020) ||
+		(@sold_nameid[.@i] == 43021) ||
+		(@sold_nameid[.@i] == 43015) ||
+		(@sold_nameid[.@i] == 43031) ||
+		(@sold_nameid[.@i] == 43023) ||
+		(@sold_nameid[.@i] == 43024) ||
+		(@sold_nameid[.@i] == 43022) ||
+		(@sold_nameid[.@i] == 43025) ||
+		(@sold_nameid[.@i] == 43052) ||
+		(@sold_nameid[.@i] == 43041) ||
+		(@sold_nameid[.@i] == 43038) ||
+		(@sold_nameid[.@i] == 27334) ||
+		(@sold_nameid[.@i] == 27329)) {
+
+			set .@card_id[getarraysize(.@card_id)], @sold_nameid[.@i];
+			set .@card_amt[getarraysize(.@card_amt)], @sold_quantity[.@i];
+			if (@sold_nameid[.@i] != 4301 && @sold_nameid[.@i] != 4302 && @sold_nameid[.@i] != 4303 && @sold_nameid[.@i] != 4304 && @sold_nameid[.@i] != 4305 && @sold_nameid[.@i] != 4306 && @sold_nameid[.@i] != 4307)
+				set .@mvp, compare(.MVP$,""+@sold_nameid[.@i]);
+			mes ((.@mvp)?"  ^FF0000":"  ^777777")+@sold_quantity[.@i]+"x "+getitemname(@sold_nameid[.@i])+"^000000";
+			set .@card_total, .@card_total+(@sold_quantity[.@i]*((.@mvp)?.Points[1]:.Points[0]));
+		}
+	deletearray @sold_nameid[0], getarraysize(@sold_nameid);
+	deletearray @sold_quantity[0], getarraysize(@sold_quantity);
+	if (!.@card_id) {
+		mes "  ^777777(ไม่มีการ์ด)^000000";
+		close;
+	}
+	mes " ";
+	mes "---------- รวมทั้งหมด: ^0055FF"+.@card_total+" แต้ม.^000000 -------";
+	next;
+	if(select(" > ^0055FFแลกเปลี่ยน...^000000: > ^777777ยกเลิก^000000") == 2) {
+		mes "[Card Trader]";
+		mes "โอ้, ได้เลย...";
+		close;
+	}
+	for(set .@i,0; .@i<getarraysize(.@card_id); set .@i,.@i+1)
+		delitem .@card_id[.@i],.@card_amt[.@i];
+	setd .Points$, getd(.Points$)+.@card_total;
+	mes "[Card Trader]";
+	mes "เรียบร้อย!";
+	close;
+
+OnBuyItem:
+
+	close;
+
+OnInit:
+//	waitingroom "   MVP to MVP",0;
+	set .Level,0;   		// เลเวลมอนสเตอร์ขั้นต่ำในการแลกการ์ด.
+	set .Points$,"#MVPTREAD";	// ตัวแปรพอยท์.
+
+	setarray .Points[0],1,1;	// แต้มพอยท์ต่อ <การ์ดทั่วไป>,<การ์ดบอส>
+	set .MVP$,			// รหัสการ์ดบอส.
+	  "4121,4123,4128,4131,4132,4134,4135,4137,4143,4144,4145,4146,4147,4148,4168,4236,"+
+	  "4425,4372,4386,4142,4441,4408,4430,4419,4376,4456,4367,4374,4352,"+	// เพิ่มการ์ดบอสที่ขาด
+	  "4601,4636,4592,31023,4562,4697,4560,4603,4563,4574,4576,4509,4566,4580,4525,4520,4652,4565,4561,4578,4507,4564,31026,4625,27020,"+	// การ์ดบอสใหม่
+	  "4263,4276,4302,4305,4318,4324,4330,4342,4357,4359,4361,4363,4365,4399,4403,4407,27106,27162,27126,4662,4671,4672,4673,4674,4675,"+
+	  "4676,4677,4678,4679,4680,4681,4682,4683,4647,4648,4649,4650,4651,27081,27104,27113,27119,27152,27151,27164,27168,27180,"+
+	  "27182,27265,27321,27324,27325,27327,27326,27298,27294,27287,27362,27363,27346,27344,27345,27127,27128,27305,27318,27319,"+
+	  "43020,43021,43015,43031,43023,43024,43022,43025,43052,43041,43038,27334,27329";
+	
+	npcshopdelitem "card_shopmvpc",909;
+	for(set .@i,0; .@i<getarraysize(.Shop); set .@i,.@i+2)
+		npcshopadditem "card_shopmvpc",.Shop[.@i],.Shop[.@i+1];
+	end;
+}

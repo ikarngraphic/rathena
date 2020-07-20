@@ -1,0 +1,19 @@
+/*-	script	expbonus	-1,{
+
+OnNPCKillEvent:
+	
+	set .@bonus,0;
+	
+	set .@expmob,(((getmonsterinfo(killedrid,MOB_BASEEXP)*1000))/100)*.@bonus;
+	set .@expmob2,(((getmonsterinfo(killedrid,MOB_JOBEXP)*1000))/100)*.@bonus;
+	
+	set .@getexp,.@expmob;
+	set .@getexp2,.@expmob2;
+	
+		getexp .@getexp,.@getexp2;
+	
+	//dispbottom "[Bonus EXP] : ได้รับโบนัส "+.@getexp+" & "+.@getexp2+".";
+	
+	end;
+	
+}*/

@@ -1,0 +1,9 @@
+bossnia_01	mapflag	noexp
+bossnia_02	mapflag	noexp
+bossnia_03	mapflag	noexp
+bossnia_04	mapflag	noexp
+
+prontera	mapflag	noexp
+sp_cor	mapflag	noexp
+mooc	mapflag	noexp
+maintown	mapflag	noexp

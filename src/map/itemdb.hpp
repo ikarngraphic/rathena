@@ -7,8 +7,8 @@
 #include "../common/db.hpp"
 #include "../common/mmo.hpp" // ITEM_NAME_LENGTH
 
-
-
+///Maximum allowed Item ID (range: 1 ~ 65,534)
+#define MAX_ITEMID USHRT_MAX
 ///Use apple for unknown items.
 #define UNKNOWN_ITEM_ID 512
 /// The maximum number of item delays
@@ -733,17 +733,70 @@ enum e_random_item_group {
 	IG_PRIZEOFHERO,
 	IG_PRIVATE_AIRSHIP,
 	IG_TOKEN_OF_SIEGFRIED,
-	IG_ENCHANT_STONE_BOX5,
-	IG_ENCHANT_STONE_BOX6,
-	IG_ENCHANT_STONE_BOX7,
-	IG_ENCHANT_STONE_BOX8,
-	IG_ENCHANT_STONE_BOX9,
-	IG_ENCHANT_STONE_BOX10,
-	IG_ENCHANT_STONE_BOX11,
-	IG_ENCHANT_STONE_BOX12,
-	IG_ENCHANT_STONE_BOX13,
-	IG_ENCHANT_STONE_BOX14,
-	IG_ENCHANT_STONE_BOX15,
+	IG_BS_SHA_M_S_1,
+	IG_BS_SHA_M_S_17,
+	IG_BS_SHA_M_S_18,
+	IG_BS_SHA_M_S_19,
+	IG_BS_SHA_M_S_20,
+	IG_BS_ITEM_M_S_12,
+	IG_BS_ITEM_M_S_15,
+	IG_BS_SHA_M_S_5,
+	IG_BS_SHA_M_S_6,
+	IG_BS_SHA_M_S_7,
+	IG_BS_SHA_M_S_8,
+	IG_BS_SHA_M_S_13,
+	IG_BS_SHA_M_S_15,
+	IG_BS_SHA_M_S_16,
+	IG_BS_SHA_M_S_23,
+	IG_BS_ITEM_M_S_5,
+	IG_BS_SHA_M_S_9,
+	IG_BS_SHA_M_S_10,
+	IG_IG_BS_SHA_M_S_11,
+	IG_BS_SHA_M_S_21,
+	IG_BS_SHA_M_S_22,
+	IG_BS_SHA_M_S_3,
+	IG_BS_SHA_M_S_4,
+	IG_BS_SHA_M_S_12,
+	IG_BS_SHA_M_S_14,
+	IG_BS_SHA_M_S_24,
+	IG_BS_SHA_M_S_25,
+	IG_PHYSICALMAGICAL_MIX,
+	IG_SILVER_STATUE,
+	IG_STABILITY_SHADOW_BOX,
+	IG_RACE_SHADOW_BOX,
+	IG_BEARERS_S_CONVERSION_BOX,
+	IG_GEMSTONE_S_CONVERSION_BOX,
+	IG_STATUS_S_CONVERSION_BOX,
+	IG_SHADOW_EXCHANGE_BOX,
+	IG_COSTUME_ENCHANT_STONE_BOX,
+	IG_PIERCING_SHADOW_BOX,
+	IG_ENCHANTSTONE_RECIPE_4M,
+	IG_ENCHANTSTONE_RECIPE_9M,
+	IG_CLASS_SHADOW_PENDANT,
+	IG_CLASS_SHADOW_EARRING,
+	IG_CLASS_SHADOW_SHIELD,
+	IG_CLASS_SHADOW_SHOES,
+	IG_CLASS_SHADOW_ARMOR,
+	IG_CLASS_SHADOW_WEAPON,
+	IG_COSTUME_EXCHANGE_BOX,
+	IG_COLLECTIBLES_EXCHANGE_BOX,
+	IG_COSTUME_ENCHANT_STONE_BOX5,
+	IG_COSTUME_ENCHANT_STONE_BOX6,
+	IG_COSTUME_ENCHANT_STONE_BOX7,
+	IG_COSTUME_ENCHANT_STONE_BOX8,
+	IG_COSTUME_ENCHANT_STONE_BOX9,
+	IG_COSTUME_ENCHANT_STONE_BOX10,
+	IG_COSTUME_ENCHANT_STONE_BOX11,
+	IG_COSTUME_ENCHANT_STONE_BOX12,
+	IG_COSTUME_ENCHANT_STONE_BOX13,
+	IG_COSTUME_ENCHANT_STONE_BOX14,
+	IG_COSTUME_ENCHANT_STONE_BOX15,
+	IG_COSTUME_ENCHANT_STONE_BOX16,
+	IG_COSTUME_ENCHANT_STONE_BOX17,
+	IG_COSTUME_ENCHANT_STONE_BOX18,
+	IG_COSTUME_ENCHANT_STONE_BOX19,
+	IG_PERFECTSIZE_MIX,
+	IG_MAGICPIERCING_MIX,
 };
 
 /// Enum for bound/sell restricted selling
@@ -759,7 +812,7 @@ enum e_itemshop_restrictions {
 struct item_combo
 {
 	struct script_code *script;
-	uint32 *nameid;/* nameid array */
+	unsigned short *nameid;/* nameid array */
 	unsigned char count;
 	unsigned short id;/* id of this combo */
 	bool isRef;/* whether this struct is a reference or the master */
@@ -769,8 +822,8 @@ struct item_combo
 /// Struct of item group entry
 struct s_item_group_entry
 {
-	uint32 nameid; /// Item ID
-	unsigned short duration, /// Duration if item as rental item (in minutes)
+	unsigned short nameid, /// Item ID
+		duration, /// Duration if item as rental item (in minutes)
 		amount; /// Amount of item will be obtained
 	bool isAnnounced, /// Broadcast if player get this item
 		GUID, /// Gives Unique ID for items in each box opened
@@ -796,17 +849,25 @@ struct s_item_group_db
 
 /// Struct of Roulette db
 struct s_roulette_db {
-	uint32 *nameid[MAX_ROULETTE_LEVEL]; /// Item ID
-	unsigned short *qty[MAX_ROULETTE_LEVEL]; /// Amount of Item ID
+	unsigned short *nameid[MAX_ROULETTE_LEVEL], /// Item ID
+		           *qty[MAX_ROULETTE_LEVEL]; /// Amount of Item ID
 	int *flag[MAX_ROULETTE_LEVEL]; /// Whether the item is for loss or win
 	int items[MAX_ROULETTE_LEVEL]; /// Number of items in the list for each
 };
 extern struct s_roulette_db rd;
 
+/**
+* Extended Vending system [Lilith]
+**/
+struct s_item_vend {
+	unsigned short itemid;
+};
+extern struct s_item_vend item_vend[MAX_INVENTORY];
+
 ///Main item data struct
 struct item_data
 {
-	uint32 nameid;
+	unsigned short nameid;
 	char name[ITEM_NAME_LENGTH],jname[ITEM_NAME_LENGTH];
 
 	//Do not add stuff between value_buy and view_id (see how getiteminfo works)
@@ -906,8 +967,8 @@ struct s_random_opt_group {
 struct item_data* itemdb_searchname(const char *name);
 struct item_data* itemdb_search_aegisname( const char *str );
 int itemdb_searchname_array(struct item_data** data, int size, const char *str);
-struct item_data* itemdb_search(uint32 nameid);
-struct item_data* itemdb_exists(uint32 nameid);
+struct item_data* itemdb_search(unsigned short nameid);
+struct item_data* itemdb_exists(unsigned short nameid);
 #define itemdb_name(n) itemdb_search(n)->name
 #define itemdb_jname(n) itemdb_search(n)->jname
 #define itemdb_type(n) itemdb_search(n)->type
@@ -930,7 +991,7 @@ const char* itemdb_typename(enum item_types type);
 const char *itemdb_typename_ammo (enum e_item_ammo ammo);
 
 struct s_item_group_entry *itemdb_get_randgroupitem(uint16 group_id, uint8 sub_group);
-uint32 itemdb_searchrandomid(uint16 group_id, uint8 sub_group);
+unsigned short itemdb_searchrandomid(uint16 group_id, uint8 sub_group);
 
 #define itemdb_value_buy(n) itemdb_search(n)->value_buy
 #define itemdb_value_sell(n) itemdb_search(n)->value_sell
@@ -959,7 +1020,7 @@ bool itemdb_ishatched_egg(struct item* item);
 
 bool itemdb_isequip2(struct item_data *id);
 #define itemdb_isequip(nameid) itemdb_isequip2(itemdb_search(nameid))
-char itemdb_isidentified(uint32 nameid);
+char itemdb_isidentified(unsigned short nameid);
 bool itemdb_isstackable2(struct item_data *id);
 #define itemdb_isstackable(nameid) itemdb_isstackable2(itemdb_search(nameid))
 bool itemdb_isNoEquip(struct item_data *id, uint16 m);
@@ -967,7 +1028,7 @@ bool itemdb_isNoEquip(struct item_data *id, uint16 m);
 struct item_combo *itemdb_combo_exists(unsigned short combo_id);
 
 struct s_item_group_db *itemdb_group_exists(unsigned short group_id);
-bool itemdb_group_item_exists(unsigned short group_id, uint32 nameid);
+bool itemdb_group_item_exists(unsigned short group_id, unsigned short nameid);
 int16 itemdb_group_item_exists_pc(struct map_session_data *sd, unsigned short group_id);
 char itemdb_pc_get_itemgroup(uint16 group_id, bool identify, struct map_session_data *sd);
 
@@ -980,5 +1041,11 @@ void itemdb_reload(void);
 
 void do_final_itemdb(void);
 void do_init_itemdb(void);
+
+/**
+* Extended Vending system [Lilith]
+**/
+#define ITEMID_ZENY battle_config.item_zeny
+#define ITEMID_CASH battle_config.item_cash
 
 #endif /* ITEMDB_HPP */

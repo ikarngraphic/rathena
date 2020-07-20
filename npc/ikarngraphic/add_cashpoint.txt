@@ -1,0 +1,29 @@
+-	script	DIARY_ADDCASH	 -1,{
+
+OnInit:
+
+	while (1)
+	{
+		query_sql "SELECT `cash_id`,`amount`,`account_id` FROM `reward_cashpoint` WHERE `status` = 1 ORDER BY RAND()",.cash_id,.cash_amount,.cash_account_id;
+		sleep 1500;
+		if (getarraysize(.cash_id) > 0) {
+			for (set .i,0; .i < getarraysize(.cash_id); set .i,.i+1) {
+				if(.cash_amount[.i] > 0 && attachrid(.cash_account_id[.i]) == 1)
+				{
+					dispbottom "=======================[ Auto Cash Points ]=======================",0xFFFFFF;
+					dispbottom "คุณได้รับ Cash Point จำนวน " + callfunc("F_InsertComma",.cash_amount[.i]) + " Point",0xFFFFFF;
+					set #CASHPOINTS,(#CASHPOINTS + .cash_amount[.i]);
+					dispbottom "================[ ทีมงานได้ส่งสินค้าให้เรียบร้อยแล้วนะค่ะ ]=================",0xFFFFFF;
+					query_sql "UPDATE `reward_cashpoint` SET `status` = 2 WHERE `cash_id` = " + .cash_id[.i];
+					detachrid;
+				}
+			}
+			deletearray .cash_id[0],getarraysize(.cash_id);
+			deletearray .cash_amount[0],getarraysize(.cash_amount);
+			deletearray .cash_account_id[0],getarraysize(.cash_account_id);
+		}
+		sleep 5000;
+	}
+	end;
+
+}

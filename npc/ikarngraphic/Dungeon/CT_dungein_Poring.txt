@@ -1,0 +1,228 @@
+maintown,37,23,6	script	Sarah#D	10183,{
+
+// =========== RESET DAY =============
+
+set .@npc$,"[ Sarah ]";
+	set .@party_id,getcharid(1);
+	
+	
+	
+set .@gettimetick, gettimetick(2);
+		set .@instance_delay, ( instance_delay_dunctpor - gettimetick(2) );
+		if( .@has_instance == 0 && .@instance_delay > 0 )
+		{
+			mes .@npc$;
+			mes "คุณต้องรออีก : ^FF0000"+.@instance_delay+" วินาที.^000000";
+			end;	}	
+	
+	if(.@party_id == 0){ end; }		
+			
+	if($@MVPTW6party_name == .@party_id){
+	
+	set .instance_delay, 1800;	// 23 hr
+	set instance_delay_dunctpor, ( .@gettimetick + ( .instance_delay ));
+	warp "sand_m01",351,45;
+	end;
+	}
+	
+	if(getmapusers("sand_m01") == 0) { set $@MVPTW6,0;	}
+	
+mes .@npc$;
+mes "ช่วยเราด้วย !!";
+mes "เราเจอ พวกโจรสลัด!";
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "และลูกทีมที่เก่ง";
+next;
+	menu 
+	"^009933•^000000 ต้องการเข้าร่วม",Plays,
+	"^FF0000•^000000 ยกเลิก",Cancel;
+
+Cancel:
+	mes "ยินดีให้บริการครับ";
+	end;
+
+
+Plays:
+
+cutin "3rd_wl_queen02",255;
+	set .@party_id,getcharid(1);
+	set $@partyPKING,getcharid(1);
+	//ถ้าหากตายแล้วกลับมาใหม่ได้ไม่ต้องเอาออก
+	if ($@MVPTW6party_name == .@party_id){
+
+	if(getmapusers("sand_m01") == 0) { 
+	set $@MVPTW6,0;
+	set $@PPRS,0;
+	set $@MVPTW6party_name,0;
+	mes .@npc$;
+	mes "รีเซทเรียบร้อยแล้ว";
+	end;
+	}
+
+	mes .@npc$;
+	mes "หากคุณตายไม่สามารถกลับเข้าไปได้";
+	end;
+		}
+	
+	if (.@party_id == 0) {
+mes .@npc$;
+mes "ท่านจำเป็นต้องมีปาร์ตี้";
+mes "จึงจะสามารถเข้าหอคอยได้";
+	close;
+	} else if (getpartyleader(.@party_id,2) != getcharid(0)) {
+mes .@npc$;
+mes "ท่านไม่ใช่หัวหน้าปาร์ตี้";
+	close;
+	} else if ($@MVPTW6) {
+mes .@npc$;
+mes "ขณะนี้มี Party อื่น";
+mes "กำลังอยู่ในหอคอย";
+	close;
+	} else {
+
+	set $PARTYDP1,getpartymember(.@party_id);
+	set $@MVPTW6,1;
+	set $@MVPTW6party_name,.@party_id;
+	announce "[ Sarah ] : Party "+getpartyname(.@party_id)+" ได้เข้าร่วม ดันเจี้ยนเพลงของโจรสลัด แล้ว !!",0,0xAAEC37,bold,15;
+	killmonster "sand_m01","All";
+	disablenpc "warpprpo";
+	disablenpc "BossPR";
+	disablenpc "BossPR2";
+	enablenpc "TRP01";
+	enablenpc "TRP02";
+	enablenpc "TRP03";
+	enablenpc "TRP04";
+	enablenpc "SMMAP1";	
+	set $@PPRS,0;
+	mes .@npc$;
+	mes "สามารถเข้าร่วมดันเจี้ยนได้แล้ว";
+	close2;
+	set .instance_delay, 1800;	// 23 hr
+	set instance_delay_dunctpor, ( .@gettimetick + ( .instance_delay ));
+	warp "sand_m01",351,45;
+	end;
+	
+}
+end;
+	OnInit:
+	disablenpc "SMMAP1";
+	disablenpc "BossPR";
+	disablenpc "BossPR2";
+	disablenpc "warpprpo";
+	//waitingroom "# เพลงของโจรสลัด",0;
+	end;
+}
+
+sand_m01,351,52,4	script	Sarah::SMMAP1	10183,{
+if ($@PPRS == 1){ end; }
+set $@PPRS,1;
+npctalk "Sarah : หวัดดี ข้าต้องการความช่วยเหลือจากพวกเจ้า";
+sleep 2000;
+npctalk "Sarah : ข้าได้ยินมาว่าที่นี่มี ผู้บุกรุกเข้ามาหาขุมทรัพย์มากมาย";
+sleep 2000;
+npctalk "Sarah : เราลองเข้าไปหาใน พีระมิดดีไหม ?";
+sleep 2000;
+npctalk "Sarah : ข้าจะนางทางให้พวกท่านเอง";
+sleep 2000;
+areawarp "sand_m01",0,0,999,999,"sand_m01",151,173;
+sleep 2000;
+donpcevent "SMMAP2::OnFirst";
+end;
+}
+
+
+sand_m01,0,0,0	script	theend2::SMMAP2	-1,{
+end;
+OnFirst:
+mapannounce "sand_m01","[ Pirate ] : เร่งมือหน่อยๆ เพื่อนๆ สมบัติทั้งหมดจะเป็นของเรา !!",bc_map,0xAAEC37;
+sleep 3500;
+mapannounce "sand_m01","[ Pirate ] : ...Yo, ho, haul together,",bc_map,0xAAEC37;
+sleep 1500;
+mapannounce "sand_m01","[ Pirate ] : hoist the colors high.",bc_map,0xAAEC37;
+sleep 1500;
+mapannounce "sand_m01","[ Pirate ] : Heave ho, thieves and beggars,",bc_map,0xAAEC37;
+sleep 1500;
+mapannounce "sand_m01","[ Pirate ] : never shall we die.",bc_map,0xAAEC37;
+sleep 1500;
+mapannounce "sand_m01","[ Pirate ] : Hahahah aaaaa !!~",bc_map,0xAAEC37;
+enablenpc "BossPR";
+sleep 1500;
+mapannounce "sand_m01","[ Pirate ] : เห้ย !! มีผู้บุกรุก !!",bc_map,0xAAEC37;
+areawarp "sand_m01",0,0,999,999,"sand_m01",152,134;
+sleep 1000;
+donpcevent "BossPR::OnFirst";
+//==================================================================================================
+end;
+}
+
+sand_m01,157,168,4	script	Treasure::TRP01	10005,{ end; }
+sand_m01,146,168,6	script	Treasure::TRP02	10005,{ end; }
+sand_m01,157,164,4	script	Treasure::TRP03	10005,{ end; }
+sand_m01,152,139,4	script	Treasure::TRP04	10005,{ end; }
+
+sand_m01,148,139,6	script	Pirate::BossPR	830,{
+end;
+OnFirst:
+npctalk "Pirate : ท่านหัวหน้า !!";
+sleep 2000;
+npctalk "Pirate : ข้าเจอผู้บุกรุกแล้ว !";
+sleep 2000;
+npctalk "Pirate : จะให้ข้าทำยังไงกับมันดี !!";
+sleep 2000;
+npctalk "Pirate : จัดการมันเลยใช่หรือไม่ !!";
+sleep 2000;
+npctalk "Pirate : ท่านหัวหน้า !!";
+sleep 2000;
+specialeffect 795;
+disablenpc "BossPR";
+enablenpc "BossPR2";
+donpcevent "BossPR2::OnFirst";
+}
+
+sand_m01,148,139,6	script	Boss Pirate::BossPR2	31012,{
+end;
+OnFirst:
+npctalk "Boss : เสียงดัง เอะอะ น่ารำคาน !!";
+sleep 2000;
+npctalk "Boss : ตายๆ ไปซะได้ก็ดี !!";
+sleep 2000;
+npctalk "Boss : มาถึงเวลาของพวกเรากันดีกว่า !!";
+sleep 2000;
+npctalk "Boss : ใครเป็นคนส่งพวกเจ้าเข้ามา !!";
+sleep 2000;
+npctalk "Boss : อ่อ !! ยาย Sarah สินะ";
+sleep 2000;
+npctalk "Boss : ถ้าเป็นนางคนนี้ ล่ะก็";
+sleep 2000;
+npctalk "Boss : คงส่งคนฝีมือดีมาแน่ๆ";
+sleep 2000;
+npctalk "Boss : ไหน ข้าของลองฝีมือของเจ้าหน่อย สิ!!";
+disablenpc "BossPR2";
+disablenpc "TRP04";
+areamonster "sand_m01",148,139,148,139,"Pirate Poring",31012,1,"BossPR3::OnBOSS";
+end;	}
+
+-	script	A::BossPR3	-1,{
+OnBOSS:
+announce "[ Sarah ] : ข้าขอบใจพวกเจ้ามาก ที่เข้ามาช่วยเหลือข้า !!",0;
+sleep 2000;
+announce "[ Sarah ] : สักวัน !! ข้าจะตอบแทนพวกเจ้า",0;
+set $@PPRS,0;
+sleep 2000;
+enablenpc "warpprpo";
+end;	}
+
+sand_m01,151,134,4	script	Warp Port::warpprpo	10007,{
+if(rand(1,100) < 80){ getitem 49529,rand(1,2);	} else { getitem 49529,rand(2,5); }
+if(rand(1,100) > 90){ getitem 49530,1;	} else {  }
+warp "maintown",86,57;
+end;
+}
+
+
+sand_m01	mapflag	nowarp
+sand_m01	mapflag	nowarpto
+sand_m01	mapflag	noteleport
+sand_m01	mapflag	nosave	SavePoint
+sand_m01	mapflag	nomemo
+sand_m01	mapflag	nobranch
